@@ -1,0 +1,62 @@
+.container {
+    width: auto;
+    margin: auto;
+}
+
+table.scrolling {
+    border-collapse: collapse;
+    width:100%;
+    border:1px solid #50a5ed;
+}
+
+.scrolling thead {
+    background: #50a5ed;
+}
+
+.scrolling thead tr:nth-child(even) {
+    background: #50a5ed;
+}
+
+.scrolling thead th {
+    color: white;
+    border: 1px solid #aaa;
+    padding:5px 0px;
+}
+
+.scrolling th a {
+    color: white;
+}
+
+.purple {
+/*    border:1px solid #9B59B6;*/
+}
+
+.purple thead {
+    background: #9B59B6;
+}
+
+.scrolling tbody td {
+    border: 1px solid #aaa;
+    padding:5px 0px;
+}
+
+.scrolling tbody.nth tr:nth-child(even) {
+    background:#ECF0F1;
+}
+
+.fixed {
+    top:0;
+    margin-top: 0;
+    position:fixed;
+    width:auto !important;
+    display:none;
+    border:none;
+}
+
+.scrollMore {
+    margin-top: 600px;
+}
+
+.up {
+    cursor: pointer;
+}

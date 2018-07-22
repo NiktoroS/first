@@ -1,0 +1,18 @@
+<IfModule mod_rewrite.c>
+    Options -Indexes
+    Options +FollowSymlinks
+    RewriteEngine On
+
+    RewriteBase /
+
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteRule ^(.*)$ index.php [QSA,NC,L]
+
+</IfModule>
+
+php_value   session.gc_maxlifetime  10800
+php_flag    magic_quotes_gpc        off
+php_flag    register_globals        off
+php_flag    display_errors          on
+FileETag    None

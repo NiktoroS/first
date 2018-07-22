@@ -1,0 +1,7 @@
+.idea
+.project
+.buildpath
+.settings
+
+/app/.log
+/app/.tmp
