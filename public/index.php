@@ -3,34 +3,32 @@
  * @author <first@mail.ru>
  * @since  2018-03-30
  */
-
-require_once("../app/cnf/main.php");
-require_once(INC_DIR . "Dump.class.php");
+require_once ("../app/cnf/main.php");
+require_once (INC_DIR . "Dump.class.php");
 
 $uri = explode("?", $_SERVER["REQUEST_URI"]);
 $httpRequest = $httpRequestInit = explode("/", substr($uri[0], 1));
 
 if ("ajax" == $httpRequest[0]) {
-    require_once(INC_DIR . "ajaxObj.php");
-    exit;
+    require_once (INC_DIR . "ajaxObj.php");
+    exit();
 }
 
 try {
-    $moduleClass  = "main";
+    $moduleClass = "main";
     $moduleMethod = "show";
-    if (!empty($httpRequest[0]) and is_file(MOD_DIR . $httpRequest[0] . ".php")) {
+    if (! empty($httpRequest[0]) and is_file(MOD_DIR . $httpRequest[0] . ".php")) {
         $moduleClass = array_shift($httpRequest);
     }
-    require_once(MOD_DIR . $moduleClass . ".php");
+    require_once (MOD_DIR . $moduleClass . ".php");
     $moduleObj = new $moduleClass();
-    if (!empty($httpRequest[0]) and method_exists($moduleObj, $httpRequest[0])) {
+    if (! empty($httpRequest[0]) and method_exists($moduleObj, $httpRequest[0])) {
         $moduleMethod = array_shift($httpRequest);
     }
     $moduleObj->$moduleMethod($httpRequest);
-    if (is_file(TPL_DIR . $moduleClass . DS . $moduleMethod . ".tpl")) {
-        $moduleTpl  = $moduleClass . DS . $moduleMethod . ".tpl";
-    } else {
-        $moduleTpl  = $moduleClass . ".tpl";
+    $moduleTpl = $moduleClass . DS . $moduleMethod . ".tpl";
+    if (! is_file(TPL_DIR . $moduleTpl)) {
+        $moduleTpl = $moduleClass . ".tpl";
     }
     $moduleObj->display($moduleTpl);
 } catch (Exception $exception) {
@@ -43,7 +41,7 @@ try {
     }
     _dump(strval($exception), $code);
     if (404 != $code) {
-        $logs =  new Logs();
+        $logs = new Logs();
         $logs->add($exception);
     }
 }
