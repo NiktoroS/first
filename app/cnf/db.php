@@ -6,8 +6,8 @@
  */
 
 $dsnMySql = array (
-    "host" => "localhost",
-    "user" => "sro_db_user",
-    "pass" => "Twz9GhWT2PNWxrcz",
-    "name" => "sro",
+    "host" => "192.168.211.116", //"localhost",
+    "user" => "first",
+    "pass" => "first",
+    "name" => "sirotkin",
 );

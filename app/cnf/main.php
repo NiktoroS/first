@@ -13,8 +13,8 @@ define("DS", DIRECTORY_SEPARATOR);
 define("APP_DIR", dirname(dirname(__FILE__)) . DS);
 define("ROOT_DIR", dirname(APP_DIR) . DS);
 
-define("TMP_DIR", APP_DIR . ".tmp" . DS);
-define("LOG_DIR", APP_DIR . ".log" . DS);
+define("TMP_DIR", ROOT_DIR . ".tmp" . DS);
+define("LOG_DIR", ROOT_DIR . ".log" . DS);
 
 define("INC_DIR", APP_DIR . "inc" . DS);
 define("MOD_DIR", APP_DIR . "mod" . DS);

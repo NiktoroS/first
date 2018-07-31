@@ -90,7 +90,7 @@ class MySqlStorage
             $this->commit();
         }
         $this->myDb->close();
-        unset($this->myDb, $myDbAll[$this->dsn["host"]][$this->dsn["name"]]["link"]);
+#        unset($this->myDb, $myDbAll[$this->dsn["host"]][$this->dsn["name"]]["link"]);
     }
 
     /**
@@ -145,7 +145,7 @@ class MySqlStorage
      */
     public function queryRow($sql)
     {
-        $row = $this->getCache($sql, "Row");
+        $row = $this->getCache($sql, "row");
         if (false !== $row) {
             return $row;
         }
@@ -160,7 +160,7 @@ class MySqlStorage
         }
         $row = $result->fetch_assoc();
         $result->close();
-        $this->setCache($sql, "Row", $row);
+        $this->setCache($sql, "row", $row);
         return $row;
     }
 
@@ -197,12 +197,15 @@ class MySqlStorage
      */
     public function queryRows($sql, $firstFieldIsKey = false)
     {
-        $rows = $this->getCache($sql, "All");
+        $rows = $this->getCache($sql, "rows");
         if (false !== $rows) {
             return $rows;
         }
         $rows   = array ();
         $result = $this->queryForSelect($sql);
+        if (!$result) {
+            return $rows;
+        }
         if (!$result->num_rows) {
             @$result->close();
             return $rows;
@@ -220,7 +223,7 @@ class MySqlStorage
             }
         }
         $result->close();
-        $this->setCache($sql, "All", $rows);
+        $this->setCache($sql, "rows", $rows);
         return $rows;
     }
 
@@ -373,7 +376,7 @@ class MySqlStorage
         foreach ($rows as $keyRow => $row) {
             $this->correctData($table, $row, $columns);
             if (!$fields) {
-                $keys = $keysUpd = array_map(create_function('$key', 'return "`" . $key . "`";'), array_keys($row));
+                $keys = $keysUpd = array_map(function($key) { return "`" . $key . "`"; }, array_keys($row));
                 $fields  = " (" . join(", ", $keys) . ") ";
                 if ($key = array_search("`created`", $keysUpd)) {
                     unset($keysUpd[$key]);
@@ -384,7 +387,7 @@ class MySqlStorage
         $this->query("
             INSERT INTO " . $table . $fields . "
             VALUES " . join(", ", $rows) . "
-                ON DUPLICATE KEY UPDATE " . join(", ", array_map(create_function('$key', 'return $key . " = VALUES(" . $key . ")";'), $keysUpd))
+                ON DUPLICATE KEY UPDATE " . join(", ", array_map(function($key) { return $key . " = VALUES(" . $key . ")"; }, $keysUpd))
         );
         return $this->affectedRows();
     }
@@ -404,7 +407,16 @@ class MySqlStorage
             unset($row["_updated"]);
         }
         $this->correctData($table, $row);
-        $keys = $keysUpd = array_map(create_function('$key', 'return "`" . $key . "`";'), array_keys($row));
+        $keys = $keysUpd = array_map(
+            function ($key) {
+                return "`" . $key . "`";
+            },
+            array_keys($row)
+        );
+        $greet = function($name)
+        {
+            printf("Привет, %s\r\n", $name);
+        };
 
         if ($key = array_search("`created`", $keysUpd)) {
             unset($keysUpd[$key]);
@@ -412,7 +424,13 @@ class MySqlStorage
         $this->query("
             INSERT INTO " . $table . " (" . join(", ", $keys) . ")
             VALUES (" . join(", ", $row) . ")
-                ON DUPLICATE KEY UPDATE " . join(", ", array_map(create_function('$key', 'return $key . " = VALUES(" . $key . ")";'), $keysUpd))
+                ON DUPLICATE KEY UPDATE " . join(", ", array_map(
+                    function($key) {
+                        return $key . " = VALUES(" . $key . ")";
+                    },
+                    $keysUpd
+                )
+            )
         );
         return empty($id) ? $this->lastInsertID() : $id;
     }
@@ -614,7 +632,7 @@ class MySqlStorage
      */
     private function sendSms($exception)
     {
-        if (!is_file(require_once INC_DIR . "Telegram.class.php")) {
+        if (!is_file(INC_DIR . "Telegram.class.php")) {
             return;
         }
         require_once(INC_DIR . "Telegram.class.php");
@@ -728,6 +746,7 @@ class MySqlStorage
                 $sql .= " OFFSET " . $offset;
             }
         }
+        var_dump($sql);
         return $this->queryRows($sql);
     }
 

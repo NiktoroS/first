@@ -3,5 +3,7 @@
 .buildpath
 .settings
 
-/app/.log
-/app/.tmp
+.log
+.tmp
+.lock
+
