@@ -7,8 +7,6 @@
 
 require_once MOD_DIR . "main.php";
 
-$dsn = $dsn2;
-
 class rbc extends main
 {
 

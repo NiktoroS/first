@@ -62,12 +62,9 @@ $quoteRows = array (
     "EUR_CB" => array ("cb", 72383, "eod", "D"),
     "brand"  => array ("ipe",  181206, "delay", "1"),
 );
-/**/
+
 $dsnMySql["host"] = "sro.sro-abc.ru";
-$dsnMySql["name"] = "sro";
-$dsnMySql["user"] = "sro_db_user";
-$dsnMySql["pass"] = "Twz9GhWT2PNWxrcz";
-/**/
+
 //https://quote.rbc.ru/data/ticker/graph/72413/D?_=1527539370824
 //https://quote.rbc.ru/data/ticker/graph/59111/D?_=1527534642481
 //var_dump(date("Y-m-d H:i:s", 1527536040/*1527536100*/));
