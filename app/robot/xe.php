@@ -28,6 +28,7 @@ if (false === ($copy = $lock->setLock())) {
 
 
 $dsnMySql["host"] = "sro.sro-abc.ru";
+$dsnMySql["name"] = "sro";
 
 try {
     $browser = new Browser("socks5://127.0.0.1:9050");

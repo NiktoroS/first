@@ -14,7 +14,7 @@ class electro extends main
     {
         if (isset($_REQUEST["time"]) and !empty($_REQUEST["value"])) {
             $request = $_REQUEST;
-            $request["value"] *= 0.1;
+//            $request["value"] *= 0.1;
             $this->storage->insertOrUpdateRow("electro", $request);
             header("HTTP/1.1 301");
             header("Location: /electro");

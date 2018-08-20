@@ -26,10 +26,10 @@ if (false === ($copy = $lock->setLock())) {
 }
 
 $dsnDst = $dsnMySql;
+
 $dsnDst["host"] = "sro.sro-abc.ru";
-$dsnDst["name"] = "sro";
-$dsnDst["user"] = "sro_db_user";
-$dsnDst["pass"] = "Twz9GhWT2PNWxrcz";
+
+$dsnMySql["name"] = "sirotkin";
 
 try {
     $mySqlSrc = new MySqlStorage;

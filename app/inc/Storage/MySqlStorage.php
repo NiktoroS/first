@@ -746,7 +746,6 @@ class MySqlStorage
                 $sql .= " OFFSET " . $offset;
             }
         }
-        var_dump($sql);
         return $this->queryRows($sql);
     }
 

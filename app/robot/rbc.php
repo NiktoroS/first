@@ -64,6 +64,7 @@ $quoteRows = array (
 );
 
 $dsnMySql["host"] = "sro.sro-abc.ru";
+$dsnMySql["name"] = "sro";
 
 //https://quote.rbc.ru/data/ticker/graph/72413/D?_=1527539370824
 //https://quote.rbc.ru/data/ticker/graph/59111/D?_=1527534642481
