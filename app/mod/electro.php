@@ -21,7 +21,7 @@ class electro extends main
             exit;
         }
         $this->data = array (
-            "rows" => $this->storage->selectRows("electro", array ("active" => 1, "time >= '2017-05-01'"), "time ASC")
+            "rows" => $this->storage->selectRows("electro", array ("active" => 1, "time >= '2018-06-01'"), "time ASC")
         );
         foreach ($this->data["rows"] as $key => $row) {
             $row["delta"] = 0;

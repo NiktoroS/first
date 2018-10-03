@@ -12,9 +12,9 @@
     <button type="submit" class="btn btn-default">Сохранить</button>
 </form>
 
-<div id="curve_chart" style="width:900px;height:500px"></div>
+<div id="curve_chart" style="height: 800px"></div>
 
-<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+<script type="text/javascript" src="/js/loader.js"></script>
 
 <script type="text/javascript">
 google.charts.load('current', { 'packages':['corechart'] });
