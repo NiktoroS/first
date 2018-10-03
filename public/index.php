@@ -3,8 +3,8 @@
  * @author <first@mail.ru>
  * @since  2018-03-30
  */
-require_once ("../app/cnf/main.php");
-require_once (INC_DIR . "Dump.class.php");
+require_once("../app/cnf/main.php");
+require_once(INC_DIR . "Dump.class.php");
 
 $uri = explode("?", $_SERVER["REQUEST_URI"]);
 $httpRequest = $httpRequestInit = explode("/", substr($uri[0], 1));

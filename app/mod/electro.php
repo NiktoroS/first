@@ -5,7 +5,7 @@
  * @since  2017-03-13
  */
 
-require_once MOD_DIR . "main.php";
+require_once(MOD_DIR . "main.php");
 
 class electro extends main
 {

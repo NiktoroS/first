@@ -5,7 +5,7 @@
  * @since  2018-06-22
  */
 
-require_once MOD_DIR . "main.php";
+require_once(MOD_DIR . "main.php");
 
 class rbc extends main
 {

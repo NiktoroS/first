@@ -1,0 +1,11 @@
+{
+    "require": {
+        "smarty/smarty": "^3.1",
+        "components/jquery": "^3.3",
+        "components/jqueryui": "^1.12",
+        "php-ews/php-ews": "^1.0",
+        "phpmailer/phpmailer": "^6.0",
+        "wikia/simplehtmldom": "^1.6",
+        "components/bootstrap": "^4.1"
+    }
+}

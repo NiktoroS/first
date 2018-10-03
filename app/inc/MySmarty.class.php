@@ -1,8 +1,5 @@
 <?php
 
-
-require_once INC_DIR . "smarty/libs/Smarty.class.php";
-
 /**
  * @category
  * @author <first@mail.ru>

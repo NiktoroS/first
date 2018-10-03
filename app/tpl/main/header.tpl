@@ -8,16 +8,16 @@
 {/foreach}
 
     <title>first</title>
-    <link rel="stylesheet" href="/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="/css/bootstrap/bootstrap.min.css"/>
     <link rel="stylesheet" href="/css/table_scrolling.css"/>
-    <link rel="stylesheet" href="/css/jquety-ui/jquery-ui.min.css"/>
+    <link rel="stylesheet" href="/css/jquetyui-themes/ui-lightness/jquery-ui.min.css"/>
 
     <script type="text/javascript" src="/js/jquery.min.js"></script>
-    <script type="text/javascript" src="/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="/js/bootstrap/bootstrap.min.js"></script>
 
-    <script type="text/javascript" src="/js/table_scrolling.js?v=1"></script>
+    <script type="text/javascript" src="/js/table_scrolling.js"></script>
     <script type="text/javascript" src="/js/jquery-ui.min.js"></script>
     <script type="text/javascript" src="/js/jquery.ui.datepicker-ru.min.js"></script>
-    <script type="text/javascript" src="/js/main.js?v=1"></script>
+    <script type="text/javascript" src="/js/admin.js?v=1"></script>
 </head>
 <body>

@@ -10,7 +10,7 @@ date_default_timezone_set("Europe/Moscow");
 
 define("DS", DIRECTORY_SEPARATOR);
 
-define("APP_DIR", dirname(dirname(__FILE__)) . DS);
+define("APP_DIR", dirname(__DIR__) . DS);
 define("ROOT_DIR", dirname(APP_DIR) . DS);
 
 define("TMP_DIR", ROOT_DIR . ".tmp" . DS);
@@ -39,3 +39,6 @@ if (isset($_SERVER["REQUEST_URI"])) {
     session_set_cookie_params(SEC_DAY);
     session_start();
 }
+
+require(INC_DIR . "vendor/autoload.php");
+
