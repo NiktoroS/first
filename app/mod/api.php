@@ -4,7 +4,7 @@
  * @author <first@mail.ru>
  * @since  2018-07-23
  */
-require_once MOD_DIR . "main.php";
+require_once(MOD_DIR . "main.php");
 
 class api extends main
 {

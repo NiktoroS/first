@@ -6,7 +6,7 @@
  * @since  2018-04-10
  */
 
-require_once INC_DIR . "SimpleHtmlDom/simple_html_dom.php";
+require_once(INC_DIR . "vendor/wikia/simplehtmldom/simple_html_dom.php");
 
 class Browser {
 

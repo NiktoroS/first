@@ -6,7 +6,7 @@
  * @since  2018-03-30
  */
 
-require_once MOD_DIR . "main.php";
+require_once(MOD_DIR . "main.php");
 
 class errors extends main
 {

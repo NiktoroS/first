@@ -16,8 +16,6 @@ class Telegram
     public function request($method = "getMe", $params)
     {
         $browser = new Browser("socks5://127.0.0.1:9050");
-        $content = http_build_query($params);
-
         $httpHeader = array (
             "User-Agent" => "MyAgent/1.0"
         );

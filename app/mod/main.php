@@ -1,8 +1,8 @@
 <?php
 
-require_once INC_DIR . "Tools.class.php";
-require_once INC_DIR . "MySmarty.class.php";
-require_once INC_DIR . "Storage/MySqlStorage.php";
+require_once(INC_DIR . "Tools.class.php");
+require_once(INC_DIR . "MySmarty.class.php");
+require_once(INC_DIR . "Storage/MySqlStorage.php");
 
 /**
  * @category основной модуль

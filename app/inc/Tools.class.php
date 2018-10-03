@@ -18,7 +18,7 @@ class Tools
 
     static public function outputError($string)
     {
-        require_once INC_DIR . "Telegram.class.php";
+        require_once(INC_DIR . "Telegram.class.php");
         $telegram = new Telegram();
         $telegram->sendMessage($string, "error");
         fwrite(STDERR, strval($string));
@@ -132,7 +132,7 @@ class Tools
 
     static public function escapeString($string)
     {
-        require_once INC_DIR . "Storage/MySqlStorage.php";
+        require_once(INC_DIR . "Storage/MySqlStorage.php");
         $mySqlStorage = new MySqlStorage();
         return $mySqlStorage->escapeString($string);
     }
