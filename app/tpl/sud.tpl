@@ -34,7 +34,7 @@
 <input type="button" value="Clear" onClick="clearAll()"/>
 <input type="button" value="Solve" onClick="solveAll()"/>
 
-<p id="time"/>
+<p id="time" style="color: white;"/>
 
 <!--link rel="stylesheet" href="/css/sud.css"/-->
 <script type="text/javascript" src="/js/sud.js?v=1"></script>
