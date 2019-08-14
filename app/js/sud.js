@@ -1,15 +1,26 @@
 var number = "";
+var idCell   = "";
 
 function setEmpty()
 {
     number = "";
 }
 
+function setCell(_this)
+{
+    idCell = _this.id;
+    $("#" + idCell).attr("bgcolor", "green");
+}
+
 function setNumber(_this)
 {
     number = jQuery(_this).html();
+    $("#" + idCell).html(number);
+    $("#" + idCell).attr("bgcolor", "black");
+/*
     $("td[id^='set_']").attr("bgcolor", "black");
     $("td[id^='set_" + number + "']").attr("bgcolor", "green");
+*/
 }
 
 function putNumber(_this)

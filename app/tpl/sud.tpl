@@ -8,7 +8,7 @@
         {for $r2 = 0; $r2 < 3; $r2++}
         <tr>
             {for $c2 = 0; $c2 < 3; $c2++}
-            <td id="game_{$r1*3+$r2}_{$c1*3+$c2}" width="25" height="25" align="center" onClick="putNumber(this)"></td>
+            <td id="game_{$r1*3+$r2}_{$c1*3+$c2}" width="25" height="25" align="center" onClick="setCell(this)"></td>
             {/for}
         </tr>
         {/for}
