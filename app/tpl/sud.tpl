@@ -4,7 +4,7 @@
 <tr>
     {for $c1 = 0; $c1 < 3; $c1++}
     <td>
-        <table border="1" class="game">
+        <table border="1" class="game" style="color: white;">
         {for $r2 = 0; $r2 < 3; $r2++}
         <tr>
             {for $c2 = 0; $c2 < 3; $c2++}
