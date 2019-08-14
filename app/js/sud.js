@@ -4,6 +4,8 @@ var idCell   = "";
 function setEmpty()
 {
     number = "";
+    $("#" + idCell).html(number);
+    $("#" + idCell).attr("bgcolor", "black");
 }
 
 function setCell(_this)
