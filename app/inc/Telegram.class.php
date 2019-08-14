@@ -2,7 +2,7 @@
 /**
  * Telegram
  *
- * @author Andrey A. Sirotkin <a.sirotkin@np-os.ru>
+ * @author Andrey A. Sirotkin <first@mail.ru>
  * @since  20.12.2016
  */
 require_once(INC_DIR . "Browser.class.php");

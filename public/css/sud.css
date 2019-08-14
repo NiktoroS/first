@@ -1,0 +1,17 @@
+.game td {
+    width: 25;
+    height: 25;
+}
+
+.set td {
+    width: 30;
+    height: 30;
+}
+
+.noactive {
+    bacground-color: white;
+}
+
+.active {
+    bacground-color: green;
+}

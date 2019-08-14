@@ -27,7 +27,7 @@ if (false === ($copy = $lock->setLock())) {
 
 $dsnDst = $dsnMySql;
 
-$dsnDst["host"] = "sro.sro-abc.ru";
+$dsnDst["host"]   = "sro.sro-abc.ru";
 
 $dsnMySql["name"] = "sirotkin";
 

@@ -13,7 +13,7 @@
 
 function _dump()
 {
-    if (empty($_SESSION["user"]["id"]) or 1 != $_SESSION["user"]["id"]) {
+    if (!in_array($_SERVER["REMOTE_ADDR"], ["127.0.0.1"]) and (empty($_SESSION["user"]["id"]) or 1 != $_SESSION["user"]["id"]) ) {
         return false;
     }
 

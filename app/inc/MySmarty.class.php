@@ -19,7 +19,7 @@ class MySmarty extends Smarty
         $this->setCacheDir(TMP_DIR . "cache");
         $this->setCompileDir(TMP_DIR . "cache/templates");
 
-        if (isset($_SERVER["HTTP_HOST"]) and in_array($_SERVER["HTTP_HOST"], array ("vintage.service.vm"))) {
+        if (isset($_SERVER["HTTP_HOST"]) and in_array($_SERVER["HTTP_HOST"], array ("first.local"))) {
             exec("rm " . $this->compile_dir . "/*");
         }
     }
