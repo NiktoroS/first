@@ -20,4 +20,4 @@
     <script type="text/javascript" src="/js/jquery.ui.datepicker-ru.min.js"></script>
     <script type="text/javascript" src="/js/admin.js?v=1"></script>
 </head>
-<body>
+<body style="background-color: #000000;">
