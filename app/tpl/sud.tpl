@@ -1,5 +1,5 @@
 {include file="main/header.tpl"}
-<table border="1">
+<table border="1" style="color: white;">
 {for $r1 = 0; $r1 < 3; $r1++}
 <tr>
     {for $c1 = 0; $c1 < 3; $c1++}
@@ -19,7 +19,7 @@
 {/for}
 </table>
 
-<table border="1">
+<table border="1" style="color: white;">
 <tbody class="set">
 {for $r = 0; $r < 3; $r++}
 <tr>
@@ -36,5 +36,6 @@
 
 <p id="time"/>
 
+<!--link rel="stylesheet" href="/css/sud.css"/-->
 <script type="text/javascript" src="/js/sud.js?v=1"></script>
 {include file="main/footer.tpl"}

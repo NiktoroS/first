@@ -8,7 +8,7 @@ function setEmpty()
 function setNumber(_this)
 {
     number = jQuery(_this).html();
-    $("td[id^='set_']").attr("bgcolor", "white");
+    $("td[id^='set_']").attr("bgcolor", "black");
     $("td[id^='set_" + number + "']").attr("bgcolor", "green");
 }
 
