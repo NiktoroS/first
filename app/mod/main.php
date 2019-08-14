@@ -22,7 +22,7 @@ class main extends MySmarty
 
     public function show($params = [])
     {
-        if ($params[0]) {
+        if (isset($params[0])) {
             throw new Exception("not found: " . join("/", $params), 404);
         }
     }
