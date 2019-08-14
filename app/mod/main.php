@@ -12,7 +12,7 @@ require_once(INC_DIR . "Storage/MySqlStorage.php");
 
 class main extends MySmarty
 {
-    protected $meta, $storage, $data = array ();
+    protected $meta, $storage, $data = [];
 
     public function __construct()
     {
@@ -20,7 +20,7 @@ class main extends MySmarty
         $this->startPage();
     }
 
-    public function show($params = array ())
+    public function show($params = [])
     {
         if ($params[0]) {
             throw new Exception("not found: " . join("/", $params), 404);
@@ -51,7 +51,7 @@ class main extends MySmarty
 
     protected function startPage()
     {
-        $this->storage = new MySqlStorage;
+        $this->storage = new MySqlStorage();
     }
 
     protected function yesNo()

@@ -45,6 +45,30 @@ function objAjax(module, method, post, id, async, att) {
     return result;
 }
 
+function objAjaxJson(module, method, post, async)
+{
+    var result = true;
+    if (true != async) {
+        async = false;
+    }
+
+    jQuery.ajax({
+        type: "POST",
+        url: "/ajax",
+        dataType: "json",
+        data: "module=" + module + "&method=" + method + "&" + post + "&X-CSRF-Token=" + $("meta[name='X-CSRF-Token']").attr("content"),
+        cache: false,
+        async: async,
+        success: function(json) {
+            result = json;
+        },
+        error: function(jqXHR, textStatus, errorThrown) {
+            result = false;
+        },
+    });
+    return result;
+}
+
 function saveVal(table, id, field, val) {
     return objAjax("admin", "saveVal", "table=" + table + "&id=" + id + "&field=" + field + "&val=" + encodeURIComponent(val));
 }
