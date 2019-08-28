@@ -1,43 +1,31 @@
-jQuery(document).ready(function() {
-//    jQuery("#game_0_0").html(1);
-//    jQuery("#game_0_1").html(2);
-//    jQuery("#game_0_2").html(3);
-});
 
 var number = "";
 var idCell = "";
-var iii    = 0;
-
-function setEmpty()
-{
-    number = "";
-    jQuery("#" + idCell).html(number);
-    jQuery("#" + idCell).attr("bgcolor", "black");
-}
 
 function setCell(_this)
 {
     idCell = _this.id;
-    jQuery("#" + idCell).attr("bgcolor", "green");
+    _this.style.backgroundColor = "green";
 }
 
-function setNumber(_this)
+function setNumber(_number)
 {
-    number = jQuery(_this).html();
-    jQuery("#" + idCell).html(number);
-    jQuery("#" + idCell).attr("bgcolor", "black");
+    number = _number;
+    var cell = document.getElementById(idCell);
+    cell.innerHTML = number;
+    cell.style.backgroundColor = "black";
 }
 
 function putNumber(_this)
 {
-    jQuery(_this).html(number);
+    _this.innerHTM = number;
 }
 
 function clearAll()
 {
     for (var r = 0; r < 9; r ++) {
         for (var c = 0; c < 9; c ++) {
-            jQuery("#game_" + r + "_" + c).html("");
+            document.getElementById("game_" + r + "_" + c).innerHTML = "";
         }
     }
 }
@@ -50,7 +38,7 @@ function solveAll()
     for (var r = 0; r < 9; r ++) {
         rows[r] = [];
         for (var c = 0; c < 9; c ++) {
-            val = parseInt(jQuery("#game_" + r + "_" + c).html());
+            val = parseInt(document.getElementById("game_" + r + "_" + c).innerHTML, 10);
             if (!val) {
                 val = 0;
             }
@@ -58,43 +46,16 @@ function solveAll()
             s = s + "" + val;
         }
     }
-//    json = objAjaxJson("sud", "solve", "rows=" + rows);
-    json = false;
-    if (json) {
-        jQuery.each(json.rows, function(r, row) {
-            jQuery.each(row, function(c, val) {
-                if (!val) {
-                    val = "";
-                    if (json.pRows[r]) {
-                        jQuery.each(json.pRows[r][c], function(val1, val2) {
-                            if (val) {
-                                val = val + " ";
-                            }
-                            val = val + "<span style='font-size:7px;'>" + val2 + "</span>";
-                        });
-                    }
-                }
-                if ("" != jQuery("#game_" + r + "_" + c).html()) {
-                    val = "<b>" + val + "</b>";
-                }
-                jQuery("#game_" + r + "_" + c).html(val);
-            });
-        });
-        jQuery.each(json, function(key, val) {
-            jQuery("#" + key).html(val);
-        });
-        return;
-    }
-
     var time_beg = new Date().getTime();
+
     var solver   = new SudokuSolver();
 
     rows = solver.solve(s, { result: "chunks" });
 
     var time = (new Date().getTime() - time_beg) / 1000.0;
 
-    jQuery("#time").html(time);
-
+    document.getElementById("time").innerHTML = time;
+/*
     jQuery.each(rows, function(r, row) {
         jQuery.each(row, function(c, val) {
             if (!val) {
@@ -106,6 +67,19 @@ function solveAll()
             jQuery("#game_" + r + "_" + c).html(val);
         });
     });
+*/
+    for (var r = 0; r < 9; r ++) {
+        for (var c = 0; c < 9; c ++) {
+            var val = rows[r][c];
+            if (!val) {
+                val = "";
+            }
+            if ("" != document.getElementById("game_" + r + "_" + c).innerHTML) {
+                val = "<b>" + val + "</b>";
+            }
+            document.getElementById("game_" + r + "_" + c).innerHTML = val;
+        }
+    }
 }
 
 function SudokuSolver()
@@ -169,10 +143,11 @@ function SudokuSolver()
         puzzle_table = puzzle.split('').map(function (v) {
             return isNaN(v) ? 0 : +v
         });
-    
+
         if (puzzle.length !== 81) {
             return 'Puzzle is not valid.'
         }
+
         return !get_candidate(0) ? 'No solution found.' : result === 'chunks' ? chunk_in_groups(puzzle_table) : result === 'array' ? puzzle_table : puzzle_table.join('');
     }
 }
