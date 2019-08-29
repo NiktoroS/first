@@ -1,4 +1,4 @@
-<html>
+<!DOCTYPE HTML><html>
 <head>
 
 <style>
@@ -158,38 +158,43 @@ function SudokuSolver()
 <body>
 <p id="error"></p>
 <table>
+<tbody>
 <tr valign="top">
     <td style="border: 0;">
         <table>
-        {for $r1 = 0; $r1 < 3; $r1++}
+        <tbody>
+{for $r1 = 0; $r1 < 3; $r1++}
         <tr>
-            {for $c1 = 0; $c1 < 3; $c1++}
+{for $c1 = 0; $c1 < 3; $c1++}
             <td>
                 <table>
-                {for $r2 = 0; $r2 < 3; $r2++}
+                <tbody>
+{for $r2 = 0; $r2 < 3; $r2++}
                 <tr>
-                    {for $c2 = 0; $c2 < 3; $c2++}
+{for $c2 = 0; $c2 < 3; $c2++}
                     <td id="game_{$r1 * 3 + $r2}_{$c1 * 3 + $c2}" width="25" height="25" align="center" onClick="setCell(this)"> </td>
-                    {/for}
+{/for}
                 </tr>
-                {/for}
+{/for}
+                </tbody>
                 </table>
                 </td>
-            {/for}
+{/for}
         </tr>
-        {/for}
+{/for}
+        </tbody>
         </table>
     </td>
     <td style="border: 0;">
         <table>
         <tbody class="set">
-        {for $r = 0; $r < 3; $r++}
+{for $r = 0; $r < 3; $r++}
         <tr>
-            {for $c = 0; $c < 3; $c++}
+{for $c = 0; $c < 3; $c++}
                 <td id="set_{$r * 3 + $c + 1}" width="35" height="35" align="center" onClick="setNumber('{$r * 3 + $c + 1}')"><b>{$r * 3 + $c + 1}</b></td>
-            {/for}
+{/for}
         </tr>
-        {/for}
+{/for}
         </tbody>
         </table>
         <input type="button" value="E"     onClick="setNumber(' ')"/>
@@ -197,6 +202,7 @@ function SudokuSolver()
         <input type="button" value="Solve" onClick="solveAll()"/>
     </td>
 </tr>
+</tbody>
 </table>
 
 <p id="time"></p>
