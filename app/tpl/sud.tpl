@@ -13,6 +13,17 @@ td {
     border: 1px solid white;
     padding: 0;
 }
+.game, .set {
+    text-align: center;
+    width: 25px;
+    height: 25px;
+}
+.set {
+    font-weight: bold;
+    width: 35px;
+    height: 35px;
+}
+
 </style>
 
 <script type="text/javascript">
@@ -21,6 +32,10 @@ var idCell = "game_0_0";
 
 function setCell(_this)
 {
+    var elements = document.getElementsByClassName("game");
+    for (i = 0; i < elements.length; i++) {
+        elements[i].style.backgroundColor = "black";
+    }
     idCell = _this.id;
     _this.style.backgroundColor = "green";
 }
@@ -30,7 +45,11 @@ function setNumber(_number)
     number = _number;
     var cell = document.getElementById(idCell);
     cell.innerHTML = number;
-    cell.style.backgroundColor = "black";
+    if (" " == number) {
+        cell.style.fontWeight = "normal";
+    } else {
+        cell.style.fontWeight = "bold";
+    }
 }
 
 function putNumber(_this)
@@ -40,10 +59,11 @@ function putNumber(_this)
 
 function clearAll()
 {
-    for (var r = 0; r < 9; r ++) {
-        for (var c = 0; c < 9; c ++) {
-            document.getElementById("game_" + r + "_" + c).innerHTML = " ";
-        }
+    var elements = document.getElementsByClassName("game");
+    for (i = 0; i < elements.length; i++) {
+        elements[i].innerHTML = " ";
+        elements[i].style.backgroundColor = "black";
+        elements[i].style.fontWeight = "normal";
     }
 }
 
@@ -52,6 +72,7 @@ function solveAll()
     var time_begin = new Date().getTime();
 
     var s = "";
+
     for (var r = 0; r < 9; r ++) {
         for (var c = 0; c < 9; c ++) {
             s = s + "" + document.getElementById("game_" + r + "_" + c).innerHTML;
@@ -64,11 +85,7 @@ function solveAll()
         document.getElementById("error").innerHTML = "";
         for (var r = 0; r < 9; r ++) {
             for (var c = 0; c < 9; c ++) {
-                var val = rows[r][c];
-                if (" " != document.getElementById("game_" + r + "_" + c).innerHTML) {
-                    val = "<b>" + val + "</b>";
-                }
-                document.getElementById("game_" + r + "_" + c).innerHTML = val;
+                document.getElementById("game_" + r + "_" + c).innerHTML = rows[r][c];
             }
         }
     } else {
@@ -172,7 +189,7 @@ function SudokuSolver()
 {for $r2 = 0; $r2 < 3; $r2++}
                 <tr>
 {for $c2 = 0; $c2 < 3; $c2++}
-                    <td id="game_{$r1 * 3 + $r2}_{$c1 * 3 + $c2}" width="25" height="25" align="center" onClick="setCell(this)"> </td>
+                    <td class="game" id="game_{$r1 * 3 + $r2}_{$c1 * 3 + $c2}" onClick="setCell(this)"> </td>
 {/for}
                 </tr>
 {/for}
@@ -187,11 +204,11 @@ function SudokuSolver()
     </td>
     <td style="border: 0;">
         <table>
-        <tbody class="set">
+        <tbody>
 {for $r = 0; $r < 3; $r++}
         <tr>
 {for $c = 0; $c < 3; $c++}
-                <td id="set_{$r * 3 + $c + 1}" width="35" height="35" align="center" onClick="setNumber('{$r * 3 + $c + 1}')"><b>{$r * 3 + $c + 1}</b></td>
+                <td class="set" id="set_{$r * 3 + $c + 1}" onClick="setNumber('{$r * 3 + $c + 1}')">{$r * 3 + $c + 1}</td>
 {/for}
         </tr>
 {/for}

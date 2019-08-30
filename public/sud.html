@@ -1,5 +1,5 @@
-<!DOCTYPE html><html>
-<head>
+<!DOCTYPE html>
+<html><head>
 <meta http-equiv="content-type" content="text/html; charset=UTF-8">
 
 <style>
@@ -14,6 +14,17 @@ td {
     border: 1px solid white;
     padding: 0;
 }
+.game, .set {
+    text-align: center;
+    width: 25px;
+    height: 25px;
+}
+.set {
+    font-weight: bold;
+    width: 35px;
+    height: 35px;
+}
+
 </style>
 
 <script type="text/javascript">
@@ -22,6 +33,10 @@ var idCell = "game_0_0";
 
 function setCell(_this)
 {
+    var elements = document.getElementsByClassName("game");
+    for (i = 0; i < elements.length; i++) {
+        elements[i].style.backgroundColor = "black";
+    }
     idCell = _this.id;
     _this.style.backgroundColor = "green";
 }
@@ -31,7 +46,11 @@ function setNumber(_number)
     number = _number;
     var cell = document.getElementById(idCell);
     cell.innerHTML = number;
-    cell.style.backgroundColor = "black";
+    if (" " == number) {
+        cell.style.fontWeight = "normal";
+    } else {
+        cell.style.fontWeight = "bold";
+    }
 }
 
 function putNumber(_this)
@@ -41,10 +60,11 @@ function putNumber(_this)
 
 function clearAll()
 {
-    for (var r = 0; r < 9; r ++) {
-        for (var c = 0; c < 9; c ++) {
-            document.getElementById("game_" + r + "_" + c).innerHTML = " ";
-        }
+    var elements = document.getElementsByClassName("game");
+    for (i = 0; i < elements.length; i++) {
+        elements[i].innerHTML = " ";
+        elements[i].style.backgroundColor = "black";
+        elements[i].style.fontWeight = "normal";
     }
 }
 
@@ -53,6 +73,7 @@ function solveAll()
     var time_begin = new Date().getTime();
 
     var s = "";
+
     for (var r = 0; r < 9; r ++) {
         for (var c = 0; c < 9; c ++) {
             s = s + "" + document.getElementById("game_" + r + "_" + c).innerHTML;
@@ -65,11 +86,7 @@ function solveAll()
         document.getElementById("error").innerHTML = "";
         for (var r = 0; r < 9; r ++) {
             for (var c = 0; c < 9; c ++) {
-                var val = rows[r][c];
-                if (" " != document.getElementById("game_" + r + "_" + c).innerHTML) {
-                    val = "<b>" + val + "</b>";
-                }
-                document.getElementById("game_" + r + "_" + c).innerHTML = val;
+                document.getElementById("game_" + r + "_" + c).innerHTML = rows[r][c];
             }
         }
     } else {
@@ -169,40 +186,19 @@ function SudokuSolver()
                 <table>
                 <tbody>
                 <tr>
-                    <td id="game_0_0" onclick="setCell(this)" width="25" height="25" align="center"> </td>
-                    <td id="game_0_1" onclick="setCell(this)" width="25" height="25" align="center"> </td>
-                    <td id="game_0_2" onclick="setCell(this)" width="25" height="25" align="center"> </td>
+                    <td class="game" id="game_0_0" onclick="setCell(this)"> </td>
+                    <td class="game" id="game_0_1" onclick="setCell(this)"> </td>
+                    <td class="game" id="game_0_2" onclick="setCell(this)"> </td>
                 </tr>
                 <tr>
-                    <td id="game_1_0" onclick="setCell(this)" width="25" height="25" align="center"> </td>
-                    <td id="game_1_1" onclick="setCell(this)" width="25" height="25" align="center"> </td>
-                    <td id="game_1_2" onclick="setCell(this)" width="25" height="25" align="center"> </td>
+                    <td class="game" id="game_1_0" onclick="setCell(this)"> </td>
+                    <td class="game" id="game_1_1" onclick="setCell(this)"> </td>
+                    <td class="game" id="game_1_2" onclick="setCell(this)"> </td>
                 </tr>
                 <tr>
-                    <td id="game_2_0" onclick="setCell(this)" width="25" height="25" align="center"> </td>
-                    <td id="game_2_1" onclick="setCell(this)" width="25" height="25" align="center"> </td>
-                    <td id="game_2_2" onclick="setCell(this)" width="25" height="25" align="center"> </td>
-                </tr>
-                </tbody>
-                </table>
-                </td>
-            <td>
-                <table>
-                <tbody>
-                <tr>
-                    <td id="game_0_3" onclick="setCell(this)" width="25" height="25" align="center"> </td>
-                    <td id="game_0_4" onclick="setCell(this)" width="25" height="25" align="center"> </td>
-                    <td id="game_0_5" onclick="setCell(this)" width="25" height="25" align="center"> </td>
-                </tr>
-                <tr>
-                    <td id="game_1_3" onclick="setCell(this)" width="25" height="25" align="center"> </td>
-                    <td id="game_1_4" onclick="setCell(this)" width="25" height="25" align="center"> </td>
-                    <td id="game_1_5" onclick="setCell(this)" width="25" height="25" align="center"> </td>
-                </tr>
-                <tr>
-                    <td id="game_2_3" onclick="setCell(this)" width="25" height="25" align="center"> </td>
-                    <td id="game_2_4" onclick="setCell(this)" width="25" height="25" align="center"> </td>
-                    <td id="game_2_5" onclick="setCell(this)" width="25" height="25" align="center"> </td>
+                    <td class="game" id="game_2_0" onclick="setCell(this)"> </td>
+                    <td class="game" id="game_2_1" onclick="setCell(this)"> </td>
+                    <td class="game" id="game_2_2" onclick="setCell(this)"> </td>
                 </tr>
                 </tbody>
                 </table>
@@ -211,42 +207,19 @@ function SudokuSolver()
                 <table>
                 <tbody>
                 <tr>
-                    <td id="game_0_6" onclick="setCell(this)" width="25" height="25" align="center"> </td>
-                    <td id="game_0_7" onclick="setCell(this)" width="25" height="25" align="center"> </td>
-                    <td id="game_0_8" onclick="setCell(this)" width="25" height="25" align="center"> </td>
+                    <td class="game" id="game_0_3" onclick="setCell(this)"> </td>
+                    <td class="game" id="game_0_4" onclick="setCell(this)"> </td>
+                    <td class="game" id="game_0_5" onclick="setCell(this)"> </td>
                 </tr>
                 <tr>
-                    <td id="game_1_6" onclick="setCell(this)" width="25" height="25" align="center"> </td>
-                    <td id="game_1_7" onclick="setCell(this)" width="25" height="25" align="center"> </td>
-                    <td id="game_1_8" onclick="setCell(this)" width="25" height="25" align="center"> </td>
+                    <td class="game" id="game_1_3" onclick="setCell(this)"> </td>
+                    <td class="game" id="game_1_4" onclick="setCell(this)"> </td>
+                    <td class="game" id="game_1_5" onclick="setCell(this)"> </td>
                 </tr>
                 <tr>
-                    <td id="game_2_6" onclick="setCell(this)" width="25" height="25" align="center"> </td>
-                    <td id="game_2_7" onclick="setCell(this)" width="25" height="25" align="center"> </td>
-                    <td id="game_2_8" onclick="setCell(this)" width="25" height="25" align="center"> </td>
-                </tr>
-                </tbody>
-                </table>
-                </td>
-        </tr>
-        <tr>
-            <td>
-                <table>
-                <tbody>
-                <tr>
-                    <td id="game_3_0" onclick="setCell(this)" width="25" height="25" align="center"> </td>
-                    <td id="game_3_1" onclick="setCell(this)" width="25" height="25" align="center"> </td>
-                    <td id="game_3_2" onclick="setCell(this)" width="25" height="25" align="center"> </td>
-                </tr>
-                <tr>
-                    <td id="game_4_0" onclick="setCell(this)" width="25" height="25" align="center"> </td>
-                    <td id="game_4_1" onclick="setCell(this)" width="25" height="25" align="center"> </td>
-                    <td id="game_4_2" onclick="setCell(this)" width="25" height="25" align="center"> </td>
-                </tr>
-                <tr>
-                    <td id="game_5_0" onclick="setCell(this)" width="25" height="25" align="center"> </td>
-                    <td id="game_5_1" onclick="setCell(this)" width="25" height="25" align="center"> </td>
-                    <td id="game_5_2" onclick="setCell(this)" width="25" height="25" align="center"> </td>
+                    <td class="game" id="game_2_3" onclick="setCell(this)"> </td>
+                    <td class="game" id="game_2_4" onclick="setCell(this)"> </td>
+                    <td class="game" id="game_2_5" onclick="setCell(this)"> </td>
                 </tr>
                 </tbody>
                 </table>
@@ -255,40 +228,19 @@ function SudokuSolver()
                 <table>
                 <tbody>
                 <tr>
-                    <td id="game_3_3" onclick="setCell(this)" width="25" height="25" align="center"> </td>
-                    <td id="game_3_4" onclick="setCell(this)" width="25" height="25" align="center"> </td>
-                    <td id="game_3_5" onclick="setCell(this)" width="25" height="25" align="center"> </td>
+                    <td class="game" id="game_0_6" onclick="setCell(this)"> </td>
+                    <td class="game" id="game_0_7" onclick="setCell(this)"> </td>
+                    <td class="game" id="game_0_8" onclick="setCell(this)"> </td>
                 </tr>
                 <tr>
-                    <td id="game_4_3" onclick="setCell(this)" width="25" height="25" align="center"> </td>
-                    <td id="game_4_4" onclick="setCell(this)" width="25" height="25" align="center"> </td>
-                    <td id="game_4_5" onclick="setCell(this)" width="25" height="25" align="center"> </td>
+                    <td class="game" id="game_1_6" onclick="setCell(this)"> </td>
+                    <td class="game" id="game_1_7" onclick="setCell(this)"> </td>
+                    <td class="game" id="game_1_8" onclick="setCell(this)"> </td>
                 </tr>
                 <tr>
-                    <td id="game_5_3" onclick="setCell(this)" width="25" height="25" align="center"> </td>
-                    <td id="game_5_4" onclick="setCell(this)" width="25" height="25" align="center"> </td>
-                    <td id="game_5_5" onclick="setCell(this)" width="25" height="25" align="center"> </td>
-                </tr>
-                </tbody>
-                </table>
-                </td>
-            <td>
-                <table>
-                <tbody>
-                <tr>
-                    <td id="game_3_6" onclick="setCell(this)" width="25" height="25" align="center"> </td>
-                    <td id="game_3_7" onclick="setCell(this)" width="25" height="25" align="center"> </td>
-                    <td id="game_3_8" onclick="setCell(this)" width="25" height="25" align="center"> </td>
-                </tr>
-                <tr>
-                    <td id="game_4_6" onclick="setCell(this)" width="25" height="25" align="center"> </td>
-                    <td id="game_4_7" onclick="setCell(this)" width="25" height="25" align="center"> </td>
-                    <td id="game_4_8" onclick="setCell(this)" width="25" height="25" align="center"> </td>
-                </tr>
-                <tr>
-                    <td id="game_5_6" onclick="setCell(this)" width="25" height="25" align="center"> </td>
-                    <td id="game_5_7" onclick="setCell(this)" width="25" height="25" align="center"> </td>
-                    <td id="game_5_8" onclick="setCell(this)" width="25" height="25" align="center"> </td>
+                    <td class="game" id="game_2_6" onclick="setCell(this)"> </td>
+                    <td class="game" id="game_2_7" onclick="setCell(this)"> </td>
+                    <td class="game" id="game_2_8" onclick="setCell(this)"> </td>
                 </tr>
                 </tbody>
                 </table>
@@ -299,40 +251,19 @@ function SudokuSolver()
                 <table>
                 <tbody>
                 <tr>
-                    <td id="game_6_0" onclick="setCell(this)" width="25" height="25" align="center"> </td>
-                    <td id="game_6_1" onclick="setCell(this)" width="25" height="25" align="center"> </td>
-                    <td id="game_6_2" onclick="setCell(this)" width="25" height="25" align="center"> </td>
+                    <td class="game" id="game_3_0" onclick="setCell(this)"> </td>
+                    <td class="game" id="game_3_1" onclick="setCell(this)"> </td>
+                    <td class="game" id="game_3_2" onclick="setCell(this)"> </td>
                 </tr>
                 <tr>
-                    <td id="game_7_0" onclick="setCell(this)" width="25" height="25" align="center"> </td>
-                    <td id="game_7_1" onclick="setCell(this)" width="25" height="25" align="center"> </td>
-                    <td id="game_7_2" onclick="setCell(this)" width="25" height="25" align="center"> </td>
+                    <td class="game" id="game_4_0" onclick="setCell(this)"> </td>
+                    <td class="game" id="game_4_1" onclick="setCell(this)"> </td>
+                    <td class="game" id="game_4_2" onclick="setCell(this)"> </td>
                 </tr>
                 <tr>
-                    <td id="game_8_0" onclick="setCell(this)" width="25" height="25" align="center"> </td>
-                    <td id="game_8_1" onclick="setCell(this)" width="25" height="25" align="center"> </td>
-                    <td id="game_8_2" onclick="setCell(this)" width="25" height="25" align="center"> </td>
-                </tr>
-                </tbody>
-                </table>
-                </td>
-            <td>
-                <table>
-                <tbody>
-                <tr>
-                    <td id="game_6_3" onclick="setCell(this)" width="25" height="25" align="center"> </td>
-                    <td id="game_6_4" onclick="setCell(this)" width="25" height="25" align="center"> </td>
-                    <td id="game_6_5" onclick="setCell(this)" width="25" height="25" align="center"> </td>
-                </tr>
-                <tr>
-                    <td id="game_7_3" onclick="setCell(this)" width="25" height="25" align="center"> </td>
-                    <td id="game_7_4" onclick="setCell(this)" width="25" height="25" align="center"> </td>
-                    <td id="game_7_5" onclick="setCell(this)" width="25" height="25" align="center"> </td>
-                </tr>
-                <tr>
-                    <td id="game_8_3" onclick="setCell(this)" width="25" height="25" align="center"> </td>
-                    <td id="game_8_4" onclick="setCell(this)" width="25" height="25" align="center"> </td>
-                    <td id="game_8_5" onclick="setCell(this)" width="25" height="25" align="center"> </td>
+                    <td class="game" id="game_5_0" onclick="setCell(this)"> </td>
+                    <td class="game" id="game_5_1" onclick="setCell(this)"> </td>
+                    <td class="game" id="game_5_2" onclick="setCell(this)"> </td>
                 </tr>
                 </tbody>
                 </table>
@@ -341,19 +272,105 @@ function SudokuSolver()
                 <table>
                 <tbody>
                 <tr>
-                    <td id="game_6_6" onclick="setCell(this)" width="25" height="25" align="center"> </td>
-                    <td id="game_6_7" onclick="setCell(this)" width="25" height="25" align="center"> </td>
-                    <td id="game_6_8" onclick="setCell(this)" width="25" height="25" align="center"> </td>
+                    <td class="game" id="game_3_3" onclick="setCell(this)"> </td>
+                    <td class="game" id="game_3_4" onclick="setCell(this)"> </td>
+                    <td class="game" id="game_3_5" onclick="setCell(this)"> </td>
                 </tr>
                 <tr>
-                    <td id="game_7_6" onclick="setCell(this)" width="25" height="25" align="center"> </td>
-                    <td id="game_7_7" onclick="setCell(this)" width="25" height="25" align="center"> </td>
-                    <td id="game_7_8" onclick="setCell(this)" width="25" height="25" align="center"> </td>
+                    <td class="game" id="game_4_3" onclick="setCell(this)"> </td>
+                    <td class="game" id="game_4_4" onclick="setCell(this)"> </td>
+                    <td class="game" id="game_4_5" onclick="setCell(this)"> </td>
                 </tr>
                 <tr>
-                    <td id="game_8_6" onclick="setCell(this)" width="25" height="25" align="center"> </td>
-                    <td id="game_8_7" onclick="setCell(this)" width="25" height="25" align="center"> </td>
-                    <td id="game_8_8" onclick="setCell(this)" width="25" height="25" align="center"> </td>
+                    <td class="game" id="game_5_3" onclick="setCell(this)"> </td>
+                    <td class="game" id="game_5_4" onclick="setCell(this)"> </td>
+                    <td class="game" id="game_5_5" onclick="setCell(this)"> </td>
+                </tr>
+                </tbody>
+                </table>
+                </td>
+            <td>
+                <table>
+                <tbody>
+                <tr>
+                    <td class="game" id="game_3_6" onclick="setCell(this)"> </td>
+                    <td class="game" id="game_3_7" onclick="setCell(this)"> </td>
+                    <td class="game" id="game_3_8" onclick="setCell(this)"> </td>
+                </tr>
+                <tr>
+                    <td class="game" id="game_4_6" onclick="setCell(this)"> </td>
+                    <td class="game" id="game_4_7" onclick="setCell(this)"> </td>
+                    <td class="game" id="game_4_8" onclick="setCell(this)"> </td>
+                </tr>
+                <tr>
+                    <td class="game" id="game_5_6" onclick="setCell(this)"> </td>
+                    <td class="game" id="game_5_7" onclick="setCell(this)"> </td>
+                    <td class="game" id="game_5_8" onclick="setCell(this)"> </td>
+                </tr>
+                </tbody>
+                </table>
+                </td>
+        </tr>
+        <tr>
+            <td>
+                <table>
+                <tbody>
+                <tr>
+                    <td class="game" id="game_6_0" onclick="setCell(this)"> </td>
+                    <td class="game" id="game_6_1" onclick="setCell(this)"> </td>
+                    <td class="game" id="game_6_2" onclick="setCell(this)"> </td>
+                </tr>
+                <tr>
+                    <td class="game" id="game_7_0" onclick="setCell(this)"> </td>
+                    <td class="game" id="game_7_1" onclick="setCell(this)"> </td>
+                    <td class="game" id="game_7_2" onclick="setCell(this)"> </td>
+                </tr>
+                <tr>
+                    <td class="game" id="game_8_0" onclick="setCell(this)"> </td>
+                    <td class="game" id="game_8_1" onclick="setCell(this)"> </td>
+                    <td class="game" id="game_8_2" onclick="setCell(this)"> </td>
+                </tr>
+                </tbody>
+                </table>
+                </td>
+            <td>
+                <table>
+                <tbody>
+                <tr>
+                    <td class="game" id="game_6_3" onclick="setCell(this)"> </td>
+                    <td class="game" id="game_6_4" onclick="setCell(this)"> </td>
+                    <td class="game" id="game_6_5" onclick="setCell(this)"> </td>
+                </tr>
+                <tr>
+                    <td class="game" id="game_7_3" onclick="setCell(this)"> </td>
+                    <td class="game" id="game_7_4" onclick="setCell(this)"> </td>
+                    <td class="game" id="game_7_5" onclick="setCell(this)"> </td>
+                </tr>
+                <tr>
+                    <td class="game" id="game_8_3" onclick="setCell(this)"> </td>
+                    <td class="game" id="game_8_4" onclick="setCell(this)"> </td>
+                    <td class="game" id="game_8_5" onclick="setCell(this)"> </td>
+                </tr>
+                </tbody>
+                </table>
+                </td>
+            <td>
+                <table>
+                <tbody>
+                <tr>
+                    <td class="game" id="game_6_6" onclick="setCell(this)"> </td>
+                    <td class="game" id="game_6_7" onclick="setCell(this)"> </td>
+                    <td class="game" id="game_6_8" onclick="setCell(this)"> </td>
+                </tr>
+                <tr>
+                    <td class="game" id="game_7_6" onclick="setCell(this)"> </td>
+                    <td class="game" id="game_7_7" onclick="setCell(this)"> </td>
+                    <td class="game" id="game_7_8" onclick="setCell(this)"> </td>
+                </tr>
+                <tr>
+                    <td class="game" id="game_8_6" onclick="setCell(this)"> </td>
+                    <td class="game" id="game_8_7" onclick="setCell(this)"> </td>
+                    <td class="game" id="game_8_8" onclick="setCell(this)"> </td>
                 </tr>
                 </tbody>
                 </table>
@@ -364,21 +381,21 @@ function SudokuSolver()
     </td>
     <td style="border: 0;">
         <table>
-        <tbody class="set">
+        <tbody>
         <tr>
-                <td id="set_1" onclick="setNumber('1')" width="35" height="35" align="center"><b>1</b></td>
-                <td id="set_2" onclick="setNumber('2')" width="35" height="35" align="center"><b>2</b></td>
-                <td id="set_3" onclick="setNumber('3')" width="35" height="35" align="center"><b>3</b></td>
+                <td class="set" id="set_1" onclick="setNumber('1')">1</td>
+                <td class="set" id="set_2" onclick="setNumber('2')">2</td>
+                <td class="set" id="set_3" onclick="setNumber('3')">3</td>
         </tr>
         <tr>
-                <td id="set_4" onclick="setNumber('4')" width="35" height="35" align="center"><b>4</b></td>
-                <td id="set_5" onclick="setNumber('5')" width="35" height="35" align="center"><b>5</b></td>
-                <td id="set_6" onclick="setNumber('6')" width="35" height="35" align="center"><b>6</b></td>
+                <td class="set" id="set_4" onclick="setNumber('4')">4</td>
+                <td class="set" id="set_5" onclick="setNumber('5')">5</td>
+                <td class="set" id="set_6" onclick="setNumber('6')">6</td>
         </tr>
         <tr>
-                <td id="set_7" onclick="setNumber('7')" width="35" height="35" align="center"><b>7</b></td>
-                <td id="set_8" onclick="setNumber('8')" width="35" height="35" align="center"><b>8</b></td>
-                <td id="set_9" onclick="setNumber('9')" width="35" height="35" align="center"><b>9</b></td>
+                <td class="set" id="set_7" onclick="setNumber('7')">7</td>
+                <td class="set" id="set_8" onclick="setNumber('8')">8</td>
+                <td class="set" id="set_9" onclick="setNumber('9')">9</td>
         </tr>
         </tbody>
         </table>
@@ -389,6 +406,8 @@ function SudokuSolver()
 </tr>
 </tbody>
 </table>
+
 <p id="time"></p>
-</body>
-</html>
+
+
+</body></html>
