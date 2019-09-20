@@ -1,7 +1,10 @@
-<!DOCTYPE HTML><html>
+<!DOCTYPE HTML>
+<html>
 <head>
+    <title>sudoku solver</title>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
 
-<style>
+<style type="text/css">
 body {
     background-color: black;
     color: white;
@@ -20,11 +23,13 @@ td {
 }
 .set {
     font-weight: bold;
-    width: 35px;
-    height: 35px;
+    width: 45px;
+    height: 45px;
 }
 
 </style>
+<script type="text/javascript" src="/js/jquery.min.js"></script>
+<script type="text/javascript" src="/js/admin.js"></script>
 
 <script type="text/javascript">
 var number = " ";
@@ -67,19 +72,32 @@ function clearAll()
     }
 }
 
-function solveAll()
+function solveAll(online)
 {
     var time_begin = new Date().getTime();
-
     var s = "";
-
+    var number = " ";
     for (var r = 0; r < 9; r ++) {
         for (var c = 0; c < 9; c ++) {
-            s = s + "" + document.getElementById("game_" + r + "_" + c).innerHTML;
+            number = " ";
+            var cell = document.getElementById("game_" + r + "_" + c)
+            if ("bold" == cell.style.fontWeight) {
+                number = cell.innerHTML;
+            }
+            if (true == online) {
+                s = s + number + ",";
+            } else {
+                s = s + number;
+            }
         }
     }
 
-    var rows = new SudokuSolver().solve(s, { result: "chunks" });
+    if (true == online) {
+        var json = objAjaxJson("sud", "solve", "rows=" + s);
+        var rows = json.rows;
+    } else {
+        var rows = new SudokuSolver().solve(s, { result: "chunks" });
+    }
 
     if (Array.isArray(rows)) {
         document.getElementById("error").innerHTML = "";
@@ -94,6 +112,7 @@ function solveAll()
 
     document.getElementById("time").innerHTML = (new Date().getTime() - time_begin) / 1000.0;
 }
+
 
 function SudokuSolver()
 {
@@ -173,6 +192,7 @@ function SudokuSolver()
 
 </head>
 <body>
+
 <p id="error"></p>
 <table>
 <tbody>
@@ -216,7 +236,8 @@ function SudokuSolver()
         </table>
         <input type="button" value="E"     onClick="setNumber(' ')"/>
         <input type="button" value="Clear" onClick="clearAll()"/>
-        <input type="button" value="Solve" onClick="solveAll()"/>
+        <input type="button" value="Solve" onClick="solveAll(false)"/><br>
+        <input type="button" value="Solve Online" onClick="solveAll(true)"/>
     </td>
 </tr>
 </tbody>
