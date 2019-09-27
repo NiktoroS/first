@@ -7,7 +7,8 @@
 <style type="text/css">
 body {
     background-color: black;
-    color: white;
+    color: #bbbbbb;
+    font-family: arial;
 }
 table {
     border-collapse: collapse;
@@ -52,8 +53,10 @@ function setNumber(_number)
     cell.innerHTML = number;
     if (" " == number) {
         cell.style.fontWeight = "normal";
+        cell.style.color = "#bbbbbb";
     } else {
         cell.style.fontWeight = "bold";
+        cell.style.color = "#ffffff";
     }
 }
 
@@ -69,6 +72,7 @@ function clearAll()
         elements[i].innerHTML = " ";
         elements[i].style.backgroundColor = "black";
         elements[i].style.fontWeight = "normal";
+        elements[i].style.color = "#bbbbbb";
     }
 }
 

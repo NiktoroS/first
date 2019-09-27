@@ -2,6 +2,13 @@
 <head>
     <title>Тестирование PDT</title>
     <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+</head>
+<body onLoad="setFocus()">
+    <form>
+        <input type="text" id="code" name="code" onInput="onInput()"/>
+    </form>
+    <div id="result"></div>
+
     <script>
 function setFocus()
 {
@@ -13,21 +20,11 @@ function onInput()
     var codeElement     = document.getElementById("code");
     var resultElement   = document.getElementById("result");
     var codeValue       = codeElement.value;
-    console.log(codeValue);
-
     var codeRow         = codeValue.split(";");
-    console.log(codeRow);
 
     resultElement.innerHTML = codeRow[1];
 }
 
     </script>
-
-</head>
-<body onLoad="setFocus()">
-    <form>
-        <input type="text" id="code" name="code" onInput="onInput()"/>
-    </form>
-    <div id="result"></div>
 </body>
 </html>
