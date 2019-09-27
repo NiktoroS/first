@@ -5,20 +5,18 @@
     <script>
 function setFocus()
 {
-     document.getElementById("code").focus();
+     document.getElementById("code2").focus();
 }
 
-function onInput()
+function onInput(code)
 {
-    var codeElement     = document.getElementById("code");
     var resultElement   = document.getElementById("result");
-    var codeValue       = codeElement.value;
-    console.log(codeValue);
-
-    var codeRow         = codeValue.split(";");
-    console.log(codeRow);
-
-    resultElement.innerHTML = codeRow[1];
+    var codeRow         = code.split(";");
+    if (codeRow.length > 1) {
+	resultElement.innerHTML = codeRow[1];
+    } else {
+	resultElement.innerHTML = "";
+    }
 }
 
     </script>
@@ -26,7 +24,8 @@ function onInput()
 </head>
 <body onLoad="setFocus()">
     <form>
-        <input type="text" id="code" name="code" onInput="onInput()"/>
+        <input type="text" id="code1" name="code1" onInput="onInput(this.value)"/><br>
+        <input type="text" id="code2" name="code2" onInput="onInput(this.value)"/>
     </form>
     <div id="result"></div>
 </body>
