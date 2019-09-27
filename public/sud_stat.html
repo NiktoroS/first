@@ -6,7 +6,8 @@
 <style type="text/css">
 body {
     background-color: black;
-    color: white;
+    color: #bbbbbb;
+    font-family: arial;
 }
 table {
     border-collapse: collapse;
@@ -48,8 +49,10 @@ function setNumber(_number)
     var cell = document.getElementById(idCell);
     cell.innerHTML = number;
     if (" " == number) {
+        cell.style.color = "#bbbbbb";
         cell.style.fontWeight = "normal";
     } else {
+        cell.style.color = "#ffffff";
         cell.style.fontWeight = "bold";
     }
 }
@@ -66,22 +69,36 @@ function clearAll()
         elements[i].innerHTML = " ";
         elements[i].style.backgroundColor = "black";
         elements[i].style.fontWeight = "normal";
+        elements[i].style.color = "#bbbbbb";
     }
 }
 
-function solveAll()
+function solveAll(online)
 {
     var time_begin = new Date().getTime();
-
     var s = "";
-
+    var number = " ";
     for (var r = 0; r < 9; r ++) {
         for (var c = 0; c < 9; c ++) {
-            s = s + "" + document.getElementById("game_" + r + "_" + c).innerHTML;
+            number = " ";
+            var cell = document.getElementById("game_" + r + "_" + c)
+            if ("bold" == cell.style.fontWeight) {
+                number = cell.innerHTML;
+            }
+            if (true == online) {
+                s = s + number + ",";
+            } else {
+                s = s + number;
+            }
         }
     }
 
-    var rows = new SudokuSolver().solve(s, { result: "chunks" });
+    if (true == online) {
+        var json = objAjaxJson("sud", "solve", "rows=" + s);
+        var rows = json.rows;
+    } else {
+        var rows = new SudokuSolver().solve(s, { result: "chunks" });
+    }
 
     if (Array.isArray(rows)) {
         document.getElementById("error").innerHTML = "";
@@ -96,7 +113,6 @@ function solveAll()
 
     document.getElementById("time").innerHTML = (new Date().getTime() - time_begin) / 1000.0;
 }
-
 function SudokuSolver()
 {
     var puzzle_table = [];
