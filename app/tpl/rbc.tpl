@@ -20,7 +20,7 @@
     <div id="curve_chart_{$type}" style="width: 1500px; height: 1000px"></div>
 {/foreach}
 
-<script type="text/javascript" src="/js/loader.js"></script>
+<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
 
 <script type="text/javascript">
 google.charts.load('current', { 'packages':['corechart'] });

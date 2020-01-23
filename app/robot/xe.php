@@ -40,7 +40,7 @@ try {
         if (!$html) {
             throw new Exception("empty html");
         }
-        $table = $html->find("table.[id=historicalRateTbl]", 0);
+        $table = $html->find("table[id=historicalRateTbl]", 0);
         if (!$table) {
             throw new Exception("not found table.[id=historicalRateTbl]");
         }

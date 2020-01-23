@@ -3,7 +3,7 @@
 <form class="form-inline">
     <div class="form-group">
         <label for="time">Время:</label>
-        <input type="text" name="time" value="{date("Y-m-d H:i:00")}"/>
+        <input type="text" name="time" value="{date("Y-m-d H:i")}"/>
     </div>
     <div class="form-group">
         <label for="value">Бабло:</label>
