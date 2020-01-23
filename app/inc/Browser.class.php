@@ -6,11 +6,10 @@
  * @since  2018-04-10
  */
 
-require_once(INC_DIR . "vendor/wikia/simplehtmldom/simple_html_dom.php");
+use voku\helper\HtmlDomParser;
 
 class Browser {
 
-#    public $useragent = "Mozilla/5.0 (Windows NT 6.1; WOW64; Trident/7.0; rv:11.0) like Gecko";
     public $useragent = "Mozilla/5.0 (Windows NT 10.0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/39.0.2171.71 Safari/537.36 Edge/12.0";
     public $timeOut   = 300;
     public $referer   = "";
@@ -80,7 +79,7 @@ class Browser {
     public function requestHtml($url, $httpMethod = "GET", $httpHeader = array (), $content = "") {
         $this->request($url, $httpMethod, $httpHeader, $content);
         if ($this->res) {
-            return str_get_html($this->res);
+            return HtmlDomParser::str_get_html($this->res);
         }
     }
 

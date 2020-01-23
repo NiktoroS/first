@@ -1,4 +1,5 @@
-<!DOCTYPE html><html>
+<!DOCTYPE html>
+<html>
 <head>
 <title>sudoku solver</title>
 <meta http-equiv="content-type" content="text/html; charset=UTF-8">
@@ -6,27 +7,32 @@
 <style type="text/css">
 body {
     background-color: black;
-    color: #bbbbbb;
+    color: #e0e0e0;
+    font-size: 40px;
     font-family: arial;
 }
 table {
     border-collapse: collapse;
 }
 td {
-    border: 1px solid white;
+    border: 2px solid white;
     padding: 0;
 }
 .game, .set {
     text-align: center;
-    width: 25px;
-    height: 25px;
+    width: 65px;
+    height: 65px;
 }
 .set {
     font-weight: bold;
-    width: 45px;
-    height: 45px;
+    font-size: 50px;
+    width: 100px;
+    height: 100px;
 }
-
+input[type=button] {
+    font-size: 30px;
+    padding: 10px 20px;
+}
 </style>
 
 <script type="text/javascript">
@@ -49,11 +55,10 @@ function setNumber(_number)
     var cell = document.getElementById(idCell);
     cell.innerHTML = number;
     if (" " == number) {
-        cell.style.color = "#bbbbbb";
         cell.style.fontWeight = "normal";
     } else {
-        cell.style.color = "#ffffff";
         cell.style.fontWeight = "bold";
+        cell.style.color      = "#ffffff";
     }
 }
 
@@ -69,7 +74,7 @@ function clearAll()
         elements[i].innerHTML = " ";
         elements[i].style.backgroundColor = "black";
         elements[i].style.fontWeight = "normal";
-        elements[i].style.color = "#bbbbbb";
+        elements[i].style.color      = "#e0e0e0";
     }
 }
 
@@ -113,6 +118,8 @@ function solveAll(online)
 
     document.getElementById("time").innerHTML = (new Date().getTime() - time_begin) / 1000.0;
 }
+
+
 function SudokuSolver()
 {
     var puzzle_table = [];
@@ -191,7 +198,7 @@ function SudokuSolver()
 
 </head>
 <body>
-<p id="error"></p>
+
 <table>
 <tbody>
 <tr valign="top">
@@ -416,15 +423,14 @@ function SudokuSolver()
         </tr>
         </tbody>
         </table>
-        <input type="button" value="E" onclick="setNumber(' ')">
+        <input type="button" value="E"     onclick="setNumber(' ')">
         <input type="button" value="Clear" onclick="clearAll()">
-        <input type="button" value="Solve" onclick="solveAll()">
+        <input type="button" value="Solve" onclick="solveAll(false)">
     </td>
 </tr>
 </tbody>
 </table>
-
+<p id="error"></p>
 <p id="time"></p>
 
-</body>
-</html>
+</body></html>

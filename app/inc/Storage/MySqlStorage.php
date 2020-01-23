@@ -384,6 +384,10 @@ class MySqlStorage
             }
             $rows[$keyRow] = "(" . join(", ", $row) . ")";
         }
+        if (!$keysUpd) {
+            var_dump($table, $rows);
+            exit;
+        }
         $this->query("
             INSERT INTO " . $table . $fields . "
             VALUES " . join(", ", $rows) . "
@@ -758,7 +762,7 @@ class MySqlStorage
      * @return array
      * @throws
      */
-    public function selectRow($table, $conditions = array (), $addTable = "") {
+    public function selectRow($table, $conditions = [], $addTable = "", $orderBy = "") {
         if (is_array($table)) {
             extract($table);
         }
@@ -780,6 +784,9 @@ class MySqlStorage
                 $conditionsNew[] = $conditionNew;
             }
             $sql .= " WHERE " . join(" AND ", $conditionsNew);
+        }
+        if ($orderBy) {
+            $sql .= " ORDER BY {$orderBy}";
         }
         $sql .= " LIMIT 1";
         return $this->queryRow($sql);

@@ -55,13 +55,13 @@ if (isset($_SERVER["argv"][1])) {
     $days = $_SERVER["argv"][1];
 }
 
-$quoteRows = array (
-    "USD"    => array ("selt", 59111, "delay", "1"),
-    "EUR"    => array ("selt", 59090, "delay", "1"),
-    "USD_CB" => array ("cb", 72413, "eod", "D"),
-    "EUR_CB" => array ("cb", 72383, "eod", "D"),
-    "brand"  => array ("ipe",  181206, "delay", "1"),
-);
+$quoteRows = [
+    "USD"    => ["selt", 59111, "delay", "1"],
+    "EUR"    => ["selt", 59090, "delay", "1"],
+    "USD_CB" => ["cb", 72413, "eod", "D"],
+    "EUR_CB" => ["cb", 72383, "eod", "D"],
+    "brand"  => ["ipe",  181206, "delay", "1"],
+];
 
 $dsnMySql["host"] = "sro.sro-abc.ru";
 $dsnMySql["name"] = "sro";
@@ -72,12 +72,12 @@ $dsnMySql["name"] = "sro";
 try {
     $browser = new Browser("socks5://127.0.0.1:9050");
     $mySql   = new MySqlStorage;
-    $rbcRows = array ();
+    $rbcRows = [];
 
     foreach ($quoteRows as $var => $vals) {
-        $html  = $browser->request("https://quote.rbc.ru/exchanges/info/" . $vals[0] . ".0/" . $vals[1] . "/" . $vals[2]);
-        foreach(array ("D", "W", "M") as $band) {
-            $url   = "https://quote.rbc.ru/data/ticker/graph/" . $vals[1] . "/" . $band . "?_=" . intval(microtime(true) * 1000);
+        $browser->request("https://quote.rbc.ru/exchanges/info/" . $vals[0] . ".0/" . $vals[1] . "/" . $vals[2]);
+        foreach(array ("d", "w", "m") as $band) {
+            $url   = "https://quote.rbc.ru/data/ticker/graph/" . $vals[1] . "/" . $band . "/?_=" . intval(microtime(true) * 1000);
             var_dump($url);
             $json  = $browser->request($url);
             $array = json_decode($json, true);
@@ -89,7 +89,7 @@ try {
             var_dump(count($array["result"]["data"]));
             foreach ($array["result"]["data"] as $row) {
                 if (empty($rbcRows[$row[3]])) {
-                    $rbcRows[$row[3]] = array ("created" => date("Y-m-d H:i:s", $row[3] / 1000));
+                    $rbcRows[$row[3]] = ["created" => date("Y-m-d H:i:s", $row[3] / 1000)];
                 }
                 if ($row[4]) {
                     $rbcRows[$row[3]][$var] = $row[4];
