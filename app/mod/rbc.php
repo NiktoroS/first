@@ -7,6 +7,10 @@
 
 require_once(MOD_DIR . "main.php");
 
+$dsnMySql["host"] = "first.hldns.ru";
+
+_dump($dsnMySql);
+
 class rbc extends main
 {
 
@@ -49,7 +53,7 @@ class rbc extends main
                         "   AND brand <> 0" .
                         " GROUP BY 1" .
                         " ORDER BY 1 DESC" .
-                        " LIMIT 500"
+                        " LIMIT 1000"
                     )
                 ),
                 "min" => 45,

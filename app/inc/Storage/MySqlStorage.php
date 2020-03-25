@@ -369,8 +369,11 @@ class MySqlStorage
      * @return int
      * @throws
      */
-    public function insertOrUpdateRows($table, $rows)
+    public function insertOrUpdateRows($table, $rows = [])
     {
+        if (!$rows) {
+            return 0;
+        }
         $fields  = "";
         $columns = $this->queryRowsK("SHOW COLUMNS FROM " . $table);
         foreach ($rows as $keyRow => $row) {
@@ -716,7 +719,7 @@ class MySqlStorage
      * @return array
      * @throws
      */
-    public function selectRows($table, $conditions = array (), $orderBy = "name", $offset = 0, $limit = 0, $addTable = "") {
+    public function selectRows($table, $conditions = [], $orderBy = "name", $offset = 0, $limit = 0, $addTable = "") {
         if (is_array($table)) {
             extract($table);
         }

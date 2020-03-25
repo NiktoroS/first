@@ -32,7 +32,7 @@ $dsnMySql["name"] = "sirotkin";
 try {
     $mySql      = new MySqlStorage($dsnMySql);
     $telegram   = new Telegram();
-    $browser    = new Browser();//"socks5://127.0.0.1:9050");
+    $browser    = new Browser("socks5://127.0.0.1:9050");
 
     $ymRows     = $mySql->selectRows("ym", ["active" => 1]);
     foreach ($ymRows as $ymRow) {
