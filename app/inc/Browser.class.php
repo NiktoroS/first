@@ -8,7 +8,8 @@
 
 use voku\helper\HtmlDomParser;
 
-class Browser {
+class Browser
+{
 
     public $useragent = "Mozilla/5.0 (Windows NT 10.0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/39.0.2171.71 Safari/537.36 Edge/12.0";
     public $timeOut   = 300;
@@ -20,36 +21,37 @@ class Browser {
     public $resHeader;
     public $userPwd;
 
-    public function __construct($proxy = "") {
+    public function __construct($proxy = "")
+    {
         $this->proxy = $proxy;
     }
 
-    public function request($url, $httpMethod = "GET", $httpHeader = array (), $content = "") {
+    public function request($url, $httpMethod = "GET", $httpHeader = [], $content = "")
+    {
         $this->url = $url;
-        $aContext = array (
-            "http" => array (
+        $aContext = [
+            "http" => [
                 "method" => $httpMethod,
                 "header" => $this->makeHeader($httpHeader),
                 "timeout"    => $this->timeOut,
-            ),
-        );
+            ],
+        ];
         if ($content) {
             if (is_array($content)) {
                 $content = http_build_query($content);
             }
-            $aContext["http"]["header"] .= "Content-Length: ". strlen($content) . PHP_EOL;
+            $aContext["http"]["header"][] = "Content-Length: " . strlen($content);
             $aContext["http"]["content"] = $content;
         }
         if ($this->proxy) {
             $aContext["http"]["proxy"] = $this->proxy;
             $aContext["http"]["request_fulluri"] = true;
         }
-#var_dump($aContext);
-        $http_response_header = array ();
+        $http_response_header = [];
         if (1 == 2 or ($this->proxy and preg_match('/^socks5/', $this->proxy))) {
             $ch = curl_init();
             curl_setopt($ch, CURLOPT_URL, $url);
-            curl_setopt($ch, CURLOPT_HTTPHEADER, explode(PHP_EOL, $aContext["http"]["header"]));
+            curl_setopt($ch, CURLOPT_HTTPHEADER, $aContext["http"]["header"]);
             curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
             curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
             curl_setopt($ch, CURLOPT_HEADER, true);
@@ -76,14 +78,17 @@ class Browser {
         return $this->res;
     }
 
-    public function requestHtml($url, $httpMethod = "GET", $httpHeader = array (), $content = "") {
+    public function requestHtml($url, $httpMethod = "GET", $httpHeader = [], $content = "")
+    {
         $this->request($url, $httpMethod, $httpHeader, $content);
         if ($this->res) {
             return HtmlDomParser::str_get_html($this->res);
+            #return HtmlDomParser::str_get_html(iconv("CP1251", "UTF-8//IGNORE", $this->res));
         }
     }
 
-    public function getForms() {
+    public function getForms()
+    {
         $htmlObj = str_get_html($this->res);
         $forms = array ();
         foreach ($htmlObj->find("form") as $formObj) {
@@ -99,11 +104,12 @@ class Browser {
         return $forms;
     }
 
-    private function getCookies() {
+    private function getCookies()
+    {
         if (!$this->resHeader) {
             return $this->cookies;
         }
-        $cookies  = array();
+        $cookies  = [];
         if ($this->cookies) {
             $cookiesArr = explode("; ", $this->cookies);
             foreach ($cookiesArr as $cookiesRow) {
@@ -115,7 +121,7 @@ class Browser {
         }
         $filtr = '/Set-Cookie:\s(\S+[^=])=(\S*[^;\s])/';
         foreach ($this->resHeader as $responseRow) {
-            $out = array ();
+            $out = [];
             if (preg_match($filtr, $responseRow, $out)) {
                 $cookies[$out[1]] = $out[2];
             }
@@ -127,26 +133,27 @@ class Browser {
         return $this->cookies;
     }
 
-    private function makeHeader($httpHeader = array ()) {
-        $header = "";
+    private function makeHeader($httpHeader = [])
+    {
+        $header = [];
         foreach ($httpHeader as $var => $val) {
-            $header .= $var . ": " . $val . PHP_EOL;
+            $header[] = $var . ": " . $val;
         }
         if ($this->cookies and empty($httpHeader["Cookie"])) {
-            $header .= "Cookie: " . $this->cookies . PHP_EOL;
+            $header[] = "Cookie: " . $this->cookies;
         }
         if (empty($httpHeader["Content-type"])) {
-            $header .= "Content-Type: application/x-www-form-urlencoded; charset=UTF-8" . PHP_EOL;
+            $header[] = "Content-Type: application/x-www-form-urlencoded; charset=UTF-8";
         }
         if (empty($httpHeader["User-Agent"])) {
-            $header .= "User-Agent: " . $this->useragent . PHP_EOL;
+            $header[] = "User-Agent: " . $this->useragent;
         }
         if (empty($httpHeader["Host"])) {
             $urlArr = parse_url($this->url);
-            $header .= "Host: " . $urlArr["host"] . PHP_EOL;
+            $header[] = "Host: " . $urlArr["host"];
         }
         if ($this->referer and empty($httpHeader["Referer"])) {
-            $header .= "Referer: " . $this->referer . PHP_EOL;
+            $header[] = "Referer: " . $this->referer;
         }
         return $header;
     }

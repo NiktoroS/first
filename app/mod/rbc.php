@@ -7,6 +7,10 @@
 
 require_once(MOD_DIR . "main.php");
 
+$dsnMySql["host"] = "first.hldns.ru";
+
+_dump($dsnMySql);
+
 class rbc extends main
 {
 

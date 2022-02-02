@@ -33,18 +33,18 @@ $dsnMySql["name"] = "sro";
 try {
     $browser = new Browser("socks5://127.0.0.1:9050");
 
-    $vals = array ();
+    $vals = [];
     for ($i = 0; $i < 3; $i ++) {
         sleep($i * 5);
         $html  = $browser->requestHtml("http://www.xe.com/currencytables/?from=RUB");
         if (!$html) {
             throw new Exception("empty html");
         }
-        $table = $html->find("table[id=historicalRateTbl]", 0);
+        $table = $html->find("#historicalRateTbl", 0);
         if (!$table) {
-            throw new Exception("not found table.[id=historicalRateTbl]");
+            throw new Exception("not found table[id=historicalRateTbl]");
         }
-        $val   = array ();
+        $val   = [];
         foreach ($table->find("tr") as $tr) {
             $td = $tr->find("td", 0);
             if (!$td) {
@@ -65,7 +65,7 @@ try {
 
     $mySql = new MySqlStorage;
 
-    $lastRow = $mySql->queryRow("SELECT * FROM xe WHERE USD <> 0 AND EUR <> 0 AND GBP <> 0 ORDER BY created DESC LIMIT 1");
+    $lastRow = $mySql->queryRow("SELECT * FROM `xe` WHERE `USD` <> 0 AND `EUR` <> 0 AND `GBP` <> 0 ORDER BY `created` DESC LIMIT 1");
     $data["d_USD"] = round($data["USD"] - $lastRow["USD"], 4);
     $data["d_EUR"] = round($data["EUR"] - $lastRow["EUR"], 4);
     $data["d_GBP"] = round($data["GBP"] - $lastRow["GBP"], 4);
