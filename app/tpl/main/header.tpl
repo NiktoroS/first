@@ -7,10 +7,11 @@
     <meta name="{$name}" content="{$content}"/>
 {/foreach}
 
-    <title>first</title>
+    <title>{$metaRows.title}</title>
     <link rel="stylesheet" href="/css/bootstrap/bootstrap.min.css"/>
     <link rel="stylesheet" href="/css/table_scrolling.css"/>
-    <link rel="stylesheet" href="/css/jquetyui-themes/ui-lightness/jquery-ui.min.css"/>
+    <link rel="stylesheet" href="/css/jqueryui-themes/ui-lightness/jquery-ui.min.css"/>
+    <link rel="stylesheet" href="/css/price.css"/>
 
     <script type="text/javascript" src="/js/jquery.min.js"></script>
     <script type="text/javascript" src="/js/bootstrap/bootstrap.min.js"></script>
@@ -19,5 +20,6 @@
     <script type="text/javascript" src="/js/jquery-ui.min.js"></script>
     <script type="text/javascript" src="/js/jquery.ui.datepicker-ru.min.js"></script>
     <script type="text/javascript" src="/js/admin.js?v=1"></script>
+    <script type="text/javascript" src="/js/price.js?v=2"></script>
 </head>
-<body style="background-color: #000000;">
+<body{* style="background-color: #000000;"*}>

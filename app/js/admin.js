@@ -6,6 +6,11 @@ function objAjax(module, method, post, id, async, att) {
     if (!id) {
         id = "objAjax";
     }
+    if (undefined == post) {
+        data = "";
+    } else {
+        data = "&" + post;
+    }
 
     $("#" + id).html('Подождите, идет загрузка... <img src="/img/wait.gif"/> <a href="javascript:location.reload();">обновить</a>');
     $.ajax({
@@ -13,7 +18,7 @@ function objAjax(module, method, post, id, async, att) {
         async: async,
         url: "/ajax",
         dataType: "html",
-        data: "module=" + module + "&method=" + method + "&" + post + "&X-CSRF-Token=" + $("meta[name='X-CSRF-Token']").attr("content"),
+        data: "module=" + module + "&method=" + method + data + "&X-CSRF-Token=" + $("meta[name='X-CSRF-Token']").attr("content"),
         success: function(html) {
             $("#" + id).html(html);
         },
@@ -66,14 +71,17 @@ function objAjaxJson(module, method, post, async)
             result = false;
         },
     });
+    console.log(result);
     return result;
 }
 
-function saveVal(table, id, field, val) {
+function saveVal(table, id, field, val)
+{
     return objAjax("admin", "saveVal", "table=" + table + "&id=" + id + "&field=" + field + "&val=" + encodeURIComponent(val));
 }
 
-function showTable(offset) {
+function showTable(offset)
+{
     if (!$("#table").val()) {
         return false;
     }
@@ -93,7 +101,8 @@ function showTable(offset) {
     objAjax("admin", "showTable", params, "result");
 }
 
-function sortTableCur(orderBy, orderType) {
+function sortTableCur(orderBy, orderType)
+{
     $("#orderBy").val(orderBy);
     if ("ASC" == orderType) {
         $("#orderType").val("DESC");
@@ -103,19 +112,22 @@ function sortTableCur(orderBy, orderType) {
     showTable();
 }
 
-function editTable(id) {
+function editTable(id)
+{
     objAjax("admin", "editTable", "table=" + $("#table").val() + "&id=" + id, "modalBody");
     if (!id) {
         showTable();
     }
 }
 
-function saveTable(id, field, val) {
+function saveTable(id, field, val)
+{
     saveVal($("#table").val(), id, field, val);
     showTable();
 }
 
-function deleteTable(table, id, name) {
+function deleteTable(table, id, name)
+{
     var confirmText = "Действительно удалить";
     if (name) {
         confirmText = confirmText + ": " + name;
@@ -125,7 +137,8 @@ function deleteTable(table, id, name) {
     }
 }
 
-function myConfirm(confirmText) {
+function myConfirm(confirmText)
+{
     return confirm(confirmText);
 }
 
@@ -137,4 +150,4 @@ function hex2bin(hex)
         bytes.push(parseInt(hex.substr(i, 2), 16));
 
     return String.fromCharCode.apply(String, bytes);    
-}
+}   

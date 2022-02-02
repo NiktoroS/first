@@ -5,9 +5,21 @@
  * @since  2018-03-30
  */
 
-$dsnMySql = array (
+$dsnMySql = [
     "host" => "localhost",
     "name" => "sro",
     "user" => "sro_db_user",
     "pass" => "Twz9GhWT2PNWxrcz",
-);
+];
+
+$dsnPgSql = [
+    "price" => [
+        "hostRows" => [
+            "localhost"
+        ],
+        "port"      => "5432",
+        "dbname"    => "price",
+        "user"      => "price",
+        "password"  => "price",
+    ],
+];

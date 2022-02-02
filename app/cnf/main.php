@@ -10,11 +10,11 @@ date_default_timezone_set("Europe/Moscow");
 
 define("DS", DIRECTORY_SEPARATOR);
 
-define("APP_DIR", dirname(__DIR__) . DS);
-define("ROOT_DIR", dirname(APP_DIR) . DS);
+define("ROOT_DIR", dirname(dirname(__DIR__)) . DS);
 
 define("TMP_DIR", ROOT_DIR . ".tmp" . DS);
 define("LOG_DIR", ROOT_DIR . ".log" . DS);
+define("APP_DIR", ROOT_DIR . "app" . DS);
 
 define("INC_DIR", APP_DIR . "inc" . DS);
 define("MOD_DIR", APP_DIR . "mod" . DS);
@@ -36,9 +36,8 @@ if (isset($_SERVER["REQUEST_URI"])) {
         mkdir(SESSIONS_DIR, 0777, true);
     }
     ini_set("session.save_path", SESSIONS_DIR);
-    session_set_cookie_params(SEC_DAY);
-    session_start();
+#    session_set_cookie_params(SEC_DAY);
+#    session_start();
 }
 
-require(INC_DIR . "vendor/autoload.php");
-
+require(ROOT_DIR . "vendor/autoload.php");

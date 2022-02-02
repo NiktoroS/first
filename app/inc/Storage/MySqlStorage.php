@@ -53,10 +53,10 @@ class MySqlStorage
         $name = $this->dsn["name"];
         if (empty($myDbAll[$host][$name]["link"])) {
             do {
-                $myDbAll[$host][$name]["link"] = @new mysqli($host, $this->dsn["user"], $this->dsn["pass"], $name);
+                $myDbAll[$host][$name]["link"] = new mysqli($host, $this->dsn["user"], $this->dsn["pass"], $name);
                 if ($myDbAll[$host][$name]["link"]->connect_error) {
                     $this->numErrors ++;
-                    $exception = new Exception("ConnectError: " . $myDbAll[$host][$name]["link"]->connect_error, $myDbAll[$host][$name]["link"]->connect_errno);
+                    $exception = new Exception("ConnectError: {$host} {$this->dsn["user"]} {$this->dsn["pass"]} {$myDbAll[$host][$name]["link"]->connect_error}", $myDbAll[$host][$name]["link"]->connect_errno);
                     $log       = new Logs("MySqlConnectError");
                     $log->add((string)($exception));
                     if (5 == $this->numErrors) {

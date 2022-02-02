@@ -20,7 +20,7 @@ $method = $params["method"];
 
 $fileModule = MOD_DIR . $module . ".php";
 if (!is_file($fileModule)) {
-    showError("несущесвующий файл " . $fileModule);
+    showError("несущесвующий файл: " . $fileModule);
 }
 
 require_once $fileModule;
@@ -67,7 +67,7 @@ try {
 function showError($error, $type = "systemError", $code = 500)
 {
     $logs = new Logs("ajax.php");
-    $logs->add("[" . $type . "] " . (isset($params) ? "params: " . var_export($params, true) : "") . strval($error));
-    header("HTTP/1.1 " . $code);
-    exit("<input type='hidden' id='" . $type . "' name='" . $code . "' value='" . strval($error) . "'/>");
+    $logs->add("[{$type}] " . (isset($params) ? "params: " . var_export($params, true) : "") . strval($error));
+    header("HTTP/1.1 {$code}");
+    exit("<input type='hidden' id='{$type}' name='{$code}' value='" . strval($error) . "'/>");
 }

@@ -22,12 +22,12 @@ try {
     }
     require_once (MOD_DIR . $moduleClass . ".php");
     $moduleObj = new $moduleClass();
-    if (! empty($httpRequest[0]) and method_exists($moduleObj, $httpRequest[0])) {
+    if (!empty($httpRequest[0]) and method_exists($moduleObj, $httpRequest[0])) {
         $moduleMethod = array_shift($httpRequest);
     }
     $moduleObj->$moduleMethod($httpRequest);
     $moduleTpl = $moduleClass . DS . $moduleMethod . ".tpl";
-    if (! is_file(TPL_DIR . $moduleTpl)) {
+    if (!is_file(TPL_DIR . $moduleTpl)) {
         $moduleTpl = $moduleClass . ".tpl";
     }
     $moduleObj->display($moduleTpl);

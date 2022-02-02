@@ -5,8 +5,8 @@
  * @since  2018-03-30
  */
 
-$dsnMySql["host"] = "192.168.211.116";
+$dsnMySql["host"] = "localhost";
 $dsnMySql["name"] = "xv";
 
-$site  = "http://www.xvideos.com";
+$site  = "https://www.xvideos.com";
 $proxy = "socks5://127.0.0.1:9050";

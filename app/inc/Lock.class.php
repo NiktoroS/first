@@ -5,18 +5,21 @@
  * @since  2018-04-10
  */
 
-class Lock {
+class Lock
+{
     private $fileName, $copy;
     private $fp;
 
-    public function __construct($name = "") {
+    public function __construct($name = "")
+    {
         if (!$name) {
             $name = basename($_SERVER["SCRIPT_NAME"]);
         }
         $this->fileName = ROOT_DIR . ".lock" . DS . $name;
     }
 
-    public function setLock($copies = 1) {
+    public function setLock($copies = 1)
+    {
         for ($this->copy = 0; $this->copy < $copies; $this->copy ++) {
             $this->fileNameCopy = sprintf("%s.%03u.lock", $this->fileName, $this->copy);
             $this->fp = fopen($this->fileNameCopy, "w");
@@ -30,7 +33,8 @@ class Lock {
         return ($this->copy < $copies) ? $this->copy : false;
     }
 
-    public function delLock() {
+    public function delLock()
+    {
         fclose($this->fp);
         unlink($this->fileNameCopy);
     }

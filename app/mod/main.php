@@ -3,6 +3,7 @@
 require_once(INC_DIR . "Tools.class.php");
 require_once(INC_DIR . "MySmarty.class.php");
 require_once(INC_DIR . "Storage/MySqlStorage.php");
+require_once(INC_DIR . "Storage/PgSqlStorage.php");
 
 /**
  * @category основной модуль
@@ -35,6 +36,9 @@ class main extends MySmarty
 
     public function display($template = null, $cache_id = null, $compile_id = null, $parent = null)
     {
+        if (!is_file(TPL_DIR . $template)) {
+            return;
+        }
         $this->assignPage();
         parent::display($template, $cache_id, $compile_id, $parent);
     }
@@ -61,22 +65,32 @@ class main extends MySmarty
 
     protected function setData($data)
     {
-        foreach($data as $key => $val) {
+        foreach ($data as $key => $val) {
             $this->data[$key] = $val;
         }
     }
 
     protected function assignMeta()
     {
-        $this->data["metaRows"] = array (
-            "viewport"      => "width=device-width, initial-scale=1",
-            "keywords"      => KEYWORDS,
-            "description"   => DESCR,
-            "title"         => TITLE,
-        );
+        if (!$this->data["metaRows"]) {
+            $this->data["metaRows"] = [
+                "viewport"      => "width=device-width, initial-scale=1",
+                "keywords"      => KEYWORDS,
+                "description"   => DESCR,
+                "title"         => TITLE,
+            ];
+        }
         if (empty($_SESSION["X-CSRF-Token"])) {
             $_SESSION["X-CSRF-Token"] = md5(uniqid(rand(), true));
         }
         $this->data["metaRows"]["X-CSRF-Token"] = $_SESSION["X-CSRF-Token"];
     }
+
+    protected function getConditionRows($paramRows)
+    {
+        $conditionRows = $paramRows;
+        $conditionRows["active"] = "true";
+        return $conditionRows;
+    }
+
 }

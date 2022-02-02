@@ -5,8 +5,7 @@
  * @author <first@mail.ru>
  * @since  2018-04-10
  */
-
-use voku\helper\HtmlDomParser;
+require_once(ROOT_DIR . "/vendor/wikia/simplehtmldom/simple_html_dom.php");
 
 class Browser
 {
@@ -26,7 +25,7 @@ class Browser
         $this->proxy = $proxy;
     }
 
-    public function request($url, $httpMethod = "GET", $httpHeader = [], $content = "")
+    public function request($url, $httpMethod = "GET", $httpHeader = [], $content = "", $useCurl = false, $curlRows = [])
     {
         $this->url = $url;
         $aContext = [
@@ -34,6 +33,10 @@ class Browser
                 "method" => $httpMethod,
                 "header" => $this->makeHeader($httpHeader),
                 "timeout"    => $this->timeOut,
+            ],
+            "ssl" => [
+                "verify_peer"       => false,
+                "verify_peer_name"  => false,
             ],
         ];
         if ($content) {
@@ -48,7 +51,7 @@ class Browser
             $aContext["http"]["request_fulluri"] = true;
         }
         $http_response_header = [];
-        if (1 == 2 or ($this->proxy and preg_match('/^socks5/', $this->proxy))) {
+        if ($useCurl or ($this->proxy and preg_match('/^socks5/', $this->proxy))) {
             $ch = curl_init();
             curl_setopt($ch, CURLOPT_URL, $url);
             curl_setopt($ch, CURLOPT_HTTPHEADER, $aContext["http"]["header"]);
@@ -63,6 +66,9 @@ class Browser
             if ("POST" == $httpMethod and !empty($aContext["http"]["content"])) {
                 curl_setopt($ch, CURLOPT_POST, true);
                 curl_setopt($ch, CURLOPT_POSTFIELDS, $aContext["http"]["content"]);
+            }
+            if ($curlRows) {
+                curl_setopt_array($ch, $curlRows);
             }
             $resRows = explode("\r\n\r\n", curl_exec($ch));
             $http_response_header = explode("\r\n", array_shift($resRows));
@@ -82,15 +88,15 @@ class Browser
     {
         $this->request($url, $httpMethod, $httpHeader, $content);
         if ($this->res) {
-            return HtmlDomParser::str_get_html($this->res);
-            #return HtmlDomParser::str_get_html(iconv("CP1251", "UTF-8//IGNORE", $this->res));
+            return str_get_html($this->res);
+//            #return HtmlDomParser::str_get_html(iconv("CP1251", "UTF-8//IGNORE", $this->res));
         }
     }
 
     public function getForms()
     {
         $htmlObj = str_get_html($this->res);
-        $forms = array ();
+        $forms = [];
         foreach ($htmlObj->find("form") as $formObj) {
             $action = $formObj->action ? $formObj->action : "";
             $method = $formObj->method ? $formObj->method : "GET";
@@ -137,23 +143,23 @@ class Browser
     {
         $header = [];
         foreach ($httpHeader as $var => $val) {
-            $header[] = $var . ": " . $val;
+            $header[] = "{$var}: {$val}";
         }
         if ($this->cookies and empty($httpHeader["Cookie"])) {
-            $header[] = "Cookie: " . $this->cookies;
+            $header[] = "Cookie: {$this->cookies}";
         }
         if (empty($httpHeader["Content-type"])) {
             $header[] = "Content-Type: application/x-www-form-urlencoded; charset=UTF-8";
         }
         if (empty($httpHeader["User-Agent"])) {
-            $header[] = "User-Agent: " . $this->useragent;
+            $header[] = "User-Agent: {$this->useragent}";
         }
         if (empty($httpHeader["Host"])) {
             $urlArr = parse_url($this->url);
-            $header[] = "Host: " . $urlArr["host"];
+            $header[] = "Host: {$urlArr["host"]}";
         }
         if ($this->referer and empty($httpHeader["Referer"])) {
-            $header[] = "Referer: " . $this->referer;
+            $header[] = "Referer: {$this->referer}";
         }
         return $header;
     }
