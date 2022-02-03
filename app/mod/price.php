@@ -84,7 +84,7 @@ SELECT pil.*, p.name AS name_provider, pl.name AS name_price_list, i.name AS nam
         }
         $this->data["priceListRow"] = $this->pgStorage->selectRow("price_list", $this->getConditionRows($paramRows));
         $this->data["priceListRow"]["providerRow"]      = $this->pgStorage->selectRow("provider", ["id" => $this->data["priceListRow"]["id_provider"]]);
-        $this->data["priceListRow"]["priceItemRows"]    = $this->pgStorage->selectRows("price_item", ["id_price_list" => $this->data["priceListRow"]["id"]], "_updated DESC");
+        $this->data["priceListRow"]["priceItemRows"]    = $this->pgStorage->selectRows("price_item", ["active" => "true", "id_price_list" => $this->data["priceListRow"]["id"]], "_updated DESC");
         foreach ($this->data["priceListRow"]["priceItemRows"] as &$priceItemRow) {
             $priceItemRow["itemRow"] = $this->pgStorage->selectRow("item", ["id" => $priceItemRow["id_item"]]);
         }
@@ -92,7 +92,7 @@ SELECT pil.*, p.name AS name_provider, pl.name AS name_price_list, i.name AS nam
 
     public function savePriceItem($priceItemRow = [])
     {
-        $result = ["success" => true];
+        $result = ["success" => "true"];
         try {
             $this->pgStorage->begin();
             if ("new" == $priceItemRow["id"]) {
@@ -117,7 +117,7 @@ SELECT pil.*, p.name AS name_provider, pl.name AS name_price_list, i.name AS nam
             $this->pgStorage->insertRow("price_item_log", $priceItemLogRow);
             $this->pgStorage->commit();
         } catch (Exception $e) {
-            $result["success"] = false;
+            $result["success"] = "false";
         }
         header("Content-type: application/json");
         echo (json_encode($result));

@@ -67,11 +67,10 @@ function objAjaxJson(module, method, post, async)
         success: function(json) {
             result = json;
         },
-        error: function(jqXHR, textStatus, errorThrown) {
+        error: function(jqXhr, textStatus, errorMessage) {
             result = false;
-        },
+        }
     });
-    console.log(result);
     return result;
 }
 

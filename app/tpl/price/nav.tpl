@@ -13,7 +13,7 @@
                     <a class="dropdown-item" href="javaScript:priceContent('providerRows')">Поставщики</a>
                     <a class="dropdown-item" href="javaScript:priceContent('itemRows')">Позиции</a>
                     <a class="dropdown-item" href="javaScript:priceContent('priceListRows')">Прайс листы</a>
-                    <a class="dropdown-item" href="javaScript:priceContent('priceItemLogRows')">Изменение позиций прайслиста</a>
+                    <a class="dropdown-item" href="javaScript:priceContent('priceItemLogRows')">Изменение позиций прайс листа</a>
                 </div>
             </li>
             <li class="nav-item dropdown">
@@ -21,8 +21,8 @@
                     Действия
                 </a>
                 <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                    <a class="dropdown-item" href="javaScript:priceContent('priceListRows')">Крректировка данных прайлиста</a>
-                    <a class="dropdown-item" href="javaScript:priceContent('priceItemLogRows')">Изменение позиций прайслиста</a>
+                    <a class="dropdown-item" href="javaScript:priceContent('priceListRows')">Крректировка данных прайc листа</a>
+                    <a class="dropdown-item" href="javaScript:priceContent('priceItemLogRows')">Изменение позиций прайс листа</a>
                     <a class="dropdown-item" href="javaScript:priceContent('priceListRows')">Вывод прайслиста на дату</a>
                     <div class="dropdown-divider"></div>
                     <a class="dropdown-item disabled" href="/task">Задачи</a>

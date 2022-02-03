@@ -109,7 +109,6 @@ class PgSqlStorage
             if (empty($this->connection)) {
                 $this->open();
             }
-            _dump($query);
             $result = pg_query($this->connection, $query);
         } while (false === $this->checkQueryResult($result, $query));
         return $result;
@@ -359,7 +358,6 @@ SELECT column_name
   FROM information_schema.columns
  WHERE table_schema = 'public'
    AND table_name = '{$table}'";
-        _dump($query);
         $columns = $this->queryRowsK($query);
         foreach ($rows as $keyRow => $row) {
             $this->correctData($table, $row, $columns);

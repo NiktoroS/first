@@ -11,7 +11,7 @@
         <th scope="col" width="500">Название</th>
         <th scope="col" width="500">Поствщик</th>
         <th scope="col" width="100">Валюта</th>
-        <th scope="col" width="100">Cрок действия</th>
+        <th scope="col" width="200">Cрок действия</th>
         <th scope="col" width="200"></th>
     </tr>
     </thead>
@@ -25,7 +25,7 @@
             <td width="500">{$priceListRow.name}</td>
             <td width="500">{$priceListRow.providerRow.name}</td>
             <td width="100">{$priceListRow.currency}</td>
-            <td width="100">{date("d.m.Y", strtotime($priceListRow.date))}</td>
+            <td width="200">{date("d.m.Y", strtotime($priceListRow.date))}</td>
             <td width="200">
                 <input type="button" class="btn btn-outline-success" onClick="priceModal('priceListRow', 'id={$priceListRow.id}')" value="просмотр" data-toggle="modal" data-target="#modalDialog"/>
                 <input type="button" class="btn btn-outline-secondary" onClick="exportExcel('{$priceListRow.id}')" value="экспорт"/>

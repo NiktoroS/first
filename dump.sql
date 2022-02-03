@@ -369,6 +369,28 @@ INSERT INTO public.item VALUES (35, 'Кружка', '3463146', true, '20:12:17.9
 INSERT INTO public.price_item VALUES (6, 40, 29, 499.00, true, '2022-02-02 23:04:33.233032+03', '2022-02-02 23:04:33.233032+03');
 INSERT INTO public.price_item VALUES (9, 40, 30, 399.00, true, '2022-02-02 23:17:40.880008+03', '2022-02-02 23:17:40.880008+03');
 INSERT INTO public.price_item VALUES (5, 40, 31, 999.99, true, '2022-02-02 23:02:51.907531+03', '2022-02-02 23:02:51.907531+03');
+INSERT INTO public.price_item VALUES (10, 38, 22, 59.00, true, '2022-02-03 03:44:41.953562+03', '2022-02-03 03:44:41.953562+03');
+INSERT INTO public.price_item VALUES (11, 38, 24, 36.50, true, '2022-02-03 03:48:09.609063+03', '2022-02-03 03:48:09.609063+03');
+INSERT INTO public.price_item VALUES (12, 38, 23, 79.50, true, '2022-02-03 03:50:58.946091+03', '2022-02-03 03:50:58.946091+03');
+INSERT INTO public.price_item VALUES (13, 37, 22, 59.00, true, '2022-02-03 03:54:01.428772+03', '2022-02-03 03:54:01.428772+03');
+INSERT INTO public.price_item VALUES (14, 83, 24, 45.00, true, '2022-02-03 10:32:30.608673+03', '2022-02-03 10:32:30.608673+03');
+INSERT INTO public.price_item VALUES (15, 109, 29, 999.99, true, '2022-02-03 10:34:08.152528+03', '2022-02-03 10:34:08.152528+03');
+INSERT INTO public.price_item VALUES (16, 109, 33, 395.00, true, '2022-02-03 10:36:01.368838+03', '2022-02-03 10:36:01.368838+03');
+INSERT INTO public.price_item VALUES (17, 109, 32, 199.00, true, '2022-02-03 10:36:27.068213+03', '2022-02-03 10:36:27.068213+03');
+INSERT INTO public.price_item VALUES (18, 85, 32, 149.00, true, '2022-02-03 10:38:18.792849+03', '2022-02-03 10:38:18.792849+03');
+INSERT INTO public.price_item VALUES (19, 82, 27, 3500.00, true, '2022-02-03 10:42:21.950141+03', '2022-02-03 10:42:21.950141+03');
+INSERT INTO public.price_item VALUES (20, 108, 35, 20.00, true, '2022-02-03 11:40:32.664783+03', '2022-02-03 11:40:32.664783+03');
+INSERT INTO public.price_item VALUES (21, 39, 33, 49999.00, true, '2022-02-03 11:42:34.886594+03', '2022-02-03 11:42:34.886594+03');
+INSERT INTO public.price_item VALUES (22, 50, 24, 67.00, true, '2022-02-03 11:46:03.997638+03', '2022-02-03 11:46:03.997638+03');
+INSERT INTO public.price_item VALUES (23, 50, 23, 85.99, true, '2022-02-03 11:48:32.761324+03', '2022-02-03 11:48:32.761324+03');
+INSERT INTO public.price_item VALUES (24, 82, 28, 1099.99, true, '2022-02-03 11:51:14.366267+03', '2022-02-03 11:51:14.366267+03');
+INSERT INTO public.price_item VALUES (25, 42, 29, 799.95, true, '2022-02-03 11:58:43.402718+03', '2022-02-03 11:58:43.402718+03');
+INSERT INTO public.price_item VALUES (26, 42, 32, 200.00, true, '2022-02-03 12:00:44.700283+03', '2022-02-03 12:00:44.700283+03');
+INSERT INTO public.price_item VALUES (27, 45, 30, 500.00, true, '2022-02-03 12:01:36.230504+03', '2022-02-03 12:01:36.230504+03');
+INSERT INTO public.price_item VALUES (28, 85, 30, 999.99, true, '2022-02-03 12:05:17.256523+03', '2022-02-03 12:05:17.256523+03');
+INSERT INTO public.price_item VALUES (29, 82, 26, 29999.00, true, '2022-02-03 12:08:54.242519+03', '2022-02-03 12:08:54.242519+03');
+INSERT INTO public.price_item VALUES (30, 41, 32, 15000.00, true, '2022-02-03 12:09:44.572213+03', '2022-02-03 12:09:44.572213+03');
+INSERT INTO public.price_item VALUES (31, 41, 35, 249.90, false, '2022-02-03 12:09:54.161029+03', '2022-02-03 12:09:54.161029+03');
 
 
 --
@@ -388,27 +410,69 @@ INSERT INTO public.price_item_log VALUES (13, 5, 999.00, 999.00, true, true, '20
 INSERT INTO public.price_item_log VALUES (14, 5, 999.00, 999.90, true, true, '2022-02-02 23:58:51.53401+03');
 INSERT INTO public.price_item_log VALUES (15, 5, 1000.00, 999.00, true, true, '2022-02-02 23:59:26.849352+03');
 INSERT INTO public.price_item_log VALUES (16, 5, 999.00, 999.99, true, true, '2022-02-03 00:03:26.753086+03');
+INSERT INTO public.price_item_log VALUES (17, 10, NULL, 10.00, NULL, true, '2022-02-03 03:44:41.953562+03');
+INSERT INTO public.price_item_log VALUES (18, 11, NULL, 11.00, NULL, true, '2022-02-03 03:48:09.609063+03');
+INSERT INTO public.price_item_log VALUES (19, 12, NULL, 12.00, NULL, true, '2022-02-03 03:50:58.946091+03');
+INSERT INTO public.price_item_log VALUES (20, 13, NULL, 13.00, NULL, true, '2022-02-03 03:54:01.428772+03');
+INSERT INTO public.price_item_log VALUES (21, 14, NULL, 14.00, NULL, true, '2022-02-03 10:32:30.608673+03');
+INSERT INTO public.price_item_log VALUES (22, 15, NULL, 15.00, NULL, true, '2022-02-03 10:34:08.152528+03');
+INSERT INTO public.price_item_log VALUES (23, 16, NULL, 16.00, NULL, true, '2022-02-03 10:36:01.368838+03');
+INSERT INTO public.price_item_log VALUES (24, 17, NULL, 17.00, NULL, true, '2022-02-03 10:36:27.068213+03');
+INSERT INTO public.price_item_log VALUES (25, 18, NULL, 18.00, NULL, true, '2022-02-03 10:38:18.792849+03');
+INSERT INTO public.price_item_log VALUES (26, 19, NULL, 19.00, NULL, true, '2022-02-03 10:42:21.950141+03');
+INSERT INTO public.price_item_log VALUES (27, 20, NULL, 20.00, NULL, true, '2022-02-03 11:40:32.664783+03');
+INSERT INTO public.price_item_log VALUES (28, 21, NULL, 21.00, NULL, true, '2022-02-03 11:42:34.886594+03');
+INSERT INTO public.price_item_log VALUES (29, 22, NULL, 22.00, NULL, true, '2022-02-03 11:46:03.997638+03');
+INSERT INTO public.price_item_log VALUES (30, 23, NULL, 23.00, NULL, true, '2022-02-03 11:48:32.761324+03');
+INSERT INTO public.price_item_log VALUES (31, 24, NULL, 24.00, NULL, true, '2022-02-03 11:51:14.366267+03');
+INSERT INTO public.price_item_log VALUES (32, 25, NULL, 25.00, NULL, true, '2022-02-03 11:58:43.402718+03');
+INSERT INTO public.price_item_log VALUES (33, 26, NULL, 26.00, NULL, true, '2022-02-03 12:00:44.700283+03');
+INSERT INTO public.price_item_log VALUES (34, 27, NULL, 27.00, NULL, true, '2022-02-03 12:01:36.230504+03');
+INSERT INTO public.price_item_log VALUES (35, 28, NULL, 28.00, NULL, true, '2022-02-03 12:05:17.256523+03');
+INSERT INTO public.price_item_log VALUES (36, 28, 1000.00, 999.99, true, true, '2022-02-03 12:06:52.394707+03');
+INSERT INTO public.price_item_log VALUES (37, 29, NULL, 29.00, NULL, true, '2022-02-03 12:08:54.242519+03');
+INSERT INTO public.price_item_log VALUES (38, 30, NULL, 30.00, NULL, true, '2022-02-03 12:09:44.572213+03');
+INSERT INTO public.price_item_log VALUES (39, 31, NULL, 31.00, NULL, true, '2022-02-03 12:09:54.161029+03');
+INSERT INTO public.price_item_log VALUES (40, 31, 250.00, 249.90, true, true, '2022-02-03 12:10:02.581267+03');
+INSERT INTO public.price_item_log VALUES (41, 31, 249.90, 249.90, true, false, '2022-02-03 12:10:08.686329+03');
 
 
 --
 -- Data for Name: price_list; Type: TABLE DATA; Schema: public; Owner: price
 --
 
-INSERT INTO public.price_list VALUES (37, 'Общий', 1, '2022-02-02', 'RUB', true, '2022-02-02 13:59:06.292087+03', '2022-02-02 13:59:06.292087+03');
-INSERT INTO public.price_list VALUES (38, 'Продукты', 1, '2022-02-02', 'RUB', true, '2022-02-02 13:59:06.292087+03', '2022-02-02 13:59:06.292087+03');
-INSERT INTO public.price_list VALUES (39, 'Товары', 1, '2022-02-02', 'RUB', true, '2022-02-02 13:59:06.292087+03', '2022-02-02 13:59:06.292087+03');
-INSERT INTO public.price_list VALUES (40, 'Импорт', 1, '2022-02-02', 'USD', true, '2022-02-02 13:59:06.292087+03', '2022-02-02 13:59:06.292087+03');
-INSERT INTO public.price_list VALUES (41, 'Общий', 2, '2022-02-02', 'RUB', true, '2022-02-02 13:59:06.292087+03', '2022-02-02 13:59:06.292087+03');
-INSERT INTO public.price_list VALUES (42, 'Импорт', 2, '2022-02-02', 'USD', true, '2022-02-02 13:59:06.292087+03', '2022-02-02 13:59:06.292087+03');
-INSERT INTO public.price_list VALUES (43, 'Одежда', 3, '2022-02-02', 'RUB', true, '2022-02-02 13:59:06.292087+03', '2022-02-02 13:59:06.292087+03');
-INSERT INTO public.price_list VALUES (44, 'Техника', 3, '2022-02-02', 'USD', true, '2022-02-02 13:59:06.292087+03', '2022-02-02 13:59:06.292087+03');
-INSERT INTO public.price_list VALUES (45, 'Импорт', 3, '2022-02-02', 'USD', true, '2022-02-02 13:59:06.292087+03', '2022-02-02 13:59:06.292087+03');
-INSERT INTO public.price_list VALUES (46, 'Мясо', 4, '2022-02-02', 'RUB', true, '2022-02-02 13:59:06.292087+03', '2022-02-02 13:59:06.292087+03');
-INSERT INTO public.price_list VALUES (47, 'Молоко', 4, '2022-02-02', 'RUB', true, '2022-02-02 13:59:06.292087+03', '2022-02-02 13:59:06.292087+03');
-INSERT INTO public.price_list VALUES (48, 'Хлеб', 4, '2022-02-02', 'RUB', true, '2022-02-02 13:59:06.292087+03', '2022-02-02 13:59:06.292087+03');
-INSERT INTO public.price_list VALUES (49, 'Кофе', 4, '2022-02-02', 'USD', true, '2022-02-02 13:59:06.292087+03', '2022-02-02 13:59:06.292087+03');
-INSERT INTO public.price_list VALUES (50, 'Основной', 5, '2022-02-02', 'RUB', true, '2022-02-02 13:59:06.292087+03', '2022-02-02 13:59:06.292087+03');
-INSERT INTO public.price_list VALUES (51, 'Прочее', 5, '2022-02-02', 'USD', true, '2022-02-02 13:59:06.292087+03', '2022-02-02 13:59:06.292087+03');
+INSERT INTO public.price_list VALUES (99, 'Одежда', 8, '2022-02-04', 'RUB', true, '2022-02-03 10:17:50.613584+03', '2022-02-03 10:17:50.613584+03');
+INSERT INTO public.price_list VALUES (100, 'Техника', 8, '2022-02-04', 'USD', true, '2022-02-03 10:17:50.613584+03', '2022-02-03 10:17:50.613584+03');
+INSERT INTO public.price_list VALUES (101, 'Импорт', 8, '2022-02-04', 'USD', true, '2022-02-03 10:17:50.613584+03', '2022-02-03 10:17:50.613584+03');
+INSERT INTO public.price_list VALUES (102, 'Мясо', 6, '2022-02-04', 'RUB', true, '2022-02-03 10:18:10.652666+03', '2022-02-03 10:18:10.652666+03');
+INSERT INTO public.price_list VALUES (103, 'Молоко', 6, '2022-02-04', 'RUB', true, '2022-02-03 10:18:10.652666+03', '2022-02-03 10:18:10.652666+03');
+INSERT INTO public.price_list VALUES (104, 'Хлеб', 6, '2022-02-04', 'RUB', true, '2022-02-03 10:18:10.652666+03', '2022-02-03 10:18:10.652666+03');
+INSERT INTO public.price_list VALUES (105, 'Кофе', 6, '2022-02-04', 'USD', true, '2022-02-03 10:18:10.652666+03', '2022-02-03 10:18:10.652666+03');
+INSERT INTO public.price_list VALUES (106, 'Основной', 7, '2022-02-04', 'RUB', true, '2022-02-03 10:18:10.652666+03', '2022-02-03 10:18:10.652666+03');
+INSERT INTO public.price_list VALUES (107, 'Прочее', 7, '2022-02-04', 'USD', true, '2022-02-03 10:18:10.652666+03', '2022-02-03 10:18:10.652666+03');
+INSERT INTO public.price_list VALUES (108, 'Общий', 1, '2022-02-04', 'RUB', true, '2022-02-03 10:18:10.652666+03', '2022-02-03 10:18:10.652666+03');
+INSERT INTO public.price_list VALUES (109, 'Прочее', 1, '2022-02-04', 'USD', true, '2022-02-03 10:18:10.652666+03', '2022-02-03 10:18:10.652666+03');
+INSERT INTO public.price_list VALUES (37, 'Общий', 1, '2022-02-03', 'RUB', true, '2022-02-02 13:59:06.292087+03', '2022-02-02 13:59:06.292087+03');
+INSERT INTO public.price_list VALUES (38, 'Продукты', 1, '2022-02-03', 'RUB', true, '2022-02-02 13:59:06.292087+03', '2022-02-02 13:59:06.292087+03');
+INSERT INTO public.price_list VALUES (39, 'Товары', 1, '2022-02-03', 'RUB', true, '2022-02-02 13:59:06.292087+03', '2022-02-02 13:59:06.292087+03');
+INSERT INTO public.price_list VALUES (40, 'Импорт', 1, '2022-02-03', 'USD', true, '2022-02-02 13:59:06.292087+03', '2022-02-02 13:59:06.292087+03');
+INSERT INTO public.price_list VALUES (41, 'Общий', 2, '2022-02-03', 'RUB', true, '2022-02-02 13:59:06.292087+03', '2022-02-02 13:59:06.292087+03');
+INSERT INTO public.price_list VALUES (42, 'Импорт', 2, '2022-02-03', 'USD', true, '2022-02-02 13:59:06.292087+03', '2022-02-02 13:59:06.292087+03');
+INSERT INTO public.price_list VALUES (43, 'Одежда', 3, '2022-02-03', 'RUB', true, '2022-02-02 13:59:06.292087+03', '2022-02-02 13:59:06.292087+03');
+INSERT INTO public.price_list VALUES (44, 'Техника', 3, '2022-02-03', 'USD', true, '2022-02-02 13:59:06.292087+03', '2022-02-02 13:59:06.292087+03');
+INSERT INTO public.price_list VALUES (45, 'Импорт', 3, '2022-02-03', 'USD', true, '2022-02-02 13:59:06.292087+03', '2022-02-02 13:59:06.292087+03');
+INSERT INTO public.price_list VALUES (46, 'Мясо', 4, '2022-02-03', 'RUB', true, '2022-02-02 13:59:06.292087+03', '2022-02-02 13:59:06.292087+03');
+INSERT INTO public.price_list VALUES (47, 'Молоко', 4, '2022-02-03', 'RUB', true, '2022-02-02 13:59:06.292087+03', '2022-02-02 13:59:06.292087+03');
+INSERT INTO public.price_list VALUES (48, 'Хлеб', 4, '2022-02-03', 'RUB', true, '2022-02-02 13:59:06.292087+03', '2022-02-02 13:59:06.292087+03');
+INSERT INTO public.price_list VALUES (49, 'Кофе', 4, '2022-02-03', 'USD', true, '2022-02-02 13:59:06.292087+03', '2022-02-02 13:59:06.292087+03');
+INSERT INTO public.price_list VALUES (50, 'Основной', 5, '2022-02-03', 'RUB', true, '2022-02-02 13:59:06.292087+03', '2022-02-02 13:59:06.292087+03');
+INSERT INTO public.price_list VALUES (51, 'Прочее', 5, '2022-02-03', 'USD', true, '2022-02-02 13:59:06.292087+03', '2022-02-02 13:59:06.292087+03');
+INSERT INTO public.price_list VALUES (82, 'Общий', 10, '2022-02-04', 'RUB', true, '2022-02-03 10:16:25.024152+03', '2022-02-03 10:16:25.024152+03');
+INSERT INTO public.price_list VALUES (83, 'Продукты', 10, '2022-02-04', 'RUB', true, '2022-02-03 10:16:25.024152+03', '2022-02-03 10:16:25.024152+03');
+INSERT INTO public.price_list VALUES (84, 'Товары', 10, '2022-02-04', 'RUB', true, '2022-02-03 10:16:25.024152+03', '2022-02-03 10:16:25.024152+03');
+INSERT INTO public.price_list VALUES (85, 'Импорт', 10, '2022-02-04', 'USD', true, '2022-02-03 10:16:25.024152+03', '2022-02-03 10:16:25.024152+03');
+INSERT INTO public.price_list VALUES (97, 'Общий', 9, '2022-02-04', 'RUB', true, '2022-02-03 10:17:21.576498+03', '2022-02-03 10:17:21.576498+03');
+INSERT INTO public.price_list VALUES (98, 'Импорт', 9, '2022-02-04', 'USD', true, '2022-02-03 10:17:21.576498+03', '2022-02-03 10:17:21.576498+03');
 
 
 --
@@ -438,21 +502,21 @@ SELECT pg_catalog.setval('public.item_id_seq', 35, true);
 -- Name: price_irtem_log_id_seq; Type: SEQUENCE SET; Schema: public; Owner: price
 --
 
-SELECT pg_catalog.setval('public.price_irtem_log_id_seq', 16, true);
+SELECT pg_catalog.setval('public.price_irtem_log_id_seq', 41, true);
 
 
 --
 -- Name: price_item_id_seq; Type: SEQUENCE SET; Schema: public; Owner: price
 --
 
-SELECT pg_catalog.setval('public.price_item_id_seq', 9, true);
+SELECT pg_catalog.setval('public.price_item_id_seq', 31, true);
 
 
 --
 -- Name: price_list_id_seq; Type: SEQUENCE SET; Schema: public; Owner: price
 --
 
-SELECT pg_catalog.setval('public.price_list_id_seq', 51, true);
+SELECT pg_catalog.setval('public.price_list_id_seq', 109, true);
 
 
 --

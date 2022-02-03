@@ -24,9 +24,9 @@
         {foreach $priceItemLogRows as $priceItemLogId => $priceItemLogRow}
         <tr>
             <td scope="col" width="100">
-                {if !$priceItemLogRow.old_active}
+                {if "t" != $priceItemLogRow.old_active}
                     Добавление
-                {elseif !$priceItemLogRow.new_active}
+                {elseif "f" == $priceItemLogRow.new_active}
                     Удаление
                 {else}
                     Изменение
