@@ -49,7 +49,7 @@ class price extends main
 
         $this->data["requestStr"] = http_build_query($paramRows);
         $conditionRows = $this->getConditionRows($paramRows);
-        $conditionRows[] = "\"date\" <= '{$this->data["date"]}'";
+        $conditionRows[] = "\"date\" >= '{$this->data["date"]}'";
         $this->data["priceListRows"] = $this->pgStorage->selectRows("price_list", $conditionRows);
         foreach ($this->data["priceListRows"] as &$priceListRow) {
             $priceListRow["providerRow"] = $this->pgStorage->selectRow("provider", ["id" => $priceListRow["id_provider"]]);
@@ -88,7 +88,6 @@ SELECT pil.*, p.name AS name_provider, pl.name AS name_price_list, i.name AS nam
         foreach ($this->data["priceListRow"]["priceItemRows"] as &$priceItemRow) {
             $priceItemRow["itemRow"] = $this->pgStorage->selectRow("item", ["id" => $priceItemRow["id_item"]]);
         }
-#        _dump($this->data);
     }
 
     public function savePriceItem($priceItemRow = [])
