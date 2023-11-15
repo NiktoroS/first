@@ -31,7 +31,7 @@ $dsnMySql["host"] = "sro.sro-abc.ru";
 $dsnMySql["name"] = "sro";
 
 try {
-    $browser = new Browser("socks5://127.0.0.1:9050");
+    $browser = new Browser(); //"socks5://127.0.0.1:9050");
 
     $vals = [];
     for ($i = 0; $i < 3; $i ++) {

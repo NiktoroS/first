@@ -13,13 +13,14 @@ $dsnMySql = [
 ];
 
 $dsnPgSql = [
-    "price" => [
+    "prod" => [
         "hostRows" => [
             "localhost"
         ],
         "port"      => "5432",
-        "dbname"    => "price",
-        "user"      => "price",
-        "password"  => "price",
+        "name"      => "xsrmlaravel",
+        "dbname"    => "xsrmlaravel",
+        "user"      => "postgres",
+        "password"  => "easypass",
     ],
 ];

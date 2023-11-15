@@ -13,7 +13,7 @@ class Logs
     public function __construct($name = false)
     {
         if (!$name) {
-            $dirRows = explode(DS, $_SERVER["SCRIPT_NAME"]);
+            $dirRows = explode("/", $_SERVER["SCRIPT_NAME"]);
             $name   = array_pop($dirRows);
             $name   = array_pop($dirRows) . "_" . $name;
         }

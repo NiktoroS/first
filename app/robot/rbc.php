@@ -70,7 +70,7 @@ $dsnMySql["name"] = "sro";
 //https://quote.rbc.ru/data/ticker/graph/59111/D?_=1527534642481
 //var_dump(date("Y-m-d H:i:s", 1527536040/*1527536100*/));
 try {
-    $browser = new Browser("socks5://127.0.0.1:9050");
+    $browser = new Browser(); //"socks5://127.0.0.1:9050");
     $mySql   = new MySqlStorage;
     $rbcRows = [];
 

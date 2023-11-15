@@ -28,12 +28,10 @@ if (!class_exists($module)) {
     showError("неизвестный модуль: " . $module);
 }
 
+
 try {
     header("Content-Type: text/html; charset=utf-8");
     $moduleObj = new $module();
-    if (isset($tableParams)) {
-        $moduleObj->assign("tableParams", $tableParams);
-    }
 
     if (!method_exists($moduleObj, $method)) {
         showError("несуществующий метод: " . $method . " модуля: " . $module);
@@ -47,7 +45,11 @@ try {
         $logs->add(json_encode($_SERVER));
         $logs->add(json_encode($params));
     } else {
-        if ($_SESSION["X-CSRF-Token"] != $params["X-CSRF-Token"]) {
+        if (
+            isset($_SESSION['X-CSRF-Token']) &&
+            isset($params["X-CSRF-Token"]) &&
+            $_SESSION["X-CSRF-Token"] != $params["X-CSRF-Token"]
+        ) {
             $logs = new Logs("wrongToken");
             $logs->add(json_encode($_SERVER));
             $logs->add(json_encode($params));

@@ -10,7 +10,7 @@
 #namespace app\inc\Storage;
 
 require_once(CNF_DIR . "db.php");
-require_once(INC_DIR . "Log.php");
+require_once(INC_DIR . "Logs.class.php");
 
 class PgSqlStorage
 {
@@ -24,7 +24,7 @@ class PgSqlStorage
     {
         global $log;
         if (empty($log)) {
-            $this->log = new Log();
+            $this->log = new Logs();
         } else {
             $this->log = &$log;
         }
@@ -54,12 +54,13 @@ class PgSqlStorage
         $name = $this->dsn["name"];
         if (empty($pgDbAll[$host][$name]["conn"])) {
             do {
-                $connString = "host={$this->dsn["host"]} port={$this->dsn["port"]} dbname={$this->dsn["dbname"]} user={$this->dsn["user"]} password={$this->dsn["user"]}";
+                $connString = "host={$this->dsn["host"]} port={$this->dsn["port"]} dbname={$this->dsn["dbname"]} user={$this->dsn["user"]} password={$this->dsn["password"]}";
                 $pgDbAll[$host][$name]["connection"] = pg_connect($connString);
                 if (!$pgDbAll[$host][$name]["connection"]) {
+                    $this->log->add("Error connect connString: {$connString}");
                     $this->numErrors ++;
                     $exception = new Exception("ConnectError: {$host} {$this->dsn["user"]} {$this->dsn["password"]} {$pgDbAll[$host][$name]["connection"]}");
-                    $log       = new Log("PgSqlConnectError");
+                    $log       = new Logs("PgSqlConnectError");
                     $log->add($exception);
                     if (5 == $this->numErrors) {
                         throw $exception;
@@ -135,7 +136,7 @@ class PgSqlStorage
             $result = pg_query($this->connection, $query);
             $dt = microtime(true) - $t;
             if ($dt > 5.0) {
-                $logSqlLong = new Log("pgSqlQueryLong");
+                $logSqlLong = new Logs("pgSqlQueryLong");
                 $logSqlLong->add($dt . " | " . $query);
             }
         } while (false === $this->checkQueryResult($result, $query));
@@ -160,7 +161,7 @@ class PgSqlStorage
             return [];
         }
         if ($numRows > 1) {
-            $log = new Log("PgSqlWarning");
+            $log = new Logs("PgSqlWarning");
             $log->add("more one rows in: {$query}");
         }
         $row = pg_fetch_assoc($result);
@@ -396,7 +397,7 @@ SELECT column_name
                     unset($keysUpd[$key]);
                 }
             }
-            $rows[$keyRow] = "(" . join(", ", $row) . ")";
+            $rows[$keyRow] = $row;
         }
         if (!$keysUpd) {
             var_dump($table, $rows);
@@ -409,7 +410,7 @@ SELECT column_name
             $idsKey = array_map("trim", explode(",", $idsKey));
         }
         foreach ($rows as $key => $row) {
-            $strRows[] = join(",", array_map(function($val) { return PDOExt::quot($val);}, $row));
+            $strRows[] = join(",", array_map(function($val) { return $val;}, $row));
             if (!$key) {
                 $fieldStr = join(",", array_map(function($var) { return "\"{$var}\"";}, array_keys($row)));
                 foreach ($idsKey as $idKey) {
@@ -447,7 +448,7 @@ DO
         if (!$row) {
             return 0;
         }
-        return $this->insertOrUpdateRows([$row]);
+        return $this->insertOrUpdateRows($table, [$row], $idsKey);
     }
 
     /**
@@ -630,7 +631,7 @@ DO
      */
     private function addLog($exception)
     {
-        $errorlog = new Log("MySqlError");
+        $errorlog = new Logs("PgSqlError");
         $errorlog->add($exception);
         $errorlog->add(var_export($this->connection, true));
         $this->log->add($exception);
@@ -705,15 +706,26 @@ SELECT column_name
             $data["ins_date"] = "NOW()";
         }
         $colsKeys = array_keys($columns);
-        foreach ($data as $key => $val) {
+        foreach ($data as $key => $value) {
             if (!$key or !in_array($key, $colsKeys)) {
                 unset($data[$key]);
                 continue;
             }
-            if (in_array((string)$val, ["NULL", "NOW()", "RAND()"])) {
+            if (is_null($value)) {
+                $data[$key] = "null";
                 continue;
             }
-            $data[$key] = "'" . $this->escapeString($val) . "'";
+            if (is_bool($value)) {
+                $data[$key] = $value ? "true" : "false";
+                continue;
+            }
+            if (is_numeric($value)) {
+                continue;
+            }
+            if (in_array($value, ["NULL", "NOW()", "RAND()"])) {
+                continue;
+            }
+            $data[$key] = "'" . $this->escapeString($value) . "'";
         }
     }
 
@@ -734,7 +746,7 @@ SELECT column_name
         }
         $table = $this->escapeTable($table);
         $query = "SELECT ";
-        if (!$distinct or !empty($addTable)) {
+        if ($distinct) {
             $query .= "DISTINCT ";
         }
         $query .= "{$table}.* FROM {$table}";
@@ -829,7 +841,7 @@ SELECT column_name
             }
             return $val;
         } else {
-            if (in_array($val, ["NULL", "NOW()"])) {
+            if (in_array($val, [null, false, true, "NULL", "NOW()"]) && !is_numeric($val)) {
                 return $val;
             } else {
                 return "'" . $this->escapeString($val) . "'";
