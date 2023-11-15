@@ -1,4 +1,3 @@
-{* Smarty *}
 <!DOCTYPE HTML>
 <html>
 <head>
@@ -65,6 +64,17 @@ function solve(bootle, col)
   bootles.push([null, null, null, null]);
   let json = objAjaxJson("ws", "solve", "level=" + $("#level").val() + "&bootles=" + JSON.stringify(bootles));
   if (!json.success) {
+    if (json.colors) {
+      $("td").each(function() {
+        if ("td_colors" != this.id) {
+          return
+        }
+        let bgcolor = $(this).attr('bgcolor');
+        if (json.colors[bgcolor]) {
+          $(this).html(json.colors[bgcolor]);
+        }
+      })
+    }
     return;
   }
   $("#start").html(json.start);
@@ -89,9 +99,9 @@ function solve(bootle, col)
   <table>
   <tr>
     <td class="color" id="td_color">&nbsp;</td>
-    <td class="non-border" id="td_color">&nbsp;&nbsp;</td>
+    <td class="non-border">&nbsp;&nbsp;</td>
     {foreach $colors as $color}
-      <td bgcolor="{$color}" class="color" onClick="getColor('{$color}')">&nbsp</td>
+      <td bgcolor="{$color}" class="color" id="td_colors" onClick="getColor('{$color}')">&nbsp</td>
     {/foreach}
     <td class="color" onClick="getColor(null)">&nbsp</td>
   </tr>

@@ -30,7 +30,12 @@ class WsClass
             'success' => true,
             'start' => date("H:i:s")
         ];
-        $this->checkColors();
+        if ($colors = $this->checkColors()) {
+            return [
+                'success' => false,
+                'colors' => $colors
+            ];
+        }
         $this->pgStorage->query("DELETE FROM ws WHERE level = {$this->level}");
         $step   = 0;
         $bootlesJson    = json_encode($this->bootles);
@@ -79,7 +84,7 @@ class WsClass
         }
         foreach ($colors as $color => $cnt) {
             if (4 !== $cnt) {
-                throw new \Exception(print_r($colors, true));
+                return $colors;
             }
         }
     }
