@@ -1,9 +1,9 @@
 <?php
 
-require_once(INC_DIR . "Storage/PgSqlStorage.php");
-//require_once(INC_DIR . "Storage/MySqlStorage.php");
+//require_once(INC_DIR . "Storage/PgSqlStorage.php");
+require_once(INC_DIR . "Storage/MySqlStorage.php");
 
-class WsClass extends PgSqlStorage
+class WsClass extends MySqlStorage
 {
 
     public function info()
