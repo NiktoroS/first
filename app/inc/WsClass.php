@@ -28,15 +28,15 @@ class WsClass extends PgSqlStorage
         $bootlesJson    = json_encode($this->bootles);
         $hash   = md5($bootlesJson);
         $row    = [
-            'level' => $this->level,
-            'step'  => $step,
+            'bootles'   => $bootlesJson,
             'from'  => null,
-            'to'    => null,
             'hash'  => $hash,
             'hash_parent'   => "",
-            'bootles'       => $bootlesJson
+            'level' => $this->level,
+            'step'  => $step,
+            'to'    => null
         ];
-        $this->insertOrUpdateRow("ws", $row, ['level', 'step', 'hash', 'hash_parent']);
+        $this->insertOrUpdateRow("ws", $row, ['hash', 'hash_parent', 'level', 'step']);
         $this->nextStep($this->bootles, $step + 1, $hash);
         $result['finish'] = date("H:i:s");
         if (!$this->solved) {
@@ -206,88 +206,9 @@ class WsClass extends PgSqlStorage
         $this->level = $level;
     }
 
-    private $level = 459;
+    private $level = 0;
 
-    private $bootles = [
-        [
-            "тк",
-            "к",
-            "ж",
-            "з"
-        ],
-        [
-            "тз",
-            "кр",
-            "о",
-            "ж"
-        ],
-        [
-            "к",
-            "тз",
-            "ж",
-            "з"
-        ],
-        [
-            "тк",
-            "к",
-            "б",
-            "ж"
-        ],
-        [
-            "б",
-            "г",
-            "о",
-            "з"
-        ],
-        [
-            "б",
-            "г",
-            "г",
-            "с"
-        ],
-        [
-            "б",
-            "ф",
-            "о",
-            "с"
-        ],
-        [
-            "тз",
-            "кр",
-            "г",
-            "ф"
-        ],
-        [
-            "кр",
-            "ф",
-            "ф",
-            "с"
-        ],
-        [
-            "к",
-            "тз",
-            "кр",
-            "з"
-        ],
-        [
-            "тк",
-            "тк",
-            "о",
-            "с"
-        ],
-        [
-            "",
-            "",
-            "",
-            ""
-        ],
-        [
-            "",
-            "",
-            "",
-            ""
-        ]
-    ];
+    private $bootles = [];
 
     private $solved = false;
 
