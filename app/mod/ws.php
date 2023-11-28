@@ -12,26 +12,18 @@ class ws extends main
     public function show($params = [])
     {
         $this->data = [
+            'bootles' => empty($_REQUEST['bootles']) ? 15 : $_REQUEST['bootles'],
             'level'   => empty($_REQUEST['level']) ? 0 : $_REQUEST['level'],
-            'bootles' => empty($_REQUEST['bootles']) ? 13 : $_REQUEST['bootles']
+            'colors'  => []
         ];
         switch ($this->data['bootles']) {
             case 11:
                 $this->data['newLines'] = [5, 10];
-                $this->data['colors'] = [
-                    'red', 'green', 'violet', '#0000ff', '#8787ff',
-                    'yellow', 'orange', '#404000', '#909000', '#007f7f',
-                    '#870087'
-                ];
                 break;
 
             case 13:
+            case 15:
                 $this->data['newLines'] = [6, 12];
-                $this->data['colors'] = [
-                    'red', 'green', 'violet', '#0000ff', '#8787ff',
-                    'yellow', 'orange', '#404000', '#909000', '#007f7f',
-                    '#870087'
-                ];
                 break;
         }
         if ($_FILES['file'] && $_FILES['file']["tmp_name"]) {
