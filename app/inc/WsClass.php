@@ -1,23 +1,10 @@
 <?php
 
-//require_once(INC_DIR . "Storage/PgSqlStorage.php");
+require_once(INC_DIR . "Storage/PgSqlStorage.php");
+//require_once(INC_DIR . "Storage/MySqlStorage.php");
 
-class WsClass
+class WsClass extends PgSqlStorage
 {
-
-    protected $pgStorage;
-
-    public function __construct($level = null, $bootles = [])
-    {
-        global $dsnPgSql;
-        if ($level) {
-            $this->level = $level;
-        }
-        if ($bootles) {
-            $this->bootles = $bootles;
-        }
-        $this->pgStorage = new PgSqlStorage($dsnPgSql);
-    }
 
     public function info()
     {
@@ -36,7 +23,7 @@ class WsClass
                 'colors' => $colors
             ];
         }
-        $this->pgStorage->query("DELETE FROM ws WHERE level = {$this->level}");
+        $this->query("DELETE FROM ws WHERE level = {$this->level}");
         $step   = 0;
         $bootlesJson    = json_encode($this->bootles);
         $hash   = md5($bootlesJson);
@@ -49,22 +36,22 @@ class WsClass
             'hash_parent'   => "",
             'bootles'       => $bootlesJson
         ];
-        $this->pgStorage->insertOrUpdateRow("ws", $row, ['level', 'step', 'hash', 'hash_parent']);
+        $this->insertOrUpdateRow("ws", $row, ['level', 'step', 'hash', 'hash_parent']);
         $this->nextStep($this->bootles, $step + 1, $hash);
         $result['finish'] = date("H:i:s");
         if (!$this->solved) {
             $result['success'] = false;
             return $result;
         }
-        $wsRow = $this->pgStorage->selectRow("ws", ['solved' => true, 'level' => $this->level], "", "step");
-        $this->pgStorage->query("DELETE FROM ws WHERE level = {$wsRow['level']} AND step > {$wsRow['step']}");
+        $wsRow = $this->selectRow("ws", ['solved' => true, 'level' => $this->level], "", "step");
+        $this->query("DELETE FROM ws WHERE level = {$wsRow['level']} AND step > {$wsRow['step']}");
         while ($wsRow['step'] > 0) {
             $step = $wsRow['step'];
-            $this->pgStorage->query("DELETE FROM ws WHERE level = {$wsRow['level']} AND step = {$wsRow['step']} AND hash <> '{$wsRow['hash']}'");
-            $wsRow = $this->pgStorage->selectRow("ws", ['hash' => $wsRow['hash_parent'], 'level' => $wsRow['level'], "step < {$wsRow['step']}"]);
-            $this->pgStorage->query("DELETE FROM ws WHERE level = {$wsRow['level']} AND step > {$wsRow['step']} AND step < {$step}");
+            $this->query("DELETE FROM ws WHERE level = {$wsRow['level']} AND step = {$wsRow['step']} AND hash <> '{$wsRow['hash']}'");
+            $wsRow = $this->selectRow("ws", ['hash' => $wsRow['hash_parent'], 'level' => $wsRow['level'], "step < {$wsRow['step']}"]);
+            $this->query("DELETE FROM ws WHERE level = {$wsRow['level']} AND step > {$wsRow['step']} AND step < {$step}");
         }
-        $result['moves'] = $this->pgStorage->selectRows("ws", ['level' => $this->level, "step <> 0"], "step");
+        $result['moves'] = $this->selectRows("ws", ['level' => $this->level, "step <> 0"], "step");
         return $result;
     }
 
@@ -181,7 +168,7 @@ class WsClass
                 $_bootles = $this->move($bootles, $keyFrom, $keyTo);
                 $bootlesJson = json_encode($_bootles);
                 $hash = md5($bootlesJson);
-                $wsRow = $this->pgStorage->selectRow("ws", ['level' => $this->level, 'hash'  => $hash, 'from' => $keyFrom, 'to' => $keyTo]);
+                $wsRow = $this->selectRow("ws", ['level' => $this->level, 'hash'  => $hash, 'from' => $keyFrom, 'to' => $keyTo]);
                 if ($wsRow) {
                     // уже был переход на в такую позицию
                     continue;
@@ -196,7 +183,7 @@ class WsClass
                     'solved' => $this->checkSolved($_bootles),
                     'bootles' => $bootlesJson
                 ];
-                $this->pgStorage->insertOrUpdateRow("ws", $row, ['level', 'step', 'hash', 'hash_parent']);
+                $this->insertOrUpdateRow("ws", $row, ['level', 'step', 'hash', 'hash_parent']);
                 if ($this->solved) {
                     return;
                 }
@@ -208,6 +195,16 @@ class WsClass
         }
     }
 
+
+    public function setBootles($bootles)
+    {
+        $this->bootles = $bootles;
+    }
+
+    public function setLevel($level)
+    {
+        $this->level = $level;
+    }
 
     private $level = 459;
 

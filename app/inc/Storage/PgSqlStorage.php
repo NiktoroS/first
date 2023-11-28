@@ -157,7 +157,6 @@ class PgSqlStorage
         $result = $this->queryForSelect($query);
         $numRows = pg_num_rows($result);
         if (!$numRows) {
-//            @$result->close();
             return [];
         }
         if ($numRows > 1) {

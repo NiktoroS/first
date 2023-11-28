@@ -4,7 +4,7 @@ require_once(MOD_DIR . "main.php");
 
 require_once(INC_DIR . "WsClass.php");
 
-set_time_limit(600);
+set_time_limit(0);
 
 class ws extends main
 {
@@ -35,7 +35,6 @@ class ws extends main
                 break;
         }
         if ($_FILES['file'] && $_FILES['file']["tmp_name"]) {
-
             $im = imagecreatefrompng($_FILES['file']["tmp_name"]);
         } else {
             $im = imagecreatefrompng(ROOT_DIR . "/content//Screenshot_{$this->data['bootles']}.png");
@@ -73,7 +72,9 @@ class ws extends main
     {
         header("Content-type: application/json");
         try {
-            $ws = new WsClass($params['level'], json_decode($params['bootles'], true));
+            $ws = new WsClass();
+            $ws->setBootles(json_decode($params['bootles'], true));
+            $ws->setLevel($params['level']);
             echo (json_encode($ws->solve()));
         } catch (Exception $e) {
             echo (json_encode([

@@ -63,6 +63,8 @@ function solve(bootle, col)
   bootles.push([null, null, null, null]);
   bootles.push([null, null, null, null]);
   let json = objAjaxJson("ws", "solve", "level=" + $("#level").val() + "&bootles=" + JSON.stringify(bootles));
+  $("#start").html(json.start);
+  $("#finish").html(json.finish);
   if (!json.success) {
     if (json.colors) {
       $("td").each(function() {
@@ -77,8 +79,6 @@ function solve(bootle, col)
     }
     return;
   }
-  $("#start").html(json.start);
-  $("#finish").html(json.finish);
   let moves = "";
   console.log(json.moves)
   json.moves.forEach((move) => {

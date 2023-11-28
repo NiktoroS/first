@@ -72,7 +72,7 @@ class main extends MySmarty
 
     protected function assignMeta()
     {
-        if (!$this->data["metaRows"]) {
+        if (empty($this->data["metaRows"])) {
             $this->data["metaRows"] = [
                 "viewport"      => "width=device-width, initial-scale=1",
                 "keywords"      => KEYWORDS,
