@@ -43,6 +43,7 @@ function getColor(_color)
 
 function setColor(bootle, col)
 {
+  $("#submit").attr('disabled', true);
   if (color == $("#td_bootle_" + bootle + "_" + col).attr('bgcolor')) {
     $("#td_bootle_" + bootle + "_" + col).attr('bgcolor', "black");
     return;
@@ -52,6 +53,7 @@ function setColor(bootle, col)
 
 function solve(bootle, col)
 {
+  $("#submit").attr('disabled', false);
   let bootles = [];
   for (let bootle = 0; bootle < $("#bootles").val(); bootle ++) {
     let _bootle = [];
@@ -95,7 +97,7 @@ function solve(bootle, col)
   Уровень:<input type="text" name="level" value="{$level}" id="level" /><br/>
   Бутылок:<input type="text" name="bootles" value="{$bootles}" id="bootles" /><br/>
   Файл:<input type="file" name="file" id="file"/><br/>
-  <input type="submit"/>
+  <input type="submit" id="submit"/>
   <table>
   <tr>
     <td class="color" id="td_color">&nbsp;</td>
