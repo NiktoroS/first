@@ -420,10 +420,6 @@ class MySqlStorage
             },
             array_keys($row)
         );
-        $greet = function($name)
-        {
-            printf("Привет, %s\r\n", $name);
-        };
 
         if ($key = array_search("`created`", $keysUpd)) {
             unset($keysUpd[$key]);

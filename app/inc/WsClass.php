@@ -1,9 +1,9 @@
 <?php
 
-//require_once(INC_DIR . "Storage/PgSqlStorage.php");
-require_once(INC_DIR . "Storage/MySqlStorage.php");
+require_once(INC_DIR . "Storage/PgSqlStorage.php");
+//require_once(INC_DIR . "Storage/MySqlStorage.php");
 
-class WsClass extends MySqlStorage
+class WsClass extends PgSqlStorage
 {
 
     public function info()
@@ -150,7 +150,7 @@ class WsClass extends MySqlStorage
         if ($this->solved) {
             return;
         }
-        if ($step > 50000) {
+        if ($step > 1000000) {
             return;
         }
         foreach ($bootles as $keyFrom => $bootleFrom) {
