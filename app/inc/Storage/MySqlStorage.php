@@ -407,9 +407,9 @@ class MySqlStorage
      * @return int lastInsertId
      * @throws
      */
-    public function insertOrUpdateRow($table, $row, $idField = "id")
+    public function insertOrUpdateRow($table, $row, $idsKey = ["id"])
     {
-        $id = isset($row[$idField]) ? intval($row[$idField]) : 0;
+        $id = empty($row) || empty($idsKey) || empty($row[$idsKey[0]]) ? 0 : intval($row[$idsKey[0]]);
         if (isset($row["_updated"])) {
             unset($row["_updated"]);
         }
