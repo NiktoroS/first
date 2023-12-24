@@ -25,7 +25,6 @@ td {
   border-style: none !important; 
   color: red;
 }
-}
 
 </style>
 
@@ -62,8 +61,8 @@ function solve(bootle, col)
     }
     bootles.push(_bootle);
   }
-  bootles.push([null, null, null, null]);
-  bootles.push([null, null, null, null]);
+  bootles.push(["", "", "", ""]);
+  bootles.push(["", "", "", ""]);
   let json = objAjaxJson("ws", "solve", "level=" + $("#level").val() + "&bootles=" + JSON.stringify(bootles));
   $("#start").html(json.start);
   $("#finish").html(json.finish);
@@ -97,13 +96,17 @@ function solve(bootle, col)
   Уровень:<input type="text" name="level" value="{$level}" id="level" /><br/>
   Бутылок:<input type="text" name="bootles" value="{$bootles}" id="bootles" /><br/>
   Файл:<input type="file" name="file" id="file"/><br/>
+  Код цвета:<input type="checkbox" name="colorCode" {if $colorCode}checked{/if}/><br/>
+  {if $colorCode}
+    <a href="https://elfin.cc/en/water-sort-solver" target="_blank">https://elfin.cc/en/water-sort-solver</a><br/>
+  {/if}
   <input type="submit" id="submit"/>
   <table>
   <tr>
     <td class="color" id="td_color">&nbsp;</td>
     <td class="non-border">&nbsp;&nbsp;</td>
     {foreach $colors as $color}
-      <td bgcolor="{$color}" class="color" id="td_colors" onClick="getColor('{$color}')">&nbsp</td>
+      <td bgcolor="{$color}" class="color" id="td_colors" onClick="getColor('{$color}')">{if $colorCode}{$color}{else}&nbsp;{/if}</td>
     {/foreach}
     <td class="color" onClick="getColor(null)">&nbsp</td>
   </tr>
@@ -118,7 +121,11 @@ function solve(bootle, col)
       <table align=left>
         {for $col = 0 to 3}
         <tr>
-          <td class="color" id="td_bootle_{$bootle}_{$col}" onClick="setColor({$bootle}, {$col})">&nbsp;</td>
+          {$color = ''}
+          {if isset($bootleRows[$bootle][$col])}
+            {$color = $bootleRows[$bootle][$col]}
+          {/if}
+          <td bgcolor="{$color}" class="color" id="td_bootle_{$bootle}_{$col}" onClick="setColor({$bootle}, {$col})">&nbsp;</td>
         </tr>
         {/for}
       </table>

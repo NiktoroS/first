@@ -11,11 +11,22 @@ class WsClass extends PgSqlStorage
         phpinfo();
     }
 
+    public function setBootles($bootles)
+    {
+        $this->bootles = $bootles;
+    }
+
+    public function setLevel($level)
+    {
+        $this->level = $level;
+    }
+
     public function solve()
     {
         $result = [
-            'success' => true,
-            'start' => date("H:i:s")
+            'success'   => false,
+            'start'     => date("H:i:s"),
+            'finish'    => date("H:i:s")
         ];
         if ($colors = $this->checkColors()) {
             return [
@@ -23,24 +34,27 @@ class WsClass extends PgSqlStorage
                 'colors' => $colors
             ];
         }
-        $this->query("DELETE FROM ws WHERE level = {$this->level}");
+        $this->query("DELETE FROM ws WHERE level = {$this->level} AND step > 0");
         $step   = 0;
-        $bootlesJson    = json_encode($this->bootles);
-        $hash   = md5($bootlesJson);
+        if ($this->bootles) {
+            $bootlesJson    = json_encode($this->bootles);
+        } else {
+            $wsRow = $this->selectRow("ws", ['level' => $this->level, 'step' => 0]);
+            if (!$wsRow) {
+                return $result;
+            }
+            $bootlesJson = $wsRow['bootles'];
+            $this->bootles = json_decode($bootlesJson, true);
+        }
+        $hash   = strval(md5("{$bootlesJson};0;0;"));
         $row    = [
             'bootles'   => $bootlesJson,
-            'from'  => null,
-            'hash'  => $hash,
-            'hash_parent'   => "",
-            'level' => $this->level,
-            'step'  => $step,
-            'to'    => null
+            'hash'      => $hash
         ];
-        $this->insertOrUpdateRow("ws", $row, ['hash', 'hash_parent', 'level', 'step']);
+        $this->insertWsRow($row);
         $this->nextStep($this->bootles, $step + 1, $hash);
         $result['finish'] = date("H:i:s");
         if (!$this->solved) {
-            $result['success'] = false;
             return $result;
         }
         $wsRow = $this->selectRow("ws", ['solved' => true, 'level' => $this->level], "", "step");
@@ -51,7 +65,8 @@ class WsClass extends PgSqlStorage
             $wsRow = $this->selectRow("ws", ['hash' => $wsRow['hash_parent'], 'level' => $wsRow['level'], "step < {$wsRow['step']}"]);
             $this->query("DELETE FROM ws WHERE level = {$wsRow['level']} AND step > {$wsRow['step']} AND step < {$step}");
         }
-        $result['moves'] = $this->selectRows("ws", ['level' => $this->level, "step <> 0"], "step");
+        $result['success'] = true;
+        $result['moves'] = $this->selectRows("ws", ['level' => $this->level, "step > 0"], "step");
         return $result;
     }
 
@@ -78,21 +93,23 @@ class WsClass extends PgSqlStorage
 
     private function checkMove($bootleFrom, $bootleTo)
     {
-        $cntFrom   = 0;
-        $cntTotalFrom = 0;
-        $colorFrom = "";
+        $cntFrom        = 0;
+        $cntTotalFrom   = 0;
+        $colorFrom      = "";
         foreach ($bootleFrom as $_colorFrom) {
-            if (!$colorFrom && $_colorFrom) {
+            if (!$_colorFrom) {
+                continue;
+            }
+            $cntTotalFrom ++;
+            if (!$colorFrom) {
                 $colorFrom = $_colorFrom;
             }
-            if ($_colorFrom) {
-                $cntTotalFrom ++;
-                if ($colorFrom == $_colorFrom) {
-                    $cntFrom ++;
-                }
+            if ($colorFrom == $_colorFrom) {
+                $cntFrom ++;
             }
         }
         if (!$cntFrom) {
+            // нечего перемещать
             return false;
         }
         $cntFreeTo = 0;
@@ -101,9 +118,14 @@ class WsClass extends PgSqlStorage
                 $cntFreeTo ++;
                 continue;
             }
-            return $colorFrom === $colorTo && $cntFreeTo >= $cntFrom;
+            return $colorFrom == $colorTo && $cntFreeTo >= $cntFrom;
+        }
+        if (!$cntFreeTo) {
+            // некуда перемещать
+            return false;
         }
         if (4 == $cntFreeTo && $cntTotalFrom == $cntFrom) {
+            // не имеет смысла перемещать всё в пустоту
             return false;
         }
         return true;
@@ -120,9 +142,15 @@ class WsClass extends PgSqlStorage
         return true;
     }
 
+    private function insertWsRow($row)
+    {
+        $row['level'] = $this->level;
+        $this->insertOrUpdateRow("ws", $row, ['hash', 'level']);
+    }
+
     private function move($bootles, $from, $to)
     {
-        $colorMove  = "";
+        $colorMove = "";
         foreach ($bootles[$from] as $keyFrom => $colorFrom) {
             if (!$colorFrom) {
                 continue;
@@ -145,12 +173,61 @@ class WsClass extends PgSqlStorage
         return $bootles;
     }
 
-    private function nextStep($bootles, $step, $hashParent, $from = null, $to = null)
+    /**-
+     *
+     * @param array $bootles
+     * @param number $step
+     * @param string $hashParent
+     */
+    private function nextStep($bootles = [], $step = 0, $hashParent = "")
     {
         if ($this->solved) {
             return;
         }
-        if ($step > 1000000) {
+        $bootlesJson = json_encode($bootles);
+        $keysFrom    = array_keys($bootles);
+        shuffle($keysFrom);
+        foreach ($keysFrom as $keyFrom) {
+            $bootleFrom = $bootles[$keyFrom];
+            foreach ($bootles as $keyTo => $bootleTo) {
+                if ($keyFrom == $keyTo) {
+                    continue;
+                }
+                if (!$this->checkMove($bootleFrom, $bootleTo)) {
+                    continue;
+                }
+                $hash = strval(md5("{$bootlesJson};{$keyFrom};{$keyTo};"));
+                $wsRow = $this->selectRow("ws", [
+                    'hash'  => $hash,
+                    'level' => $this->level
+                ]);
+                if ($wsRow && $wsRow['step'] <= $step - 0) {
+                    // уже был такой переход с данной позиции
+                    continue;
+                }
+                $_bootles = $this->move($bootles, $keyFrom, $keyTo);
+                if (!$wsRow || $step < $wsRow['step']) {
+                    $this->insertWsRow([
+                        'bootles'   => $bootlesJson,
+                        'from'  => $keyFrom,
+                        'hash'  => $hash,
+                        'hash_parent'   => $hashParent,
+                        'solved'    => $this->checkSolved($_bootles),
+                        'step'  => $step,
+                        'to'    => $keyTo
+                    ]);
+                }
+                if ($this->solved) {
+                    return;
+                }
+                $this->nextStep($_bootles, $step + 1, $hash);
+            }
+        }
+    }
+
+    private function nextStepOld($bootles, $step, $hashParent, $from = 0, $to = 0)
+    {
+        if ($this->solved) {
             return;
         }
         foreach ($bootles as $keyFrom => $bootleFrom) {
@@ -168,22 +245,28 @@ class WsClass extends PgSqlStorage
                 $_bootles = $this->move($bootles, $keyFrom, $keyTo);
                 $bootlesJson = json_encode($_bootles);
                 $hash = md5($bootlesJson);
-                $wsRow = $this->selectRow("ws", ['level' => $this->level, 'hash'  => $hash, 'from' => $keyFrom, 'to' => $keyTo]);
-                if ($wsRow) {
-                    // уже был переход на в такую позицию
-                    continue;
-                }
-                $row = [
+                if ($this->selectRow("ws", [
+                    'from'  => $keyFrom,
+                    'hash'  => $hash,
+                    'hash_parent' => $hashParent,
                     'level' => $this->level,
                     'step'  => $step,
-                    'from' => $keyFrom,
-                    'to'   => $keyTo,
-                    'hash'  => $hash,
-                    'hash_parent'  => $hashParent,
-                    'solved' => $this->checkSolved($_bootles),
-                    'bootles' => $bootlesJson
-                ];
-                $this->insertOrUpdateRow("ws", $row, ['level', 'step', 'hash', 'hash_parent']);
+                    'to'    => $keyTo
+                ])) {
+                    // уже был переход на в такую позицию
+                    continue;
+                } else {
+                    $this->insertWsRow([
+                        'level' => $this->level,
+                        'step'  => $step,
+                        'from'  => $keyFrom,
+                        'to'    => $keyTo,
+                        'hash'  => $hash,
+                        'hash_parent'  => $hashParent,
+                        'solved'  => $this->checkSolved($_bootles),
+                        'bootles' => $bootlesJson
+                    ]);
+                }
                 if ($this->solved) {
                     return;
                 }
@@ -195,20 +278,9 @@ class WsClass extends PgSqlStorage
         }
     }
 
-
-    public function setBootles($bootles)
-    {
-        $this->bootles = $bootles;
-    }
-
-    public function setLevel($level)
-    {
-        $this->level = $level;
-    }
+    private $bootles = [];
 
     private $level = 0;
-
-    private $bootles = [];
 
     private $solved = false;
 

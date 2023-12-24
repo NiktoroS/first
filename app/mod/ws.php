@@ -13,9 +13,22 @@ class ws extends main
     {
         $this->data = [
             'bootles' => empty($_REQUEST['bootles']) ? 15 : $_REQUEST['bootles'],
-            'level'   => empty($_REQUEST['level']) ? 0 : $_REQUEST['level'],
-            'colors'  => []
+            'bootleRows' => [],
+            'colors'  => [],
+            'colorCode'   => empty($_REQUEST['colorCode']) ? false : true,
+            'level'   => empty($_REQUEST['level']) ? 0 : $_REQUEST['level']
         ];
+        $ws = new WsClass();
+        $ws->setLevel($this->data['level']);
+        $wsRow = $ws->selectRow(
+            'ws', [
+                'level' => $this->data['level'],
+                'step' => 0
+            ]
+        );
+        if ($wsRow) {
+            $this->data['bootleRows'] = json_decode($wsRow['bootles'], true);
+        }
         switch ($this->data['bootles']) {
             case 11:
                 $this->data['newLines'] = [5, 10];
@@ -26,7 +39,7 @@ class ws extends main
                 $this->data['newLines'] = [6, 12];
                 break;
         }
-        if ($_FILES['file'] && $_FILES['file']["tmp_name"]) {
+        if ($_FILES && $_FILES['file'] && $_FILES['file']["tmp_name"]) {
             $im = imagecreatefrompng($_FILES['file']["tmp_name"]);
         } else {
             $im = imagecreatefrompng(ROOT_DIR . "/content//Screenshot_{$this->data['bootles']}.png");
