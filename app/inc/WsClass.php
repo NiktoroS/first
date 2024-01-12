@@ -216,10 +216,7 @@ class WsClass extends PgSqlStorage
             return;
         }
         $bootlesJson = json_encode($bootles);
-        $keysFrom    = array_keys($bootles);
-        shuffle($keysFrom);
-        foreach ($keysFrom as $keyFrom) {
-            $bootleFrom = $bootles[$keyFrom];
+        foreach ($bootles as $keyFrom => $bootleFrom) {
             foreach ($bootles as $keyTo => $bootleTo) {
                 if ($keyFrom == $keyTo) {
                     continue;
@@ -232,8 +229,8 @@ class WsClass extends PgSqlStorage
                     'hash'  => $hash,
                     'level' => $this->level
                 ]);
-                if ($wsRow && $wsRow['step'] <= $step - 0) {
-                    // уже был такой переход с данной позиции
+                if ($wsRow && $wsRow['step'] <= $step) {
+                    // уже был такой переход с данной позиции yf на эмже или более предпочтительном шаге
                     continue;
                 }
                 $_bootles = $this->move($bootles, $keyFrom, $keyTo);
