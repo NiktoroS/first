@@ -1,26 +1,33 @@
 <?php
 
 require_once(INC_DIR . "Storage/PgSqlStorage.php");
-//require_once(INC_DIR . "Storage/MySqlStorage.php");
+require_once(INC_DIR . "Storage/MySqlStorage.php");
 
 class WsClass extends PgSqlStorage
 {
 
-    public function info()
-    {
-        phpinfo();
-    }
-
-    public function setBootles($bootles)
+    /**
+     *
+     * @param array $bootles
+     */
+    public function setBootles(array $bootles)
     {
         $this->bootles = $bootles;
     }
 
-    public function setLevel($level)
+    /**
+     *
+     * @param int $level
+     */
+    public function setLevel(int $level)
     {
         $this->level = $level;
     }
 
+    /**
+     *
+     * @return array
+     */
     public function solve()
     {
         $result = [
@@ -70,6 +77,10 @@ class WsClass extends PgSqlStorage
         return $result;
     }
 
+    /**
+     *
+     * @return array
+     */
     private function checkColors()
     {
         $colors = [];
@@ -91,8 +102,18 @@ class WsClass extends PgSqlStorage
         }
     }
 
-    private function checkMove($bootleFrom, $bootleTo)
+    /**
+     *
+     * @param array $bootleFrom
+     * @param array $bootleTo
+     * @return boolean
+     */
+    private function checkMove(array $bootleFrom, array $bootleTo)
     {
+        if ($bootleTo[0]) {
+            // некуда перемещать
+            return false;
+        }
         $cntFrom        = 0;
         $cntTotalFrom   = 0;
         $colorFrom      = "";
@@ -112,26 +133,25 @@ class WsClass extends PgSqlStorage
             // нечего перемещать
             return false;
         }
-        $cntFreeTo = 0;
-        foreach ($bootleTo as $colorTo) {
-            if (!$colorTo) {
-                $cntFreeTo ++;
-                continue;
-            }
-            return $colorFrom == $colorTo && $cntFreeTo >= $cntFrom;
-        }
-        if (!$cntFreeTo) {
-            // некуда перемещать
-            return false;
-        }
-        if (4 == $cntFreeTo && $cntTotalFrom == $cntFrom) {
+        if (!$bootleTo[3] && $cntTotalFrom == $cntFrom) {
             // не имеет смысла перемещать всё в пустоту
             return false;
+        }
+        foreach ($bootleTo as $colorTo) {
+            if (!$colorTo) {
+                continue;
+            }
+            return $colorFrom == $colorTo;
         }
         return true;
     }
 
-    private function checkSolved($bootles)
+    /**
+     *
+     * @param array $bootles
+     * @return boolean
+     */
+    private function checkSolved(array $bootles)
     {
         foreach ($bootles AS $bootle) {
             if (count(array_unique($bootle)) > 1) {
@@ -142,13 +162,24 @@ class WsClass extends PgSqlStorage
         return true;
     }
 
-    private function insertWsRow($row)
+    /**
+     *
+     * @param array $row
+     */
+    private function insertWsRow(array $row)
     {
         $row['level'] = $this->level;
         $this->insertOrUpdateRow("ws", $row, ['hash', 'level']);
     }
 
-    private function move($bootles, $from, $to)
+    /**
+     *
+     * @param array $bootles
+     * @param int $from
+     * @param int $to
+     * @return array
+     */
+    private function move(array $bootles, int $from, int $to)
     {
         $colorMove = "";
         foreach ($bootles[$from] as $keyFrom => $colorFrom) {
@@ -173,13 +204,13 @@ class WsClass extends PgSqlStorage
         return $bootles;
     }
 
-    /**-
+    /**
      *
      * @param array $bootles
-     * @param number $step
+     * @param int $step
      * @param string $hashParent
      */
-    private function nextStep($bootles = [], $step = 0, $hashParent = "")
+    private function nextStep(array $bootles = [], int $step = 0, string $hashParent = "")
     {
         if ($this->solved) {
             return;
@@ -221,59 +252,6 @@ class WsClass extends PgSqlStorage
                     return;
                 }
                 $this->nextStep($_bootles, $step + 1, $hash);
-            }
-        }
-    }
-
-    private function nextStepOld($bootles, $step, $hashParent, $from = 0, $to = 0)
-    {
-        if ($this->solved) {
-            return;
-        }
-        foreach ($bootles as $keyFrom => $bootleFrom) {
-            if (1 === count(array_unique($bootles[$keyFrom]))) {
-                // с одним цветом
-                continue;
-            }
-            foreach ($bootles as $keyTo => $bootleTo) {
-                if ($keyFrom === $keyTo) {
-                    continue;
-                }
-                if (!$this->checkMove($bootleFrom, $bootleTo)) {
-                    continue;
-                }
-                $_bootles = $this->move($bootles, $keyFrom, $keyTo);
-                $bootlesJson = json_encode($_bootles);
-                $hash = md5($bootlesJson);
-                if ($this->selectRow("ws", [
-                    'from'  => $keyFrom,
-                    'hash'  => $hash,
-                    'hash_parent' => $hashParent,
-                    'level' => $this->level,
-                    'step'  => $step,
-                    'to'    => $keyTo
-                ])) {
-                    // уже был переход на в такую позицию
-                    continue;
-                } else {
-                    $this->insertWsRow([
-                        'level' => $this->level,
-                        'step'  => $step,
-                        'from'  => $keyFrom,
-                        'to'    => $keyTo,
-                        'hash'  => $hash,
-                        'hash_parent'  => $hashParent,
-                        'solved'  => $this->checkSolved($_bootles),
-                        'bootles' => $bootlesJson
-                    ]);
-                }
-                if ($this->solved) {
-                    return;
-                }
-                if ($keyFrom === $from && $keyTo === $to) {
-                    continue;
-                }
-                $this->nextStep($_bootles, $step + 1, $hash, $keyTo, $keyFrom);
             }
         }
     }
