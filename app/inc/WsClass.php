@@ -41,6 +41,11 @@ class WsClass extends PgSqlStorage
                 'colors' => $colors
             ];
         }
+        $wsRow = $this->selectRow("ws", ['level' => $this->level, 'solved' => true]);
+        if ($wsRow) {
+            $result['moves'] = $this->selectRows("ws", ['level' => $this->level, "step > 0"], "step");
+            return $result;
+        }
         $this->query("DELETE FROM ws WHERE level = {$this->level} AND step > 0");
         $step   = 0;
         if ($this->bootles) {
