@@ -3,7 +3,7 @@
 require_once(INC_DIR . "Storage/PgSqlStorage.php");
 require_once(INC_DIR . "Storage/MySqlStorage.php");
 
-class WsClass extends PgSqlStorage
+class WsClass extends MySqlStorage
 {
 
     /**
@@ -31,7 +31,7 @@ class WsClass extends PgSqlStorage
     public function solve()
     {
         $result = [
-            'success'   => false,
+            'success'   => true,
             'start'     => date("H:i:s"),
             'finish'    => date("H:i:s")
         ];
@@ -67,6 +67,7 @@ class WsClass extends PgSqlStorage
         $this->nextStep($this->bootles, $step + 1, $hash);
         $result['finish'] = date("H:i:s");
         if (!$this->solved) {
+            $result['success'] = false;
             return $result;
         }
         $wsRow = $this->selectRow("ws", ['solved' => true, 'level' => $this->level], "", "step");
@@ -77,7 +78,6 @@ class WsClass extends PgSqlStorage
             $wsRow = $this->selectRow("ws", ['hash' => $wsRow['hash_parent'], 'level' => $wsRow['level'], "step < {$wsRow['step']}"]);
             $this->query("DELETE FROM ws WHERE level = {$wsRow['level']} AND step > {$wsRow['step']} AND step < {$step}");
         }
-        $result['success'] = true;
         $result['moves'] = $this->selectRows("ws", ['level' => $this->level, "step > 0"], "step");
         return $result;
     }
@@ -234,8 +234,8 @@ class WsClass extends PgSqlStorage
                     'hash'  => $hash,
                     'level' => $this->level
                 ]);
-                if ($wsRow && $wsRow['step'] <= $step) {
-                    // уже был такой переход с данной позиции yf на эмже или более предпочтительном шаге
+                if ($wsRow/* && $wsRow['step'] <= $step*/) {
+                    // уже был такой переход с данной позиции /*на этом или более предпочтительном шаге*/
                     continue;
                 }
                 $_bootles = $this->move($bootles, $keyFrom, $keyTo);
