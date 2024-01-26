@@ -3,7 +3,7 @@
 require_once(INC_DIR . "Storage/PgSqlStorage.php");
 require_once(INC_DIR . "Storage/MySqlStorage.php");
 
-class WsClass extends MySqlStorage
+class WsClass extends PgSqlStorage
 {
 
     /**
@@ -47,7 +47,7 @@ class WsClass extends MySqlStorage
             return $result;
         }
         $this->query("DELETE FROM ws WHERE level = {$this->level} AND step > 0");
-        $step   = 0;
+        $step   = 1;
         if ($this->bootles) {
             $bootlesJson    = json_encode($this->bootles);
         } else {
@@ -64,7 +64,7 @@ class WsClass extends MySqlStorage
             'hash'      => $hash
         ];
         $this->insertWsRow($row);
-        $this->nextStep($this->bootles, $step + 1, $hash);
+        $this->nextStep($this->bootles, $step, $hash);
         $result['finish'] = date("H:i:s");
         if (!$this->solved) {
             $result['success'] = false;
@@ -215,7 +215,7 @@ class WsClass extends MySqlStorage
      * @param int $step
      * @param string $hashParent
      */
-    private function nextStep(array $bootles = [], int $step = 0, string $hashParent = "")
+    private function nextStep(array $bootles = [], int $step = 0, string $hashParent = "", $prevFrom = 0, $prevTo = 0)
     {
         if ($this->solved) {
             return;
@@ -224,6 +224,9 @@ class WsClass extends MySqlStorage
         foreach ($bootles as $keyFrom => $bootleFrom) {
             foreach ($bootles as $keyTo => $bootleTo) {
                 if ($keyFrom == $keyTo) {
+                    continue;
+                }
+                if ($keyFrom == $prevTo && $keyTo == $prevFrom) {
                     continue;
                 }
                 if (!$this->checkMove($bootleFrom, $bootleTo)) {
@@ -253,7 +256,7 @@ class WsClass extends MySqlStorage
                 if ($this->solved) {
                     return;
                 }
-                $this->nextStep($_bootles, $step + 1, $hash);
+                $this->nextStep($_bootles, $step + 1, $hash, $keyFrom, $keyTo);
             }
         }
     }

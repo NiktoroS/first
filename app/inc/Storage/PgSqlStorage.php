@@ -718,13 +718,12 @@ SELECT column_name
                 $data[$key] = $value ? "true" : "false";
                 continue;
             }
-            if (is_numeric($value)) {
-                continue;
-            }
             if (in_array($value, ["NULL", "NOW()", "RAND()"])) {
                 continue;
             }
-            $data[$key] = "'" . $this->escapeString($value) . "'";
+            if (is_string($value)) {
+                $data[$key] = "'" . $this->escapeString($value) . "'";
+            }
         }
     }
 

@@ -1,1 +1,0 @@
-/?Amount=1100&Params=1%2010007%3B&PaymExtId=5f1f63778dfb&PaymSubjTp=18578&RequestId=690b3cb1-5180-48de-ad8d-cedfcd6ee480&TermID=FS001&TermType=006-22&function=Payment&usr_mail=ABastina@alfabank.ru&user_ip=127.0.0.1
