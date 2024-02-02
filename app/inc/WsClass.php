@@ -115,6 +115,10 @@ class WsClass extends PgSqlStorage
      */
     private function checkMove(array $bootleFrom, array $bootleTo)
     {
+        if (!$bootleFrom[3]) {
+            // нечего перемещать
+            return false;
+        }
         if ($bootleTo[0]) {
             // некуда перемещать
             return false;
@@ -134,19 +138,23 @@ class WsClass extends PgSqlStorage
                 $cntFrom ++;
             }
         }
-        if (!$cntFrom) {
-            // нечего перемещать
-            return false;
-        }
         if (!$bootleTo[3] && $cntTotalFrom == $cntFrom) {
-            // не имеет смысла перемещать всё в пустоту
+            // не имеет смысла перемещать всё в "пустоту"
             return false;
         }
+        $cntFreeTo = 0;
         foreach ($bootleTo as $colorTo) {
             if (!$colorTo) {
+                $cntFreeTo ++;
                 continue;
             }
-            return $colorFrom == $colorTo;
+            if ($colorFrom == $colorTo) {
+//                 if ($cntFreeTo >= $cntFrom) {
+//                     return true;
+//                 }
+                return true;
+            }
+            return false;
         }
         return true;
     }
@@ -221,7 +229,11 @@ class WsClass extends PgSqlStorage
             return;
         }
         $bootlesJson = json_encode($bootles);
-        foreach ($bootles as $keyFrom => $bootleFrom) {
+        $keysFrom    = array_keys($bootles);
+        shuffle($keysFrom);
+        foreach ($keysFrom as $keyFrom) {
+            $bootleFrom = $bootles[$keyFrom];
+//        foreach ($bootles as $keyFrom => $bootleFrom) {
             foreach ($bootles as $keyTo => $bootleTo) {
                 if ($keyFrom == $keyTo) {
                     continue;
@@ -237,8 +249,8 @@ class WsClass extends PgSqlStorage
                     'hash'  => $hash,
                     'level' => $this->level
                 ]);
-                if ($wsRow/* && $wsRow['step'] <= $step*/) {
-                    // уже был такой переход с данной позиции /*на этом или более предпочтительном шаге*/
+                if ($wsRow && $wsRow['step'] <= $step) {
+                    // уже был такой переход с данной позиции, на этом или более предпочтительном шаге
                     continue;
                 }
                 $_bootles = $this->move($bootles, $keyFrom, $keyTo);
