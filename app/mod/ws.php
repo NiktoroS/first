@@ -20,14 +20,9 @@ class ws extends main
         ];
         $ws = new WsClass();
         $ws->setLevel($this->data['level']);
-        $wsRow = $ws->selectRow(
-            'ws', [
-                'level' => $this->data['level'],
-                'step' => 0
-            ]
-        );
-        if ($wsRow) {
-            $this->data['bootleRows'] = json_decode($wsRow['bootles'], true);
+        $wsLevelRow = $ws->selectRow('ws_levels', ['level' => $this->data['level']]);
+        if ($wsLevelRow) {
+            $this->data['bootleRows'] = json_decode($wsLevelRow['bootles'], true);
         }
         switch ($this->data['bootles']) {
             case 11:

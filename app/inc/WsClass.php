@@ -1,5 +1,7 @@
 <?php
 
+ini_set("memory_limit", -1);
+
 require_once(INC_DIR . "Storage/PgSqlStorage.php");
 require_once(INC_DIR . "Storage/MySqlStorage.php");
 
@@ -51,17 +53,22 @@ class WsClass extends PgSqlStorage
         if ($this->bootles) {
             $bootlesJson    = json_encode($this->bootles);
         } else {
-            $wsRow = $this->selectRow("ws", ['level' => $this->level, 'step' => 0]);
-            if (!$wsRow) {
+            $wsLevelsRow = $this->selectRow("ws_levels", ['level' => $this->level]);
+            if (!$wsLevelsRow) {
                 return $result;
             }
-            $bootlesJson = $wsRow['bootles'];
+            $bootlesJson = $wsLevelsRow['bootles'];
             $this->bootles = json_decode($bootlesJson, true);
         }
         $hash   = strval(md5("{$bootlesJson};0;0;"));
         $row    = [
             'bootles'   => $bootlesJson,
-            'hash'      => $hash
+            'from'  => 0,
+            'hash'  => $hash,
+            'hash_parent'   => "",
+            'solved'    => false,
+            'step'  => 0,
+            'to'    => 0
         ];
         $this->insertWsRow($row);
         $this->nextStep($this->bootles, $step, $hash);
@@ -70,6 +77,7 @@ class WsClass extends PgSqlStorage
             $result['success'] = false;
             return $result;
         }
+        $this->insertWsRows();
         $wsRow = $this->selectRow("ws", ['solved' => true, 'level' => $this->level], "", "step");
         $this->query("DELETE FROM ws WHERE level = {$wsRow['level']} AND step > {$wsRow['step']}");
         while ($wsRow['step'] > 0) {
@@ -179,10 +187,35 @@ class WsClass extends PgSqlStorage
      *
      * @param array $row
      */
-    private function insertWsRow(array $row)
+    private function insertWsRow(array $row = [])
     {
         $row['level'] = $this->level;
-        $this->insertOrUpdateRow("ws", $row, ['hash', 'level']);
+        if (isset($row['bootles'])) {
+            $this->insertOrUpdateRow("ws_levels", $row, ['level']);
+            unset($row['bootles']);
+        }
+        $this->hashes[$row['hash']] = $row;
+        $this->hasheCnt ++;
+        if (
+            $this->hasheCnt % $this->hasheCntMax == 0 ||
+            $this->hasheCnt == $this->hasheCntNext
+        ) {
+            $this->insertWsRows();
+            $this->hasheCntNext *= 2;
+            if ($this->hasheCnt % $this->hasheCntMax == 0) {
+                $this->hashes = [];
+            }
+        }
+    }
+
+    private function insertWsRows()
+    {
+        $this->log->add('$this->hasheCnt: ' . $this->hasheCnt);
+        foreach (array_chunk($this->hashes, 10000) as $hashes) {
+            $this->insertOrUpdateRows("ws", $hashes, ['hash', 'level']);
+        }
+        $this->query("vacuum full analyse ws");
+        $this->log->add('count($this->hashes): ' . count($this->hashes));
     }
 
     /**
@@ -245,10 +278,7 @@ class WsClass extends PgSqlStorage
                     continue;
                 }
                 $hash = strval(md5("{$bootlesJson};{$keyFrom};{$keyTo};"));
-                $wsRow = $this->selectRow("ws", [
-                    'hash'  => $hash,
-                    'level' => $this->level
-                ]);
+                $wsRow = $this->selectWsRow($hash);
                 if ($wsRow && $wsRow['step'] <= $step) {
                     // уже был такой переход с данной позиции, на этом или более предпочтительном шаге
                     continue;
@@ -256,7 +286,6 @@ class WsClass extends PgSqlStorage
                 $_bootles = $this->move($bootles, $keyFrom, $keyTo);
                 if (!$wsRow || $step < $wsRow['step']) {
                     $this->insertWsRow([
-                        'bootles'   => $bootlesJson,
                         'from'  => $keyFrom,
                         'hash'  => $hash,
                         'hash_parent'   => $hashParent,
@@ -273,9 +302,30 @@ class WsClass extends PgSqlStorage
         }
     }
 
+    /**
+     *
+     * @param string $hash
+     * @return array
+     */
+    private function selectWsRow($hash = "")
+    {
+        if (empty($this->hashes[$hash])) {
+            $this->hashes[$hash] = $this->selectRow("ws", ['hash'  => $hash, 'level' => $this->level]);
+        }
+        return $this->hashes[$hash];
+    }
+
     private $bootles = [];
 
-    private $level = 0;
+    private $hashes  = [];
+
+    private $hasheCnt     = 0;
+
+    private $hasheCntMax  = 16777216;
+
+    private $hasheCntNext = 1;
+
+    private $level     = 0;
 
     private $solved = false;
 

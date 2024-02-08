@@ -24,7 +24,7 @@ try {
         if (!preg_match('/mp4$/', $file)) {
             continue;
         }
-        $fileOutput = "2.{$file}";
+        $fileOutput = "1.{$file}";
         if (is_file($fileOutput)) {
             continue;
         }
@@ -38,17 +38,20 @@ try {
 /*
         $video
         ->filters()
-        ->resize(new \FFMpeg\Coordinate\Dimension(1920, 1080), \FFMpeg\Filters\Video\ResizeFilter::RESIZEMODE_INSET, true)
+        ->resize(new FFMpeg\Coordinate\Dimension(1920, 1080), FFMpeg\Filters\Video\ResizeFilter::RESIZEMODE_INSET, true)
         ->synchronize();
         $video
-        ->frame(\FFMpeg\Coordinate\TimeCode::fromSeconds(10))
+        ->frame(FFMpeg\Coordinate\TimeCode::fromSeconds(10))
         ->save($file . '.jpg');
+
         $video
-        ->save(new \FFMpeg\Format\Video\X264(), $fileOutput);
+        ->filters()
+        ->resize(new FFMpeg\Coordinate\Dimension(1920, 1080), FFMpeg\Filters\Video\ResizeFilter::RESIZEMODE_FIT, true);
 */
         $video
         ->filters()
-        ->resize(new FFMpeg\Coordinate\Dimension(1920, 1080), FFMpeg\Filters\Video\ResizeFilter::RESIZEMODE_INSET, true);
+        ->resize(new FFMpeg\Coordinate\Dimension(1920, 1080));
+
         $video->save(new FFMpeg\Format\Video\X264(), $fileOutput);
     }
 } catch (Exception $e) {

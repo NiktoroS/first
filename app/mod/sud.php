@@ -4,7 +4,7 @@ require_once(MOD_DIR . "main.php");
 
 require_once(INC_DIR . "SudokuSolver.class.php");
 
-set_time_limit(60);
+set_time_limit(600);
 
 class sud extends main
 {
