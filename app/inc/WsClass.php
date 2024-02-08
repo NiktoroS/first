@@ -66,6 +66,7 @@ class WsClass extends PgSqlStorage
             'from'  => 0,
             'hash'  => $hash,
             'hash_parent'   => "",
+            'level'         => $this->level,
             'solved'    => false,
             'step'  => 0,
             'to'    => 0
@@ -289,6 +290,7 @@ class WsClass extends PgSqlStorage
                         'from'  => $keyFrom,
                         'hash'  => $hash,
                         'hash_parent'   => $hashParent,
+                        'level'         => $this->level,
                         'solved'    => $this->checkSolved($_bootles),
                         'step'  => $step,
                         'to'    => $keyTo
@@ -310,7 +312,19 @@ class WsClass extends PgSqlStorage
     private function selectWsRow($hash = "")
     {
         if (empty($this->hashes[$hash])) {
-            $this->hashes[$hash] = $this->selectRow("ws", ['hash'  => $hash, 'level' => $this->level]);
+            $wsRow = $this->selectRow("ws", ['hash'  => $hash, 'level' => $this->level]);
+            if (!$wsRow) {
+                return [];
+            }
+            $this->hashes[$hash] = [
+                'from'  => $wsRow['from'],
+                'hash'  => $wsRow['hash'],
+                'hash_parent'   => $wsRow['hash_parent'],
+                'level'         => $wsRow['level'],
+                'solved'    => $wsRow['solved'],
+                'step'  => $wsRow['step'],
+                'to'    => $wsRow['to']
+            ];
         }
         return $this->hashes[$hash];
     }
