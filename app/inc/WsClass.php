@@ -49,6 +49,8 @@ class WsClass extends PgSqlStorage
             return $result;
         }
         $this->query("DELETE FROM ws WHERE level = {$this->level} AND step > 0");
+        $this->query("vacuum full analyse ws");
+        $this->log->add("DELETE&vacuum done");
         $step   = 1;
         if ($this->bootles) {
             $bootlesJson    = json_encode($this->bootles);
@@ -197,26 +199,27 @@ class WsClass extends PgSqlStorage
         }
         $this->hashes[$row['hash']] = $row;
         $this->hasheCnt ++;
-        if (
-            $this->hasheCnt % $this->hasheCntMax == 0 ||
-            $this->hasheCnt == $this->hasheCntNext
-        ) {
-            $this->insertWsRows();
-            $this->hasheCntNext *= 2;
-            if ($this->hasheCnt % $this->hasheCntMax == 0) {
-                $this->hashes = [];
-            }
+        if ($this->hasheCnt % 1000000 != 0) {
+            return;
         }
+        $cnt = count($this->hashes);
+        $this->log->add("{$this->hasheCnt}: {$cnt}");
+        if ($cnt < 5000000) {
+            return;
+        }
+        $this->insertWsRows();
+        $this->hashes = [];
     }
 
     private function insertWsRows()
     {
-        $this->log->add('$this->hasheCnt: ' . $this->hasheCnt);
+        $affectedRows = 0;
         foreach (array_chunk($this->hashes, 10000) as $hashes) {
-            $this->insertOrUpdateRows("ws", $hashes, ['hash', 'level']);
+            $affectedRows += $this->insertOrUpdateRows("ws", $hashes, ['hash', 'level']);
         }
+        $this->log->add("affectedRows: {$affectedRows}");
         $this->query("vacuum full analyse ws");
-        $this->log->add('count($this->hashes): ' . count($this->hashes));
+        $this->log->add("vacuum done");
     }
 
     /**
@@ -320,7 +323,7 @@ class WsClass extends PgSqlStorage
                 'from'  => $wsRow['from'],
                 'hash'  => $wsRow['hash'],
                 'hash_parent'   => $wsRow['hash_parent'],
-                'level'         => $wsRow['level'],
+                'level' => $wsRow['level'],
                 'solved'    => $wsRow['solved'],
                 'step'  => $wsRow['step'],
                 'to'    => $wsRow['to']
@@ -335,9 +338,7 @@ class WsClass extends PgSqlStorage
 
     private $hasheCnt     = 0;
 
-    private $hasheCntMax  = 16777216;
-
-    private $hasheCntNext = 1;
+    private $hasheCntMax  = 5000000; //16777216;
 
     private $level     = 0;
 
