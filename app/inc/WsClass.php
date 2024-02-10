@@ -76,11 +76,11 @@ class WsClass extends PgSqlStorage
         $this->insertWsRow($row);
         $this->nextStep($this->bootles, $step, $hash);
         $result['finish'] = date("H:i:s");
+        $this->insertWsRows();
         if (!$this->solved) {
             $result['success'] = false;
             return $result;
         }
-        $this->insertWsRows();
         $wsRow = $this->selectRow("ws", ['solved' => true, 'level' => $this->level], "", "step");
         $this->query("DELETE FROM ws WHERE level = {$wsRow['level']} AND step > {$wsRow['step']}");
         while ($wsRow['step'] > 0) {
@@ -213,6 +213,7 @@ class WsClass extends PgSqlStorage
 
     private function insertWsRows()
     {
+        $this->log->add('count($this->hashes): ' . count($this->hashes));
         $affectedRows = 0;
         foreach (array_chunk($this->hashes, 10000) as $hashes) {
             $affectedRows += $this->insertOrUpdateRows("ws", $hashes, ['hash', 'level']);
