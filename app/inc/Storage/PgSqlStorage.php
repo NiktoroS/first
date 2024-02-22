@@ -7,10 +7,11 @@
  *
  */
 
-#namespace app\inc\Storage;
+namespace app\inc\Storage;
 
 require_once(CNF_DIR . "db.php");
-require_once(INC_DIR . "Logs.class.php");
+
+use app\inc\Logs;
 
 class PgSqlStorage
 {
@@ -59,7 +60,7 @@ class PgSqlStorage
                 if (!$pgDbAll[$host][$name]["connection"]) {
                     $this->log->add("Error connect connString: {$connString}");
                     $this->numErrors ++;
-                    $exception = new Exception("ConnectError: {$host} {$this->dsn["user"]} {$this->dsn["password"]} {$pgDbAll[$host][$name]["connection"]}");
+                    $exception = new \Exception("ConnectError: {$host} {$this->dsn["user"]} {$this->dsn["password"]} {$pgDbAll[$host][$name]["connection"]}");
                     $log       = new Logs("PgSqlConnectError");
                     $log->add($exception);
                     if (5 == $this->numErrors) {

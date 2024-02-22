@@ -1,4 +1,7 @@
 <?php
+namespace app\inc\Storage;
+
+use app\inc\Logs;
 
 /**
  * @category
@@ -7,10 +10,8 @@
  *
  */
 
-#namespace app\inc\Storage;
-
 require_once(CNF_DIR . "db.php");
-require_once(INC_DIR . "Logs.class.php");
+require_once(INC_DIR . "Logs.php");
 
 class MySqlStorage
 {
