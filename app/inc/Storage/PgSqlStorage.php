@@ -12,6 +12,7 @@ namespace app\inc\Storage;
 require_once(CNF_DIR . "db.php");
 
 use app\inc\Logs;
+use app\inc\TelegramClass;
 
 class PgSqlStorage
 {
@@ -496,7 +497,7 @@ DO
         }
 //        $this->myDb->autocommit(false);
         if (true != $this->checkQueryResult($this->query("BEGIN"), "BEGIN")) {
-            throw new Exception("begin transaction - fail");
+            throw new \Exception("begin transaction - fail");
         }
         $this->transactions ++;
         return true;
@@ -519,7 +520,7 @@ DO
         }
         if (true != $this->checkQueryResult($this->query("COMMIT"), "COMMIT")) {
             $this->rollback();
-            throw new Exception("commit transaction - fail");
+            throw new \Exception("commit transaction - fail");
         }
         $this->transactions --;
         return true;
@@ -532,7 +533,7 @@ DO
     public function rollback()
     {
         if (true != $this->checkQueryResult($this->query("ROLLBACK"), "ROLLBACK")) {
-            throw new Exception("rollback - fail");
+            throw new \Exception("rollback - fail");
         }
         $this->transactions = 0;
         return true;
@@ -606,7 +607,7 @@ DO
         if (false === $result or pg_last_error($this->connection)) {
             $error = pg_last_error($this->connection);
             $request   = empty($_SERVER["REQUEST_URI"]) ? "" : "request: " . $_SERVER["REQUEST_URI"] . ($_POST ? "?" . http_build_query($_POST) : "") . "\n\n";
-            $exception = new Exception("{$request}{$query} [{$error}]");
+            $exception = new \Exception("{$request}{$query} [{$error}]");
             if ("" == $request and $this->numErrors < 5 and !$this->transactions) {
                 // при offline запуске и отсутствии открытой транзакции
                 // попытаемся переконнектится и выполнить запрос еще раз
@@ -627,9 +628,10 @@ DO
     }
 
     /**
-     * @param Exception $exception
+     *
+     * @param \Exception $exception
      */
-    private function addLog($exception)
+    private function addLog(\Exception $exception)
     {
         $errorlog = new Logs("PgSqlError");
         $errorlog->add($exception);
@@ -642,15 +644,16 @@ DO
     }
 
     /**
-     * @param Exception $exception
+     *
+     * @param \Exception $exception
      */
-    private function sendSms($exception)
+    private function sendSms(\Exception $exception)
     {
-        if (!is_file(INC_DIR . "Telegram.class.php")) {
+        if (!is_file(INC_DIR . "TelegramClass.php")) {
             return;
         }
-        require_once(INC_DIR . "Telegram.class.php");
-        $telegram = new Telegram();
+        require_once(INC_DIR . "TelegramClass.php");
+        $telegram = new TelegramClass();
         $telegram->sendMessage($exception, "PgSql");
     }
 

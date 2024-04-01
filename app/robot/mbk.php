@@ -1,5 +1,8 @@
 <?php
 
+use app\inc\BrowserClass;
+use app\inc\Logs;
+
 /**
  * @category
  * @package  xv
@@ -12,7 +15,7 @@ ini_set("memory_limit", "4095M");
 
 require_once(dirname(__DIR__) . "/cnf/main.php");
 require_once(INC_DIR . "Logs.class.php");
-require_once(INC_DIR . "Browser.class.php");
+require_once(INC_DIR . "BrowserClass.php");
 
 error_reporting(E_ALL);
 
@@ -21,7 +24,7 @@ $logs = new Logs();
 $url = "https://loan-v3.mbk.ru/";
 
 try {
-    $browser = new Browser("socks5://127.0.0.1:9050");
+    $browser = new BrowserClass("socks5://127.0.0.1:9050");
     do {
         $browser->request("{$url}", "GET");
         $formRows   = $browser->getForms();

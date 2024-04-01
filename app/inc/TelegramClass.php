@@ -1,13 +1,15 @@
 <?php
+namespace app\inc;
+
 /**
  * Telegram
  *
  * @author Andrey A. Sirotkin <first@mail.ru>
  * @since  20.12.2016
  */
-require_once(INC_DIR . "Browser.class.php");
+require_once(INC_DIR . "BrowserClass.php");
 
-class Telegram
+class TelegramClass
 {
 
     private $botToken = "329014600:AAGB3v56moIsLum3gsfiNsE6-9u4WKGqOrg"; // @niktorisBot:
@@ -15,7 +17,7 @@ class Telegram
 
     public function request($method = "getMe", $params)
     {
-        $browser = new Browser("socks5://127.0.0.1:9050");
+        $browser = new BrowserClass("socks5://127.0.0.1:9050");
         $httpHeader = array (
             "User-Agent" => "MyAgent/1.0"
         );
@@ -27,11 +29,11 @@ class Telegram
     {
         return $this->request(
             "sendMessage",
-            array (
+            [
                 "chat_id" => $chatId,
                 "parse_mode" => "HTML",
                 "text" => "<b>" . strip_tags(strval($subject)) . "</b><pre>\n" . strip_tags(strval($text)) . "</pre>"
-            )
+            ]
         );
     }
 

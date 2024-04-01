@@ -1,11 +1,12 @@
 <?php
+
+namespace app\inc;
+
 /**
  * @category Логирование
  * @author <first@mailru>
  * @since  2018-03-30
  */
-
-namespace app\inc;
 
 class Logs
 {

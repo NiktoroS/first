@@ -1,8 +1,9 @@
 <?php
 
-require_once(MOD_DIR . "main.php");
+use app\inc\SudokuSolver;
 
-require_once(INC_DIR . "SudokuSolver.class.php");
+require_once(MOD_DIR . "main.php");
+require_once(INC_DIR . "SudokuSolver.php");
 
 set_time_limit(600);
 

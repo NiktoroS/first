@@ -1,4 +1,9 @@
 <?php
+use app\inc\BrowserClass;
+use app\inc\Lock;
+use app\inc\Logs;
+use app\inc\Storage\MySqlStorage;
+
 /**
  * @category robot
  * @package  rbc.ru
@@ -10,18 +15,18 @@ set_time_limit(0);
 ini_set("memory_limit", "4095M");
 
 require_once(dirname(__DIR__) . "/cnf/main.php");
-require_once(INC_DIR . "Logs.class.php");
-require_once(INC_DIR . "Lock.class.php");
-require_once(INC_DIR . "Browser.class.php");
+require_once(INC_DIR . "Logs.php");
+require_once(INC_DIR . "Lock.php");
+require_once(INC_DIR . "BrowserClass.php");
 require_once(INC_DIR . "Storage/MySqlStorage.php");
 
 error_reporting(E_ALL);
 sleep(0);
 
-$logs = new Logs();
 $lock = new Lock();
+$logs = new Logs();
 
-if (false === ($copy = $lock->setLock())) {
+if (false === $lock->setLock()) {
     $logs->add("error in set lock");
     exit;
 }
@@ -70,8 +75,8 @@ $dsnMySql["name"] = "sro";
 //https://quote.rbc.ru/data/ticker/graph/59111/D?_=1527534642481
 //var_dump(date("Y-m-d H:i:s", 1527536040/*1527536100*/));
 try {
-    $browser = new Browser(); //"socks5://127.0.0.1:9050");
-    $mySql   = new MySqlStorage;
+    $browser = new BrowserClass(); //"socks5://127.0.0.1:9050");
+    $mySql   = new MySqlStorage();
     $rbcRows = [];
 
     foreach ($quoteRows as $var => $vals) {

@@ -1,4 +1,7 @@
 <?php
+use app\inc\BrowserClass;
+use app\inc\Logs;
+
 /**
  * @category
  * @package  paymgate
@@ -10,8 +13,8 @@ set_time_limit(0);
 ini_set("memory_limit", "4095M");
 
 require_once(dirname(__DIR__, 2) . "/cnf/main.php");
-require_once(INC_DIR . "Logs.class.php");
-require_once(INC_DIR . "Browser.class.php");
+require_once(INC_DIR . "Logs.php");
+require_once(INC_DIR . "BrowserClass.php");
 
 error_reporting(E_ALL);
 
@@ -30,7 +33,7 @@ try {
     $uri    = "https://sbp-gate3.nspk.ru/test/";
     $get    = join("/", $argv);// "start/00033"; //"main";//"test/start/00030";
     $file   = $dir . "/" . join("_", $argv) . ".html";
-    $browser = new Browser();
+    $browser = new BrowserClass();
     $headerRows = [
         "User-Agent" => "curl",
     ];

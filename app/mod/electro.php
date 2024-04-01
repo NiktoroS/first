@@ -20,9 +20,13 @@ class electro extends main
             header("Location: /electro");
             exit;
         }
-        $this->data = array (
-            "rows" => $this->storage->selectRows("electro", array ("active" => 1, "time >= '2019-08-06'"), "time ASC")
-        );
+        $this->data = [
+            "rows" => $this->storage->selectRows(
+                "electro",
+                ["active" => 1, "time >= '2019-08-06'"],
+                "time ASC"
+            )
+        ];
         foreach ($this->data["rows"] as $key => $row) {
             $row["delta"] = 0;
             if ($key) {

@@ -1,4 +1,9 @@
 <?php
+use app\inc\BrowserClass;
+use app\inc\Lock;
+use app\inc\Logs;
+use app\inc\Storage\MySqlStorage;
+
 /**
  * @category robot
  * @package  kinopoisk.ru
@@ -12,7 +17,7 @@ ini_set("memory_limit", "4095M");
 require_once(dirname(__DIR__) . "/cnf/main.php");
 require_once(INC_DIR . "Logs.class.php");
 require_once(INC_DIR . "Lock.class.php");
-require_once(INC_DIR . "Browser.class.php");
+require_once(INC_DIR . "BrowserClass.php");
 require_once(INC_DIR . "Storage/MySqlStorage.php");
 
 error_reporting(E_ALL);
@@ -32,7 +37,7 @@ global $dsnMySql;
 $dsnMySql["name"] = "sirotkin";
 
 try {
-    $browser    = new Browser("socks5://127.0.0.1:9050");
+    $browser    = new BrowserClass("socks5://127.0.0.1:9050");
     $mySql      = new MySqlStorage($dsnMySql);
     $url        = "https://www.kinopoisk.ru/lists/top500/?tab=all";
     $mySql->query("UPDATE `kinopoisk_rate` SET `active` = 0 WHERE `date` > '{$dateTo}'");

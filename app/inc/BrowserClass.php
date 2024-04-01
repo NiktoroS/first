@@ -1,4 +1,6 @@
 <?php
+namespace app\inc;
+
 /**
  * @category Library
  * @package  http requests with file_get_contents
@@ -7,7 +9,7 @@
  */
 require_once(ROOT_DIR . "/vendor/wikia/simplehtmldom/simple_html_dom.php");
 
-class Browser
+class BrowserClass
 {
 
     public $useragent = "Mozilla/5.0 (Windows NT 10.0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/39.0.2171.71 Safari/537.36 Edge/12.0";

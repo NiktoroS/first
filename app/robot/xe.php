@@ -1,4 +1,9 @@
 <?php
+use app\inc\BrowserClass;
+use app\inc\Lock;
+use app\inc\Logs;
+use app\inc\Storage\MySqlStorage;
+
 /**
  * @category robot
  * @package  xe.com
@@ -10,9 +15,9 @@ set_time_limit(0);
 ini_set("memory_limit", "4095M");
 
 require_once(dirname(__DIR__) . "/cnf/main.php");
-require_once(INC_DIR . "Logs.class.php");
-require_once(INC_DIR . "Lock.class.php");
-require_once(INC_DIR . "Browser.class.php");
+require_once(INC_DIR . "Logs.php");
+require_once(INC_DIR . "Lock.php");
+require_once(INC_DIR . "BrowserClass.php");
 require_once(INC_DIR . "Storage/MySqlStorage.php");
 
 error_reporting(E_ALL);
@@ -21,7 +26,7 @@ sleep(0);
 $logs = new Logs();
 $lock = new Lock();
 
-if (false === ($copy = $lock->setLock())) {
+if (false === $lock->setLock()) {
     $logs->add("error in set lock");
     exit;
 }
@@ -31,7 +36,7 @@ $dsnMySql["host"] = "sro.sro-abc.ru";
 $dsnMySql["name"] = "sro";
 
 try {
-    $browser = new Browser(); //"socks5://127.0.0.1:9050");
+    $browser = new BrowserClass(); //"socks5://127.0.0.1:9050");
 
     $vals = [];
     for ($i = 0; $i < 3; $i ++) {
@@ -63,7 +68,7 @@ try {
     $data = $vals[1];
     $data["created"] = date("YmdHi00");
 
-    $mySql = new MySqlStorage;
+    $mySql = new MySqlStorage();
 
     $lastRow = $mySql->queryRow("SELECT * FROM `xe` WHERE `USD` <> 0 AND `EUR` <> 0 AND `GBP` <> 0 ORDER BY `created` DESC LIMIT 1");
     $data["d_USD"] = round($data["USD"] - $lastRow["USD"], 4);

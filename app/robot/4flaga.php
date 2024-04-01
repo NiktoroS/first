@@ -1,4 +1,9 @@
 <?php
+use app\inc\BrowserClass;
+use app\inc\Lock;
+use app\inc\Logs;
+use app\inc\Storage\MySqlStorage;
+
 /**
  * @category robot
  * @package  wooordhunt
@@ -10,15 +15,15 @@ set_time_limit(0);
 ini_set("memory_limit", "4095M");
 
 require_once(dirname(__DIR__) . "/cnf/main.php");
-require_once(INC_DIR . "Logs.class.php");
-require_once(INC_DIR . "Lock.class.php");
-require_once(INC_DIR . "Telegram.class.php");
+require_once(INC_DIR . "Logs.php");
+require_once(INC_DIR . "Lock.php");
+require_once(INC_DIR . "TelegramClass.php");
 require_once(INC_DIR . "Storage/MySqlStorage.php");
 
 error_reporting(E_ALL);
 
-$logs = new Logs();
 $lock = new Lock();
+$logs = new Logs();
 
 if (false === $lock->setLock()) {
     $logs->add("error in set lock");
@@ -32,9 +37,8 @@ $dsnMySql["name"] = "sirotkin";
 
 try {
     $mySql      = new MySqlStorage($dsnMySql);
-    $telegram   = new Telegram();
 
-    $browser    = new Browser();//"socks5://127.0.0.1:9050");
+    $browser    = new BrowserClass();//"socks5://127.0.0.1:9050");
     $url        = "http://4flaga.ru/d_1001_2000.html";
     $url        = "http://4flaga.ru/d_1_1000.html";
 
