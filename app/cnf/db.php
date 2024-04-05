@@ -18,9 +18,9 @@ $dsnPgSql = [
             "localhost"
         ],
         "port"      => "5432",
-        "name"      => "xsrmlaravel",
-        "dbname"    => "xsrmlaravel",
-        "user"      => "postgres",
-        "password"  => "easypass",
+        "name"      => "postgres",
+        "dbname"    => "postgres",
+        "user"      => "first",
+        "password"  => "first",
     ],
 ];

@@ -1,11 +1,13 @@
 <?php
 
-ini_set("memory_limit", -1);
+namespace app\inc;
 
 use app\inc\Storage\PgsqlStorage;
 
+ini_set("memory_limit", -1);
+
 require_once(INC_DIR . "Storage/PgSqlStorage.php");
-require_once(INC_DIR . "Storage/MySqlStorage.php");
+//require_once(INC_DIR . "Storage/MySqlStorage.php");
 
 class WsClass extends PgSqlStorage
 {
@@ -45,24 +47,22 @@ class WsClass extends PgSqlStorage
                 'colors' => $colors
             ];
         }
-        $wsRow = $this->selectRow("ws", ['level' => $this->level, 'solved' => true]);
+        $wsRow = $this->selectRow("ws", ['level' => $this->level]);
         if ($wsRow && !$resolve) {
             $result['moves'] = $this->selectRows("ws", ['level' => $this->level, "step > 0"], "step");
             return $this->result($result);
         }
-        $this->query("DELETE FROM ws WHERE level = {$this->level}");
-        $this->vacuum();
+        $this->query("TRUNCATE TABLE ws_tmp");
+//        $this->vacuum();
         $step   = 1;
-        if ($this->bootles) {
-            $bootlesJson    = json_encode($this->bootles);
-        } else {
+        if (!$this->bootles) {
             $wsLevelsRow = $this->selectRow("ws_levels", ['level' => $this->level]);
             if (!$wsLevelsRow) {
                 return $this->result($result);
             }
-            $bootlesJson = $wsLevelsRow['bootles'];
-            $this->bootles = json_decode($bootlesJson, true);
+            $this->bootles = json_decode($wsLevelsRow['bootles'], true);
         }
+        $bootlesJson = json_encode($this->bootles);
         $hash   = strval(md5("{$bootlesJson};0;0;"));
         $row    = [
             'bootles'   => $bootlesJson,
@@ -70,25 +70,25 @@ class WsClass extends PgSqlStorage
             'hash'  => $hash,
             'hash_parent'   => "",
             'level' => $this->level,
-            'solved'    => false,
             'step'  => 0,
             'to'    => 0
         ];
         $this->insertWsRow($row);
         $this->nextStep($this->bootles, $step, $hash);
-        $this->insertWsRows();
+        $this->insertWsTmpRows();
         if (!$this->solved) {
             $result['success'] = false;
             return $this->result($result);
         }
-        $wsRow = $this->selectRow("ws", ['solved' => true, 'level' => $this->level], "", "step");
-        $this->query("DELETE FROM ws WHERE level = {$wsRow['level']} AND step > {$wsRow['step']}");
+        $wsRows = [];
+        $wsRow = $this->selectRow("ws_tmp", [], "", "step DESC");
         while ($wsRow['step'] > 0) {
-            $step = $wsRow['step'];
-            $this->query("DELETE FROM ws WHERE level = {$wsRow['level']} AND step = {$wsRow['step']} AND hash <> '{$wsRow['hash']}'");
-            $wsRow = $this->selectRow("ws", ['hash' => $wsRow['hash_parent'], 'level' => $wsRow['level'], "step < {$wsRow['step']}"]);
-            $this->query("DELETE FROM ws WHERE level = {$wsRow['level']} AND step > {$wsRow['step']} AND step < {$step}");
+            $wsRow['level'] = $this->level;
+            $wsRows[] = $wsRow;
+            $wsRow = $this->selectRow("ws_tmp", ['hash' => $wsRow['hash_parent'], "step < {$wsRow['step']}"]);
         }
+        $this->query("DELETE FROM ws WHERE level = {$this->level}");
+        $this->insertOrUpdateRows("ws", $wsRows, ['step', 'level']);
         $result['moves'] = $this->selectRows("ws", ['level' => $this->level, "step > 0"], "step");
         return $this->result($result);
     }
@@ -158,6 +158,9 @@ class WsClass extends PgSqlStorage
      */
     private function checkSolved(array $bootles)
     {
+        if ($this->solved) {
+            return true;
+        }
         foreach ($bootles AS $bootle) {
             if (count(array_unique($bootle)) > 1) {
                 return false;
@@ -188,15 +191,15 @@ class WsClass extends PgSqlStorage
         if ($cnt < $this->hasheCntChunk) {
             return;
         }
-        $this->insertWsRows();
+        $this->insertWsTmpRows();
         $this->hashes = [];
     }
 
-    private function insertWsRows()
+    private function insertWsTmpRows()
     {
         $affectedRows = 0;
         foreach (array_chunk($this->hashes, 10000) as $hashes) {
-            $affectedRows += $this->insertOrUpdateRows("ws", $hashes, ['hash', 'level']);
+            $affectedRows += $this->insertOrUpdateRows("ws_tmp", $hashes, ['hash']);
         }
         $this->log->add("affectedRows: {$affectedRows}");
         $this->vacuum();
@@ -285,10 +288,10 @@ class WsClass extends PgSqlStorage
                     'hash'  => $hash,
                     'hash_parent'   => $hashParent,
                     'level' => $this->level,
-                    'solved'    => $this->checkSolved($_bootles),
                     'step'  => $step,
                     'to'    => $keyTo
                 ]);
+                $this->checkSolved($_bootles);
                 if ($this->solved) {
                     return;
                 }
@@ -338,7 +341,7 @@ class WsClass extends PgSqlStorage
 
     private function vacuum()
     {
-        $this->query("vacuum full verbose analyse ws");
+        $this->query("vacuum full verbose analyse ws_tmp");
         $this->log->add("vacuum done:");
     }
 

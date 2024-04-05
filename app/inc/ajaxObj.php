@@ -1,4 +1,6 @@
 <?php
+use app\inc\Logs;
+
 /**
  * @category обработчик ajax-запросов к методам модулей
  * @author <first@mail.ru>

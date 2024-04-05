@@ -1,4 +1,6 @@
 <?php
+use app\inc\Storage\MySqlStorage;
+
 /**
  * @category различные утилиты
  * @author <first@mail.ru>

@@ -1,4 +1,7 @@
 <?php
+use app\inc\BrowserClass;
+use app\inc\Logs;
+
 /**
  * @category
  * @package  paymgate
@@ -23,8 +26,8 @@ if (isset($_SERVER["argv"][1])) {
 set_time_limit(0);
 
 require_once(dirname(__DIR__, 2) . "/cnf/main.php");
-require_once(INC_DIR . "Logs.class.php");
-require_once(INC_DIR . "Browser.class.php");
+require_once(INC_DIR . "Logs.php");
+require_once(INC_DIR . "BrowserClass.php");
 
 error_reporting(E_ALL);
 
@@ -45,7 +48,7 @@ try {
 
     $logs->add("start");
 
-    $browser = new Browser();
+    $browser = new BrowserClass();
 
     $PaymExtId  = mb_substr(md5(rand()), 0, 12);
     $requestId  = md5(rand());

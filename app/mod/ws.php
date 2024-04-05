@@ -1,7 +1,8 @@
 <?php
 
-require_once(MOD_DIR . "main.php");
+use app\inc\WsClass;
 
+require_once(MOD_DIR . "main.php");
 require_once(INC_DIR . "WsClass.php");
 
 set_time_limit(0);

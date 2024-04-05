@@ -7,9 +7,9 @@
 
 require_once(MOD_DIR . "main.php");
 
+use app\inc\Storage\PgSqlStorage;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
-use PhpOffice\PhpSpreadsheet\Writer\Xls;
 
 class price extends main
 {
@@ -152,8 +152,8 @@ SELECT pil.*, p.name AS name_provider, pl.name AS name_price_list, i.name AS nam
         }
 
         header("Content-Type:application/vnd.ms-excel");
-        header("Content-Disposition:attachment;filename=\"{$this->data["priceListRow"]["name"]}.xls\"");
-        $objXlsx = new Xls($spreadsheet);
+        header("Content-Disposition:attachment;filename=\"{$this->data["priceListRow"]["name"]}.xlsx\"");
+        $objXlsx = new Xlsx($spreadsheet);
         $objXlsx->save("php://output");
         exit;
     }

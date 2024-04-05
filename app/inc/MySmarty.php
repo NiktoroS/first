@@ -1,4 +1,5 @@
 <?php
+namespace app\inc;
 
 /**
  * @category
@@ -6,7 +7,7 @@
  * @since  2018-03-30
  */
 
-class MySmarty extends Smarty
+class MySmarty extends \Smarty
 {
 
     public function __construct()
@@ -29,6 +30,10 @@ class MySmarty extends Smarty
         if (!empty($_SESSION["user"]["css"]["tpl"]) and is_file($this->template_dir[0] . $_SESSION["user"]["css"]["tpl"] . $template)) {
             $template = $_SESSION["user"]["css"]["tpl"] . $template;
         }
-        return preg_replace(array ('/ +/', '/\>\s+\</'), array (" ", "><"), parent::fetch($template , $cacheId, $compileId, $parent, $display, $mergeTplVars, $noOutputFilter));
+        return preg_replace(
+            ['/ +/', '/\>\s+\</'],
+            [" ", "><"],
+            parent::fetch($template , $cacheId, $compileId, $parent, $display, $mergeTplVars, $noOutputFilter)
+        );
     }
 }

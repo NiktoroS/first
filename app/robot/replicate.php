@@ -1,4 +1,8 @@
 <?php
+use app\inc\Lock;
+use app\inc\Logs;
+use app\inc\Storage\MySqlStorage;
+
 /**
  * @category robot
  * @package  replicate
@@ -20,7 +24,7 @@ sleep(0);
 $logs = new Logs();
 $lock = new Lock();
 
-if (false === ($copy = $lock->setLock())) {
+if (false === $lock->setLock()) {
     $logs->add("error in set lock");
     exit;
 }
@@ -32,7 +36,7 @@ $dsnDst["host"]   = "sro.sro-abc.ru";
 $dsnMySql["name"] = "sirotkin";
 
 try {
-    $mySqlSrc = new MySqlStorage;
+    $mySqlSrc = new MySqlStorage();
     $mySqlDst = new MySqlStorage($dsnDst);
 /*
     $tables = array (

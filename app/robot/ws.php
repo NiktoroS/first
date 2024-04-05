@@ -1,5 +1,6 @@
 <?php
 
+use app\inc\WsClass;
 
 /**
  * @category robot

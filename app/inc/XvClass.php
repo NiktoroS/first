@@ -1,4 +1,9 @@
 <?php
+
+namespace app\inc;
+
+use app\inc\Storage\MySqlStorage;
+
 /**
  * @category Library
  * @package  vx driver
@@ -9,11 +14,11 @@
 
 require_once(INC_DIR . "Storage/MySqlStorage.php");
 require_once(INC_DIR . "Tools.class.php");
-require_once(INC_DIR . "Browser.class.php");
+require_once(INC_DIR . "BrowserClass.php");
 
 require(CNF_DIR . "xv.php");
 
-class xvClass extends MySqlStorage
+class XvClass extends MySqlStorage
 {
 
     public $browser, $site, $proxy;
@@ -23,7 +28,7 @@ class xvClass extends MySqlStorage
         global $site, $proxy;
         $this->site  = $site;
         $this->proxy = $proxy;
-        $this->browser = new Browser($this->proxy);
+        $this->browser = new BrowserClass($this->proxy);
         if (!$dsnMySql) {
             global $dsnMySql;
         }
@@ -37,11 +42,11 @@ class xvClass extends MySqlStorage
     {
         $htmlObj = $this->requestHtml("/tags");
         if (!$htmlObj) {
-            throw new Exception("empty : {$this->site}/tags");
+            throw new \Exception("empty : {$this->site}/tags");
         }
         $ulObj = $htmlObj->find("ul.tags-list", 1);
         if (!$ulObj) {
-            throw new Exception("not found <ul class=\"tags-list\"> : {$this->site}/tags");
+            throw new \Exception("not found <ul class=\"tags-list\"> : {$this->site}/tags");
         }
         $return = 0;
         foreach ($ulObj->find("li") as $liObj) {

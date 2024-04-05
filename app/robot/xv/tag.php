@@ -1,4 +1,8 @@
 <?php
+use app\inc\Lock;
+use app\inc\Logs;
+use app\inc\XvClass;
+
 /**
  * @category tag
  * @package  xv
@@ -10,8 +14,8 @@ set_time_limit(0);
 ini_set("memory_limit", "4095M");
 
 require_once(dirname(__DIR__, 2) . "/cnf/main.php");
-require_once(INC_DIR . "Xv.class.php");
-require_once(INC_DIR . "Lock.class.php");
+require_once(INC_DIR . "Lock.php");
+require_once(INC_DIR . "XvClass.php");
 
 error_reporting(E_ALL);
 
@@ -54,7 +58,7 @@ SELECT `name_tag`, MIN(`id`) AS `id_min`, MAX(`id`) AS `id_max`
 HAVING COUNT(*) > 1";
 try {
 
-    $xvObj = new xvClass();
+    $xvObj = new XvClass();
 
     $logs->add("start");
 /**/

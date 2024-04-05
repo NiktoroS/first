@@ -1,4 +1,8 @@
 <?php
+use app\inc\Lock;
+use app\inc\Logs;
+use app\inc\XvClass;
+
 /**
  * @category profile_week
  * @package  xv
@@ -10,8 +14,8 @@ set_time_limit(0);
 ini_set("memory_limit", "4095M");
 
 require_once(dirname(__DIR__, 2) . "/cnf/main.php");
-require_once(INC_DIR . "Xv.class.php");
-require_once(INC_DIR . "Lock.class.php");
+require_once(INC_DIR . "Lock.php");
+require_once(INC_DIR . "XvClass.php");
 
 error_reporting(E_ALL);
 
@@ -28,7 +32,7 @@ $logs->setCopy($copy);
 try {
     $logs->add("start");
 
-    $xvObj = new xvClass();
+    $xvObj = new XvClass();
 
     $profileRows = $xvObj->selectRows("profile", ["active" => 1, "`_updated` > NOW() - INTERVAL 1 WEEK", "`id` % {$copies} = {$copy}"], true, "`_updated` DESC");
     $logs->add("profileRows: " . count($profileRows));

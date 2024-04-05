@@ -1,4 +1,7 @@
 <?php
+
+namespace app\inc;
+
 /**
  * @category лок, для работы офлайн скриптов
  * @author <mail@mail.ru>
