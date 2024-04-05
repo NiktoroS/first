@@ -2,9 +2,7 @@
 
 use app\inc\Logs;
 use app\inc\SudokuSolver;
-//use app\inc\TelegramClass;
-use Telegram\Bot\Api;
-use Telegram\Bot\FileUpload\InputFile;
+use app\inc\TelegramClass;
 
 require_once(MOD_DIR . "main.php");
 require_once(INC_DIR . "SudokuSolver.php");
@@ -48,17 +46,13 @@ class sud extends main
         ];
 
         $log = new Logs("sud");
-        $telegram = new Api("329014600:AAGB3v56moIsLum3gsfiNsE6-9u4WKGqOrg");
-        $document = "config.{$result['acc']}.txt";
-        file_put_contents($document, file_get_contents(ROOT_DIR . "content" . DS . "config.{$result['acc']}.txt"));
-        $response = $telegram->sendDocument([
-            'chat_id' => '205579980',
-            'document' => InputFile::create($document),
-            'caption' => "config.{$result['acc']}.txt"
-        ]);
-        $messageId = $response->getMessageId();
-        $log->add(var_export($messageId, true));
-
+        try {
+            $telegram = new TelegramClass();
+            $response = $telegram->sendDocument(ROOT_DIR . "content" . DS . "config.{$result['acc']}.txt");
+            $log->add(var_export($response, true));
+        } catch (Exception $e) {
+            $log->add($e->getMessage());
+        }
         header("Content-type: application/json");
         echo (json_encode($result));
         exit;

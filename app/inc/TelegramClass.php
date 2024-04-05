@@ -1,6 +1,9 @@
 <?php
 namespace app\inc;
 
+use Telegram\Bot\Api;
+use Telegram\Bot\FileUpload\InputFile;
+
 /**
  * Telegram
  *
@@ -37,36 +40,14 @@ class TelegramClass
         );
     }
 
-    public function sendDocument($file, $name = "test.txt", $chatId = 205579980)
+    public function sendDocument($document, $caption = "", $chatId = 205579980)
     {
-        if (is_file($file)) {
-            $document = curl_file_create($file, mime_content_type($file), $name);
-        } else {
-            $document = $file;
-        }
-        $finfo = finfo_file(finfo_open(FILEINFO_MIME_TYPE), $file);
-        $cFile = new \CURLFile($file, $finfo);
-
-        $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, "{$this->webSite}{$this->botToken}/sendDocument?chat_id={$chatId}");
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_POST, 1);
-        curl_setopt($ch, CURLOPT_POSTFIELDS, [
-            "document" => $cFile
+        $telegram = new Api($this->botToken);
+        return $telegram->sendDocument([
+            'chat_id' => $chatId,
+            'document' => InputFile::create($document),
+            'caption' => $caption
         ]);
-        $res = curl_exec($ch);
-        curl_close($ch);
-        return $res;
-/*
-        return $this->request(
-            "sendDocument",
-            [
-                "chat_id" => $chatId,
-                'caption' => 'Проверка работы',
-                "document" => $document
-            ]
-        );
-*/
     }
 
 }
