@@ -48,9 +48,11 @@ class sud extends main
 
         $log = new Logs("sud");
         $telegram = new Api("329014600:AAGB3v56moIsLum3gsfiNsE6-9u4WKGqOrg");
+        $document = "config.{$result['acc']}.txt";
+        file_put_contents($document, file_get_contents(ROOT_DIR . "content" . DS . "config.{$result['acc']}.txt"));
         $response = $telegram->sendDocument([
             'chat_id' => '205579980',
-            'document' => ROOT_DIR . "content" . DS . "config.{$result['acc']}.txt",
+            'document' => $document,
             'caption' => "config.{$result['acc']}.txt"
         ]);
         $messageId = $response->getMessageId();
