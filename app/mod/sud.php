@@ -1,9 +1,10 @@
 <?php
 
+use app\inc\Logs;
 use app\inc\SudokuSolver;
 //use app\inc\TelegramClass;
-use app\inc\Logs;
 use Telegram\Bot\Api;
+use Telegram\Bot\FileUpload\InputFile;
 
 require_once(MOD_DIR . "main.php");
 require_once(INC_DIR . "SudokuSolver.php");
@@ -52,7 +53,7 @@ class sud extends main
         file_put_contents($document, file_get_contents(ROOT_DIR . "content" . DS . "config.{$result['acc']}.txt"));
         $response = $telegram->sendDocument([
             'chat_id' => '205579980',
-            'document' => $document,
+            'document' => InputFile::create($document),
             'caption' => "config.{$result['acc']}.txt"
         ]);
         $messageId = $response->getMessageId();
