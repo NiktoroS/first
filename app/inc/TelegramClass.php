@@ -17,11 +17,11 @@ class TelegramClass
 
     public function request($method = "getMe", $params)
     {
-        $browser = new BrowserClass("socks5://127.0.0.1:9050");
-        $httpHeader = array (
+        $browser = new BrowserClass();
+        $httpHeader = [
             "User-Agent" => "MyAgent/1.0"
-        );
-        $res = $browser->request($this->webSite . $this->botToken . "/" . $method, "POST", $httpHeader, $params);
+        ];
+        $res = $browser->request("{$this->webSite}{$this->botToken}/{$method}", "POST", $httpHeader, $params);
         return json_decode($res, true);
     }
 
@@ -35,6 +35,38 @@ class TelegramClass
                 "text" => "<b>" . strip_tags(strval($subject)) . "</b><pre>\n" . strip_tags(strval($text)) . "</pre>"
             ]
         );
+    }
+
+    public function sendDocument($file, $name = "test.txt", $chatId = 205579980)
+    {
+        if (is_file($file)) {
+            $document = curl_file_create($file, mime_content_type($file), $name);
+        } else {
+            $document = $file;
+        }
+        $finfo = finfo_file(finfo_open(FILEINFO_MIME_TYPE), $file);
+        $cFile = new \CURLFile($file, $finfo);
+
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, "{$this->webSite}{$this->botToken}/sendDocument?chat_id={$chatId}");
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_POST, 1);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, [
+            "document" => $cFile
+        ]);
+        $res = curl_exec($ch);
+        curl_close($ch);
+        return $res;
+/*
+        return $this->request(
+            "sendDocument",
+            [
+                "chat_id" => $chatId,
+                'caption' => 'Проверка работы',
+                "document" => $document
+            ]
+        );
+*/
     }
 
 }

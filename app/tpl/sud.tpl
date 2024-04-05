@@ -35,6 +35,12 @@ td {
 <script type="text/javascript">
 var number = " ";
 var idCell = "game_0_0";
+var accStamp  = "";
+
+function saveAcc()
+{
+    window.location="/sud/download?stamp=" + accStamp;
+}
 
 function setCell(_this)
 {
@@ -74,6 +80,7 @@ function clearAll()
         elements[i].style.fontWeight = "normal";
         elements[i].style.color = "#bbbbbb";
     }
+    $("#saveAccBtn").prop("disabled", true);
 }
 
 function solveAll(online)
@@ -97,8 +104,11 @@ function solveAll(online)
     }
 
     if (true == online) {
+        $("#saveAccBtn").prop("disabled", true);
         var json = objAjaxJson("sud", "solve", "rows=" + s);
         var rows = json.rows;
+        accStamp = json.acc;
+        $("#saveAccBtn").prop("disabled", false);
     } else {
         var rows = new SudokuSolver().solve(s, { result: "chunks" });
     }
@@ -121,7 +131,6 @@ function solveAll(online)
 function SudokuSolver()
 {
     var puzzle_table = [];
-
     /*
     * Check if the number is a legal candidate
     * for the given cell (by Sudoku rules).
@@ -184,11 +193,9 @@ function SudokuSolver()
         puzzle_table = puzzle.split('').map(function (v) {
             return isNaN(v) ? 0 : +v
         });
-
         if (puzzle.length !== 81) {
             return 'Puzzle is not valid.'
         }
-
         return !get_candidate(0) ? 'No solution found.' : result === 'chunks' ? chunk_in_groups(puzzle_table) : result === 'array' ? puzzle_table : puzzle_table.join('');
     }
 }
@@ -219,7 +226,7 @@ function SudokuSolver()
 {/for}
                 </tbody>
                 </table>
-                </td>
+            </td>
 {/for}
         </tr>
 {/for}
@@ -232,7 +239,7 @@ function SudokuSolver()
 {for $r = 0; $r < 3; $r++}
         <tr>
 {for $c = 0; $c < 3; $c++}
-                <td class="set" id="set_{$r * 3 + $c + 1}" onClick="setNumber('{$r * 3 + $c + 1}')">{$r * 3 + $c + 1}</td>
+            <td class="set" id="set_{$r * 3 + $c + 1}" onClick="setNumber('{$r * 3 + $c + 1}')">{$r * 3 + $c + 1}</td>
 {/for}
         </tr>
 {/for}
@@ -242,6 +249,7 @@ function SudokuSolver()
         <input type="button" value="Clear" onClick="clearAll()"/>
         <input type="button" value="Solve" onClick="solveAll(false)"/><br>
         <input type="button" value="Solve Online" onClick="solveAll(true)"/>
+        <input type="button" value="Save Acc"     onClick="saveAcc()" id="saveAccBtn" disabled/>
     </td>
 </tr>
 </tbody>

@@ -21,8 +21,6 @@ class SudokuSolver
     static function solveHelper(&$solution)
     {
         self::$i ++;
-//        $logs = new Logs("sud");
-//        $logs->add(self::$i . " :: " . var_export($solution, true));
 
         $minRow     = -1;
         $minColumn  = -1;
@@ -47,7 +45,6 @@ class SudokuSolver
                     if ($minRow < 0 || $possibleVaueCount < count($minValues)) {
                         $minRow     = $rowIndex;
                         $minColumn  = $columnIndex;
-
                         $minValues  = $possibleValues;
                     }
                 }
@@ -104,5 +101,141 @@ class SudokuSolver
             }
         }
         return $values;
+    }
+
+    static public function saveAcc($resultRows, $startRows)
+    {
+        $stamp = time();
+        $data = [
+            'targets' => [],
+            'antiDetection' => true,
+            'id' => 0,
+            'name' => "Config {$stamp}",
+            'numberOfCycles' => 1,
+            'stopConditionChecked' => 2,
+            'timeValue' => 400
+        ];
+        for ($button = 1; $button < 10; $button ++) {
+            $data['targets'][] = self::getAccButton($button);
+            foreach ($resultRows as $y => $row) {
+                foreach ($row as $x => $val) {
+                    if ($val == $button && empty($startRows[$y][$x])) {
+                        $data['targets'][] = self::getAccField($x, $y);
+                    }
+                }
+            }
+        }
+        file_put_contents(
+            ROOT_DIR . "content" . DS . "config.{$stamp}.txt",
+            json_encode([$data])
+        );
+        return $stamp;
+    }
+
+    static public function saveAccs($rows, $startRows)
+    {
+        $fileTemplate = ROOT_DIR . "content" . DS . "Rule.json";
+        $array  = json_decode(file_get_contents($fileTemplate), true);
+        $configRows = [];
+        for ($button = 1; $button <= 1; $button ++) {
+            $configRows[] = self::getButton($button);
+            foreach ($rows as $y => $row) {
+                foreach ($row as $x => $val) {
+                    if ($val == $button && empty($startRows[$y][$x])) {
+                        $configRows[] = self::getField($x, $y);
+                    }
+                }
+            }
+        }
+        $array["configList"][0]["config"] = json_encode($configRows);
+
+        $stamp = microtime(true);
+        $array["name"] = "Rule{$stamp}";
+        $fileOut = ROOT_DIR . "content" . DS . "Rule{$stamp}.accs";
+        file_put_contents($fileOut, json_encode($array));
+    }
+
+    static private function getAccButton($val)
+    {
+        $val --;
+        if ($val < 0) {
+            $val = 9;
+        }
+        return [
+            "delayUnit"  => 0,
+            "delayValue" => 80,
+            "duration"   => 0,
+            "type"  => 0,
+            "xPos"  => ($val % 5) * 200 + 60,
+            "xPos1" => -1,
+            "yPos"  => floor($val / 5) * 475 + 1525,
+            "yPos1" => -1
+        ];
+    }
+
+    static private function getAccField($x, $y)
+    {
+        return [
+            "delayUnit"  => 0,
+            "delayValue" => 80,
+            "duration"   => 0,
+            "type"  => 0,
+            "xPos"  => $x * 120 + 50,
+            "xPos1" => -1,
+            "yPos"  => $y * 128 + 360,
+            "yPos1" => -1
+        ];
+    }
+
+    static private function getButton($val)
+    {
+        if ("c" == $val) {
+            $val = 10;
+        }
+        $val --;
+        return [
+            "b" => -1,
+            "count" => 1,
+            "delay" => 5,
+            "duration" => 5,
+            "point" => [
+                "count" => 1,
+                "delay" => 5,
+                "duration" => 5,
+                "gravity" => 0,
+                "index" => 0,
+                "randomDistance" => 5,
+                "x" => ($val % 5) * 180 + 40,
+                "y" => floor($val / 5) * 350 + 1500
+            ],
+            "randomDelay" => 0,
+            "randomDistance" => 0,
+            "randomDuration" => 0,
+            "type" => 0
+        ];
+    }
+
+    static private function getField($x, $y)
+    {
+        return [
+            "b" => -1,
+            "count" => 1,
+            "delay" => 0,
+            "duration" => 0,
+            "point" => [
+                "count" => 1,
+                "delay" => 0,
+                "duration" => 0,
+                "gravity" => 0,
+                "index" => 0,
+                "randomDistance" => 5,
+                "x" => $x * 120 - 30,
+                "y" => $y * 115 + 345
+            ],
+            "randomDelay" => 0,
+            "randomDistance" => 0,
+            "randomDuration" => 0,
+            "type" => 0
+        ];
     }
 }
