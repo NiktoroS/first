@@ -10,44 +10,35 @@ use Telegram\Bot\FileUpload\InputFile;
  * @author Andrey A. Sirotkin <first@mail.ru>
  * @since  20.12.2016
  */
-require_once(INC_DIR . "BrowserClass.php");
 
 class TelegramClass
 {
 
+    private $api;
     private $botToken = "329014600:AAGB3v56moIsLum3gsfiNsE6-9u4WKGqOrg"; // @niktorisBot:
-    private $webSite  = "https://api.telegram.org/bot";
 
-    public function request($method = "getMe", $params)
+    public function __construct()
     {
-        $browser = new BrowserClass();
-        $httpHeader = [
-            "User-Agent" => "MyAgent/1.0"
-        ];
-        $res = $browser->request("{$this->webSite}{$this->botToken}/{$method}", "POST", $httpHeader, $params);
-        return json_decode($res, true);
-    }
-
-    public function sendMessage($text, $subject = "Message", $chatId = 205579980)
-    {
-        return $this->request(
-            "sendMessage",
-            [
-                "chat_id" => $chatId,
-                "parse_mode" => "HTML",
-                "text" => "<b>" . strip_tags(strval($subject)) . "</b><pre>\n" . strip_tags(strval($text)) . "</pre>"
-            ]
-        );
+        $this->api = new Api($this->botToken);
     }
 
     public function sendDocument($document, $caption = "", $chatId = 205579980)
     {
-        $telegram = new Api($this->botToken);
-        return $telegram->sendDocument([
+        return $this->api->sendDocument([
             'chat_id' => $chatId,
-            'document' => InputFile::create($document),
-            'caption' => $caption
+            'caption' => $caption,
+            'document' => InputFile::create($document)
         ]);
     }
+
+    public function sendMessage($text, $subject = "Message", $chatId = 205579980)
+    {
+        return $this->api->sendMessage([
+            "chat_id" => $chatId,
+            "parse_mode" => "HTML",
+            "text" => "<b>" . strip_tags(strval($subject)) . "</b><pre>\n" . strip_tags(strval($text)) . "</pre>"
+        ]);
+    }
+
 
 }
