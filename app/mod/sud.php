@@ -42,7 +42,7 @@ class sud extends main
             "rows"  => $resultRows,
             "time"  => microtime(true) - $startTime,
             "i"     => SudokuSolver::$i,
-            "acc"   => SudokuSolver::saveAcc($resultRows, $rows)
+            "acc"   => SudokuSolver::saveAcc($resultRows, $rows, "Pad6")
         ];
 
         $log = new Logs("sud");
