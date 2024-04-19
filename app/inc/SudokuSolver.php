@@ -140,7 +140,7 @@ class SudokuSolver
         }
         return [
             "delayUnit"  => 0,
-            "delayValue" => "Pad6" == $gadget ? 50: 80,
+            "delayValue" => "Pad6" == $gadget ? 25: 80,
             "duration"   => 0,
             "type"  => 0,
             "xPos"  => "Pad6" == $gadget ? ($val % 5) * 320 + 110 : ($val % 5) * 200 + 60,
@@ -154,7 +154,7 @@ class SudokuSolver
     {
         return [
             "delayUnit"  => 0,
-            "delayValue" => "Pad6" == $gadget ? 50: 80,
+            "delayValue" => "Pad6" == $gadget ? 25: 80,
             "duration"   => 0,
             "type"  => 0,
             "xPos"  => "Pad6" == $gadget ? 100 + $x * 200 : 50 + $x * 120,
