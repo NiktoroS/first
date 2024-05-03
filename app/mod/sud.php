@@ -47,8 +47,14 @@ class sud extends main
 
         $log = new Logs("sud");
         try {
+            if (empty($params['level'])) {
+
+            }
             $telegram = new TelegramClass();
-            $response = $telegram->sendDocument(ROOT_DIR . "content" . DS . "config.{$result['acc']}.txt");
+            $response = $telegram->sendDocument(
+                ROOT_DIR . "content" . DS . "config.{$result['acc']}.txt",
+                empty($params['level']) ? "" : $params['level']
+            );
             $log->add(var_export($response, true));
         } catch (Exception $e) {
             $log->add($e->getMessage());

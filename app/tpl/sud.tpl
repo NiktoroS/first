@@ -104,8 +104,9 @@ function solveAll(online)
     }
 
     if (true == online) {
+        level = 0;
         $("#saveAccBtn").prop("disabled", true);
-        var json = objAjaxJson("sud", "solve", "rows=" + s);
+        var json = objAjaxJson("sud", "solve", "rows=" + s + "&level=" + document.getElementById("level").value);
         var rows = json.rows;
         accStamp = json.acc;
         $("#saveAccBtn").prop("disabled", false);
@@ -249,7 +250,8 @@ function SudokuSolver()
         <input type="button" value="Clear" onClick="clearAll()"/>
         <input type="button" value="Solve" onClick="solveAll(false)"/><br>
         <input type="button" value="Solve Online" onClick="solveAll(true)"/>
-        <input type="button" value="Save Acc"     onClick="saveAcc()" id="saveAccBtn" disabled/>
+        <input type="button" value="Save Acc"     onClick="saveAcc()" id="saveAccBtn" disabled/><br>
+        <input type="text"   value="" id="level" name="level" size="3"/>
     </td>
 </tr>
 </tbody>
