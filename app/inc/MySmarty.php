@@ -15,7 +15,6 @@ class MySmarty extends \Smarty\Smarty
         parent::__construct();
         $this->debugging = false;
         $this->caching = false;
-        $this->addPluginsDir(INC_DIR . "mySmarty/");
         $this->setTemplateDir(TPL_DIR);
         $this->setCacheDir(TMP_DIR . "cache");
         $this->setCompileDir(TMP_DIR . "cache/templates");

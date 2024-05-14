@@ -252,6 +252,7 @@ function SudokuSolver()
         <input type="button" value="Solve Online" onClick="solveAll(true)"/>
         <input type="button" value="Save Acc"     onClick="saveAcc()" id="saveAccBtn" disabled/><br>
         <input type="number" value="" id="level" name="level" min="1" max="9999"/>
+        {html_options id="gatget" name="gadget" options=$gadgetRows}
     </td>
 </tr>
 </tbody>

@@ -28,6 +28,13 @@ class sud extends main
         exit;
     }
 
+    public function show($params = [])
+    {
+        $this->data = ['gadgetRows' => [
+            "Mi11" => "Mi11 lite",
+            "Pad6" => "Pad 6"
+        ]];
+    }
     public function solve($params = [])
     {
         $rows = [];
@@ -42,18 +49,14 @@ class sud extends main
             "rows"  => $resultRows,
             "time"  => microtime(true) - $startTime,
             "i"     => SudokuSolver::$i,
-            "acc"   => SudokuSolver::saveAcc($resultRows, $rows, "Pad6")
+            "acc"   => SudokuSolver::saveAcc($resultRows, $rows, $params)
         ];
 
         $log = new Logs("sud");
         try {
-            if (empty($params['level'])) {
-
-            }
             $telegram = new TelegramClass();
             $response = $telegram->sendDocument(
-                ROOT_DIR . "content" . DS . "config.{$result['acc']}.txt",
-                empty($params['level']) ? "" : $params['level']
+                ROOT_DIR . "content" . DS . "{$params["gadget"]}.{$params["level"]}.txt"
             );
             $log->add(var_export($response, true));
         } catch (Exception $e) {

@@ -103,33 +103,35 @@ class SudokuSolver
         return $values;
     }
 
-    static public function saveAcc($resultRows, $startRows, $gadget = "Mi11")
+    static public function saveAcc($resultRows, $startRows, &$params = [])
     {
-        $stamp = time();
+
+        $params["level"]  = empty($params["level"]) ? time() : sprintf("%04d", $params["level"]);
+        $params["gadget"] = empty($params["gadget"]) ? "Mi11" : $params["gadget"];
         $data = [
             'targets' => [],
             'antiDetection' => true,
             'id' => 0,
-            'name' => "Config {$stamp}",
+            'name' => "Config {$gadget} {$params["level"]}",
             'numberOfCycles' => 1,
             'stopConditionChecked' => 2,
             'timeValue' => 400
         ];
         for ($button = 1; $button < 10; $button ++) {
-            $data['targets'][] = self::getAccButton($button, $gadget);
+            $data['targets'][] = self::getAccButton($button, $params["gadget"]);
             foreach ($resultRows as $y => $row) {
                 foreach ($row as $x => $val) {
                     if ($val == $button && empty($startRows[$y][$x])) {
-                        $data['targets'][] = self::getAccField($x, $y, $gadget);
+                        $data['targets'][] = self::getAccField($x, $y, $params["gadget"]);
                     }
                 }
             }
         }
         file_put_contents(
-            ROOT_DIR . "content" . DS . "config.{$stamp}.txt",
+            ROOT_DIR . "content" . DS . "{$params["gadget"]}.{$params["level"]}.txt",
             json_encode([$data])
         );
-        return $stamp;
+        return $level;
     }
 
     static private function getAccButton($val, $gadget)
@@ -140,7 +142,7 @@ class SudokuSolver
         }
         return [
             "delayUnit"  => 0,
-            "delayValue" => "Pad6" == $gadget ? 25: 80,
+            "delayValue" => "Pad6" == $gadget ? 25: 200,
             "duration"   => 0,
             "type"  => 0,
             "xPos"  => "Pad6" == $gadget ? ($val % 5) * 320 + 110 : ($val % 5) * 200 + 60,
@@ -154,7 +156,7 @@ class SudokuSolver
     {
         return [
             "delayUnit"  => 0,
-            "delayValue" => "Pad6" == $gadget ? 25: 80,
+            "delayValue" => "Pad6" == $gadget ? 25: 200,
             "duration"   => 0,
             "type"  => 0,
             "xPos"  => "Pad6" == $gadget ? 100 + $x * 200 : 50 + $x * 120,
