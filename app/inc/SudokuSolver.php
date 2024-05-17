@@ -112,7 +112,7 @@ class SudokuSolver
             'targets' => [],
             'antiDetection' => true,
             'id' => 0,
-            'name' => "Config {$gadget} {$params["level"]}",
+            'name' => "Config {$params["gadget"]} {$params["level"]}",
             'numberOfCycles' => 1,
             'stopConditionChecked' => 2,
             'timeValue' => 400
@@ -142,7 +142,7 @@ class SudokuSolver
         }
         return [
             "delayUnit"  => 0,
-            "delayValue" => "Pad6" == $gadget ? 25: 200,
+            "delayValue" => "Pad6" == $gadget ? 25: 250,
             "duration"   => 0,
             "type"  => 0,
             "xPos"  => "Pad6" == $gadget ? ($val % 5) * 320 + 110 : ($val % 5) * 200 + 60,
@@ -156,12 +156,12 @@ class SudokuSolver
     {
         return [
             "delayUnit"  => 0,
-            "delayValue" => "Pad6" == $gadget ? 25: 200,
+            "delayValue" => "Pad6" == $gadget ? 25: 250,
             "duration"   => 0,
             "type"  => 0,
             "xPos"  => "Pad6" == $gadget ? 100 + $x * 200 : 50 + $x * 120,
             "xPos1" => -1,
-            "yPos"  => "Pad6" == $gadget ? 360 + $y * 205 : 360 + $y * 128,
+            "yPos"  => "Pad6" == $gadget ? 360 + $y * 205 : 370 + $y * 125,
             "yPos1" => -1
         ];
     }
