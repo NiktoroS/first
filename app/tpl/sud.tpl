@@ -238,19 +238,25 @@ function SudokuSolver()
         </tbody>
         </table>
     </td>
+</tr>
+<tr>
     <td style="border: 0;">
         <table>
         <tbody>
-{for $r = 0; $r < 3; $r++}
+{for $r = 0; $r < 2; $r++}
         <tr>
-{for $c = 0; $c < 3; $c++}
-            <td class="set" id="set_{$r * 3 + $c + 1}" onClick="setNumber('{$r * 3 + $c + 1}')">{$r * 3 + $c + 1}</td>
-{/for}
+    {for $c = 0; $c < 5; $c++}
+            {$number = $r * 5 + $c + 1}
+            {if 10 == $number}{$number = " "}{/if}
+            <td class="set" id="set_{$number}" onClick="setNumber('{$number}')">{$number}</td>
+    {/for}
         </tr>
 {/for}
         </tbody>
         </table>
+{*
         <input type="button" value="E"     onClick="setNumber(' ')"/>
+*}
         <input type="button" value="Clear" onClick="clearAll()"/>
         <input type="button" value="Solve" onClick="solveAll(false)"/><br>
         <input type="button" value="Solve Online" onClick="solveAll(true)"/>

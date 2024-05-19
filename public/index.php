@@ -1,8 +1,12 @@
 <?php
+
 /**
  * @author <first@mail.ru>
  * @since  2018-03-30
  */
+
+use app\inc\Logs;
+
 require_once("../app/cnf/main.php");
 require_once(INC_DIR . "Dump.class.php");
 
@@ -41,7 +45,7 @@ try {
     }
     _dump(strval($exception), $code);
     if (404 != $code) {
-        $logs = new Logs();
+        $logs = new Logs("public");
         $logs->add($exception);
     }
 }
