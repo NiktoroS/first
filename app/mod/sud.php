@@ -38,11 +38,9 @@ class sud extends main
     public function solve($params = [])
     {
         $rows = [];
-        $row    = explode(",", $params["rows"]);
-        foreach ($row as $key => $val) {
-            $rows[$key / 9][$key % 9] = intval($val);
+        foreach (explode(",", $params["rows"]) as $key => $val) {
+            $rows[floor($key / 9)][$key % 9] = intval($val);
         }
-
         $startTime  = microtime(true);
         $resultRows = SudokuSolver::solve($rows);
         $result = [

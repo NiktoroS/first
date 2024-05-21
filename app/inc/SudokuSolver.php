@@ -131,7 +131,7 @@ class SudokuSolver
             ROOT_DIR . "content" . DS . "{$params["gadget"]}.{$params["level"]}.txt",
             json_encode([$data])
         );
-        return $level;
+        return "{$params["gadget"]}.{$params["level"]}";
     }
 
     static private function getAccButton($val, $gadget)
