@@ -16,16 +16,16 @@ require_once(INC_DIR . "Logs.php");
 class MySqlStorage
 {
 
-    protected $dsn, $myDb, $timestamp, $transactions, $cache = array (), $numErrors = 0, $useCache = false;
+    protected $dsn, $myDb, $timestamp, $transactions, $cache = array (), $logs, $numErrors = 0, $useCache = false;
 
     /**
      * @param  array $dsnMySql
      */
-    public function __construct($dsnMySql = array ())
+    public function __construct($dsnMySql = [])
     {
         global $logs;
         if (empty($logs)) {
-            $this->logs = new Logs();
+            $this->logs = new Logs("mySql");
         } else {
             $this->logs = &$logs;
         }

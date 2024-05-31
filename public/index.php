@@ -11,11 +11,11 @@ require_once("../app/cnf/main.php");
 require_once(INC_DIR . "Dump.class.php");
 
 $uri = explode("?", $_SERVER["REQUEST_URI"]);
-$httpRequest = $httpRequestInit = explode("/", substr($uri[0], 1));
+$httpRequest = explode("/", substr($uri[0], 1));
 
 if ("ajax" == $httpRequest[0]) {
-    require_once (INC_DIR . "ajaxObj.php");
-    exit();
+    require_once (APP_DIR . "ajax.php");
+    exit;
 }
 
 try {

@@ -36,7 +36,7 @@ class WsClass extends PgSqlStorage
      */
     public function solve($resolve = false)
     {
-        $this->log->add("solve: {$this->level}");
+        $this->logs->add("solve: {$this->level}");
         $result = [
             'success'   => true,
             'start'     => date("H:i:s")
@@ -53,7 +53,6 @@ class WsClass extends PgSqlStorage
             return $this->result($result);
         }
         $this->query("TRUNCATE TABLE ws_tmp");
-//        $this->vacuum();
         $step   = 1;
         if (!$this->bootles) {
             $wsLevelsRow = $this->selectRow("ws_levels", ['level' => $this->level]);
@@ -187,7 +186,7 @@ class WsClass extends PgSqlStorage
             return;
         }
         $cnt = count($this->hashes);
-        $this->log->add("{$this->hasheCnt}: {$cnt}");
+        $this->logs->add("{$this->hasheCnt}: {$cnt}");
         if ($cnt < $this->hasheCntChunk) {
             return;
         }
@@ -201,7 +200,7 @@ class WsClass extends PgSqlStorage
         foreach (array_chunk($this->hashes, 10000) as $hashes) {
             $affectedRows += $this->insertOrUpdateRows("ws_tmp", $hashes, ['hash']);
         }
-        $this->log->add("affectedRows: {$affectedRows}");
+        $this->logs->add("affectedRows: {$affectedRows}");
         $this->vacuum();
         $this->useDb = true;
     }
@@ -272,7 +271,7 @@ class WsClass extends PgSqlStorage
                 if (!$this->checkMove($bootleFrom, $bootleTo)) {
                     continue;
                 }
-                $hash = strval(md5("{$bootlesJson};{$keyFrom};{$keyTo};"));
+                $hash  = strval(md5("{$bootlesJson};{$keyFrom};{$keyTo};"));
                 $wsRow = $this->selectWsRow($hash);
                 if ($wsRow && $wsRow['step'] <= $step) {
                     // уже был такой переход с данной позиции, на этом или более предпочтительном шаге
@@ -342,7 +341,7 @@ class WsClass extends PgSqlStorage
     private function vacuum()
     {
         $this->query("vacuum full verbose analyse ws_tmp");
-        $this->log->add("vacuum done:");
+        $this->logs->add("vacuum done:");
     }
 
     private $bootles = [];

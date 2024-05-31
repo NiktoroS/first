@@ -30,10 +30,46 @@ class ws extends main
                 $this->data['newLines'] = [5, 10];
                 break;
 
+            case 9:
+                $this->data['newLines'] = [6];
+                $this->data['colors'] = [
+                    'FF0000',
+                    'FFA500',
+                    'FFFF00',
+                    '00FF00',
+                    'FF00FF',
+                    '00008B',
+                    '800080',
+                    '20B2AA',
+                    'FF69B4'
+                ];
+                break;
+
+            case 12:
+                $this->data['newLines'] = [7];
+                $this->data['colors'] = [
+                    'FF0000',
+                    'FFA500',
+                    'FFFF00',
+                    '00FF00',
+                    '0000AF',
+                    '007F00',
+                    'F032E6',
+                    '911E8E',
+                    '7F7FFF',
+                    '00E59D',
+                    'FF69B4',
+                    'C71585'
+                ];
+                break;
+
             case 13:
             case 15:
                 $this->data['newLines'] = [6, 12];
                 break;
+        }
+        if ($this->data['colors']) {
+            return;
         }
         if ($_FILES && $_FILES['file'] && $_FILES['file']["tmp_name"]) {
             $im = imagecreatefrompng($_FILES['file']["tmp_name"]);
@@ -76,7 +112,7 @@ class ws extends main
             $ws = new WsClass();
             $ws->setBootles(json_decode($params['bootles'], true));
             $ws->setLevel($params['level']);
-            echo (json_encode($ws->solve()));
+            echo (json_encode($ws->solve($params['resolve'])));
         } catch (Exception $e) {
             echo (json_encode([
                 'error' => $e->getMessage(),

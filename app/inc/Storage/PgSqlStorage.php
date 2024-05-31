@@ -17,18 +17,18 @@ use app\inc\TelegramClass;
 class PgSqlStorage
 {
 
-    protected $dsn, $log, $connection, $timestamp, $transactions, $cache = [], $numErrors = 0, $useCache = false;
+    protected $dsn, $logs, $connection, $timestamp, $transactions, $cache = [], $numErrors = 0, $useCache = false;
 
     /**
      * @param  array $dsnMySql
      */
     public function __construct($dsnPgSql = [], $type = "prod", $host = 0)
     {
-        global $log;
-        if (empty($log)) {
-            $this->log = new Logs();
+        global $logs;
+        if (empty($logs)) {
+            $this->logs = new Logs("pgSql");
         } else {
-            $this->log = &$log;
+            $this->logs = &$logs;
         }
         if (!$dsnPgSql) {
             global $dsnPgSql;
@@ -59,7 +59,7 @@ class PgSqlStorage
                 $connString = "host={$this->dsn["host"]} port={$this->dsn["port"]} dbname={$this->dsn["dbname"]} user={$this->dsn["user"]} password={$this->dsn["password"]}";
                 $pgDbAll[$host][$name]["connection"] = pg_connect($connString);
                 if (!$pgDbAll[$host][$name]["connection"]) {
-                    $this->log->add("Error connect connString: {$connString}");
+                    $this->logs->add("Error connect connString: {$connString}");
                     $this->numErrors ++;
                     $exception = new \Exception("ConnectError: {$host} {$this->dsn["user"]} {$this->dsn["password"]} {$pgDbAll[$host][$name]["connection"]}");
                     $log       = new Logs("PgSqlConnectError");
@@ -636,7 +636,7 @@ DO
         $errorlog = new Logs("PgSqlError");
         $errorlog->add($exception);
         $errorlog->add(var_export($this->connection, true));
-        $this->log->add($exception);
+        $this->logs->add($exception);
 
         if (empty($_SERVER["REQUEST_URI"])) {
             fwrite(STDERR, strval($exception) . "\n");

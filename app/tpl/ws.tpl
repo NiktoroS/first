@@ -50,7 +50,7 @@ function setColor(bootle, col)
   $("#td_bootle_" + bootle + "_" + col).attr('bgcolor', color);
 }
 
-function solve(bootle, col)
+function solve(resolve = false)
 {
   $("#submit").attr('disabled', false);
   let bootles = [];
@@ -63,7 +63,10 @@ function solve(bootle, col)
   }
   bootles.push(["", "", "", ""]);
   bootles.push(["", "", "", ""]);
-  let json = objAjaxJson("ws", "solve", "level=" + $("#level").val() + "&bootles=" + JSON.stringify(bootles));
+  let json = objAjaxJson(
+    "ws",
+    "solve",
+    "bootles=" + JSON.stringify(bootles) + "&level=" + $("#level").val() + "&resolve=" + resolve);
   $("#start").html(json.start);
   $("#finish").html(json.finish);
   if (!json.success) {
@@ -135,6 +138,7 @@ function solve(bootle, col)
   </tr>
   </table>
   <input type="button" value="Собрать" onClick="solve()" />
+  <input type="button" value="Переобрать" onClick="solve(true)" />
   <table>
     <tr>
       <td>Start:</td>

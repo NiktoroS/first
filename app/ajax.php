@@ -32,6 +32,7 @@ if (!class_exists($module)) {
 
 
 try {
+    $logs = new Logs("ajax");
     header("Content-Type: text/html; charset=utf-8");
     $moduleObj = new $module();
 
@@ -43,18 +44,16 @@ try {
         unset($params["objAjaxTime"]);
     }
     if (empty($params["X-CSRF-Token"])) {
-        $logs = new Logs("ajaxWoToken");
-        $logs->add(json_encode($_SERVER));
-        $logs->add(json_encode($params));
+        $logs->add('WoToken: ' . json_encode($_SERVER));
+        $logs->add('WoToken: ' . json_encode($params));
     } else {
         if (
             isset($_SESSION['X-CSRF-Token']) &&
             isset($params["X-CSRF-Token"]) &&
             $_SESSION["X-CSRF-Token"] != $params["X-CSRF-Token"]
         ) {
-            $logs = new Logs("wrongToken");
-            $logs->add(json_encode($_SERVER));
-            $logs->add(json_encode($params));
+            $logs->add('WrongToken: ' . json_encode($_SERVER));
+            $logs->add('WrongToken: ' . json_encode($params));
         }
         unset($params["X-CSRF-Token"]);
     }
@@ -70,8 +69,8 @@ try {
 
 function showError($error, $type = "systemError", $code = 500)
 {
-    $logs = new Logs("ajax.php");
-    $logs->add("[{$type}] " . (isset($params) ? "params: " . var_export($params, true) : "") . strval($error));
+    $logs = new Logs("ajax");
+    $logs->add("[{$type}] " . strval($error));
     header("HTTP/1.1 {$code}");
     exit("<input type='hidden' id='{$type}' name='{$code}' value='" . strval($error) . "'/>");
 }
