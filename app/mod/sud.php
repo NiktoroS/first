@@ -30,13 +30,18 @@ class sud extends main
 
     public function show($params = [])
     {
-        $this->data = ['gadgetRows' => [
-            "Mi11" => "Mi11 lite",
-            "Pad6" => "Pad 6"
-        ]];
+        $this->data = [
+            "gadgetRows" => [
+                "Mi11" => "Mi11 lite",
+                "Pad6" => "Pad 6"
+            ]
+        ];
     }
+
     public function solve($params = [])
     {
+
+        SudokuSolver::getRowsFromFile($params);
         $rows = [];
         foreach (explode(",", $params["rows"]) as $key => $val) {
             $rows[floor($key / 9)][$key % 9] = intval($val);

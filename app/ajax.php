@@ -1,4 +1,5 @@
 <?php
+
 use app\inc\Logs;
 
 /**
@@ -8,6 +9,8 @@ use app\inc\Logs;
  */
 
 set_time_limit(600);
+
+require_once(INC_DIR . "Logs.php");
 
 if (isset($_GET["module"]) and isset($_GET["method"])) {
     $params = $_GET;
@@ -29,7 +32,6 @@ require_once $fileModule;
 if (!class_exists($module)) {
     showError("неизвестный модуль: " . $module);
 }
-
 
 try {
     $logs = new Logs("ajax");

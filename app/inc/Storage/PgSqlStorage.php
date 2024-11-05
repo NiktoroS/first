@@ -10,6 +10,7 @@
 namespace app\inc\Storage;
 
 require_once(CNF_DIR . "db.php");
+require_once(INC_DIR . "Logs.php");
 
 use app\inc\Logs;
 use app\inc\TelegramClass;

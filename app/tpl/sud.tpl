@@ -85,9 +85,11 @@ function clearAll()
 
 function solveAll(online)
 {
-    var time_begin = new Date().getTime();
-    var s = "";
     var number = " ";
+    var rows = []
+    var s = "";
+    var time_begin = new Date().getTime();
+
     for (var r = 0; r < 9; r ++) {
         for (var c = 0; c < 9; c ++) {
             number = " ";
@@ -103,19 +105,38 @@ function solveAll(online)
         }
     }
 
+
     if (true == online) {
         level = 0;
         $("#saveAccBtn").prop("disabled", true);
-        var json = objAjaxJson(
-            "sud",
-            "solve",
-            "rows=" + s + "&level=" + $("#level").val() + "&gadget=" + $("#gadget").val()
-        );
-        var rows = json.rows;
+
+        var formData = new FormData();
+        var json     = {};
+        formData.append("file", $("#file")[0].files[0]);
+        formData.append("gadget", $("#gadget").val());
+        formData.append("level", $("#level").val());
+        formData.append("method", "solve");
+        formData.append("module", "sud");
+        formData.append("rows", s);
+
+        $.ajax({
+            type: "POST",
+            url: "/ajax",
+            data: formData,
+            dataType: "json",
+            processData: false,
+            async: false,
+            contentType: false,
+            success: function(res) {
+                json = res
+            }
+        });
+
+        rows = json.rows;
         accStamp = json.acc;
         $("#saveAccBtn").prop("disabled", false);
     } else {
-        var rows = new SudokuSolver().solve(s, { result: "chunks" });
+        rows = new SudokuSolver().solve(s, { result: "chunks" });
     }
 
     if (Array.isArray(rows)) {
@@ -262,7 +283,8 @@ function SudokuSolver()
         <input type="button" value="Solve Online" onClick="solveAll(true)"/>
         <input type="button" value="Save Acc"     onClick="saveAcc()" id="saveAccBtn" disabled/><br>
         <input type="number" value="" id="level" name="level" min="1" max="9999"/>
-        {html_options id="gadget" name="gadget" options=$gadgetRows}
+        {html_options id="gadget" name="gadget" options=$gadgetRows}<br>
+        <input type="file" id="file" name="file"/>
     </td>
 </tr>
 </tbody>
