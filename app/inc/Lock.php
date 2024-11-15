@@ -10,7 +10,7 @@ namespace app\inc;
 
 class Lock
 {
-    private $fileName, $copy;
+    private $fileName, $fileNameCopy, $copy;
     private $fp;
 
     public function __construct($name = "")

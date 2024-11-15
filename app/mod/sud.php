@@ -40,26 +40,20 @@ class sud extends main
 
     public function solve($params = [])
     {
-
         SudokuSolver::getRowsFromFile($params);
-        $rows = [];
-        foreach (explode(",", $params["rows"]) as $key => $val) {
-            $rows[floor($key / 9)][$key % 9] = intval($val);
-        }
         $startTime  = microtime(true);
-        $resultRows = SudokuSolver::solve($rows);
+        $resultRows = SudokuSolver::solve($params["rows"]);
         $result = [
             "rows"  => $resultRows,
             "time"  => microtime(true) - $startTime,
             "i"     => SudokuSolver::$i,
-            "acc"   => SudokuSolver::saveAcc($resultRows, $rows, $params)
+            "acc"   => SudokuSolver::saveAcc($resultRows, $params["rows"], $params["level"], $params["gadget"])
         ];
-
         $log = new Logs("sud");
         try {
             $telegram = new TelegramClass();
             $response = $telegram->sendDocument(
-                ROOT_DIR . "content" . DS . "{$params["gadget"]}.{$params["level"]}.txt"
+                ROOT_DIR . "content" . DS . "{$result["acc"]}.txt"
             );
             $log->add(var_export($response, true));
         } catch (Exception $e) {

@@ -86,23 +86,22 @@ function clearAll()
 function solveAll(online)
 {
     var number = " ";
-    var rows = []
+    var rows = [];
     var s = "";
     var time_begin = new Date().getTime();
 
     for (var r = 0; r < 9; r ++) {
+        row = []
         for (var c = 0; c < 9; c ++) {
             number = " ";
             var cell = document.getElementById("game_" + r + "_" + c)
             if ("bold" == cell.style.fontWeight) {
                 number = cell.innerHTML;
             }
-            if (true == online) {
-                s = s + number + ",";
-            } else {
-                s = s + number;
-            }
+            s = s + number;
+            row.push(" " == number ? 0 : parseInt(number));
         }
+        rows.push(row);
     }
 
 
@@ -117,7 +116,7 @@ function solveAll(online)
         formData.append("level", $("#level").val());
         formData.append("method", "solve");
         formData.append("module", "sud");
-        formData.append("rows", s);
+        formData.append("rows", rows);
 
         $.ajax({
             type: "POST",

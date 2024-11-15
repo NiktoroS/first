@@ -34,12 +34,12 @@ class BrowserClass
             "http" => [
                 "method" => $httpMethod,
                 "header" => $this->makeHeader($httpHeader),
-                "timeout"    => $this->timeOut,
+                "timeout"    => $this->timeOut
             ],
             "ssl" => [
                 "verify_peer"       => false,
-                "verify_peer_name"  => false,
-            ],
+                "verify_peer_name"  => false
+            ]
         ];
         if ($content) {
             if (is_array($content)) {

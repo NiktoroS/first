@@ -9,7 +9,7 @@ $dsnMySql = [
     "host" => "localhost",
     "name" => "sro",
     "user" => "sro_db_user",
-    "pass" => "Twz9GhWT2PNWxrcz",
+    "pass" => "Twz9GhWT2PNWxrcz"
 ];
 
 $dsnPgSql = [
@@ -18,9 +18,9 @@ $dsnPgSql = [
             "localhost"
         ],
         "port"      => "5432",
-        "name"      => "postgres",
-        "dbname"    => "postgres",
-        "user"      => "first",
-        "password"  => "first",
-    ],
+        "name"      => "xsrmlaravel",
+        "dbname"    => "xsrmlaravel",
+        "user"      => "postgres",
+        "password"  => "easypass"
+    ]
 ];

@@ -15,12 +15,17 @@ class SudokuSolver
         if (!$_FILES) {
             return;
         }
-        $rows = [];
         if ("image/jpeg" == $_FILES["file"]["type"]) {
             $im = imagecreatefromjpeg($_FILES["file"]["tmp_name"]);
         } else {
             $im = imagecreatefrompng($_FILES["file"]["tmp_name"]);
         }
+        $params["rows"] = self::getRowsFromIm($im);
+    }
+
+    static public function getRowsFromIm($im)
+    {
+        $rows = [];
         for ($row = 0; $row < 9; $row ++) {
             for ($col = 0; $col < 9; $col ++) {
                 $errors = [];
@@ -39,7 +44,7 @@ class SudokuSolver
                                 $rgbRows[$rgbCheck] = 0;
                             }
                             $rgbRows[$rgbCheck] ++;
-                            if ($r < 64 && $g < 64 && $b < 64) {
+                            if ($r < 128 && $g < 128 && $b < 128) {
                                 if (!imagecolorat($imCheck, $x, $y)) {
                                     $errors[$val] ++;
                                 }
@@ -53,46 +58,50 @@ class SudokuSolver
                 }
                 asort($errors);
                 $keys = array_keys($errors);
-                $rows[] = $keys[0] > 0 ? $keys[0] : "";
+                $rows[$row][$col] = $keys[0];
             }
         }
-        $params["rows"] = join(",", $rows);
+        return $rows;
     }
 
-    static public function saveAcc($resultRows, $startRows, &$params = [])
+    static public function saveAcc($resultRows, $startRows, $level = null, $gadget = "Mi11")
     {
-
-        $params["level"]  = empty($params["level"]) ? time() : sprintf("%04d", $params["level"]);
-        $params["gadget"] = empty($params["gadget"]) ? "Mi11" : $params["gadget"];
+        if (!$level) {
+            $level = time();
+            $return = "{$gadget}.{$level}";
+        } else {
+            $level = sprintf("%05d", $level);
+            $return = "{$gadget}.{$level}." . time();
+        }
         $data = [
             'targets' => [],
             'antiDetection' => true,
             'id' => 0,
-            'name' => "Config {$params["gadget"]} {$params["level"]}",
+            'name' => "Config {$gadget} {$level}",
             'numberOfCycles' => 1,
             'stopConditionChecked' => 2,
             'timeValue' => 400
         ];
         for ($button = 1; $button < 10; $button ++) {
-            $data['targets'][] = self::getAccButton($button, $params["gadget"]);
+            $data['targets'][] = self::getAccButton($button, $gadget);
             foreach ($resultRows as $y => $row) {
                 foreach ($row as $x => $val) {
                     if ($val == $button && empty($startRows[$y][$x])) {
-                        $data['targets'][] = self::getAccField($x, $y, $params["gadget"]);
+                        $data['targets'][] = self::getAccField($x, $y, $gadget);
                     }
                 }
             }
         }
         file_put_contents(
-            ROOT_DIR . "content" . DS . "{$params["gadget"]}.{$params["level"]}.txt",
+            ROOT_DIR . "content" . DS . "{$return}.txt",
             json_encode([$data])
         );
-        return "{$params["gadget"]}.{$params["level"]}";
+        return $return;
     }
 
-    static public function solve($puzzle)
+    static public function solve($startSolution)
     {
-        $solution = $puzzle;
+        $solution = $startSolution;
         if (self::solveHelper($solution)) {
             return $solution;
         }

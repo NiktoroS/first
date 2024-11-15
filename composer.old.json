@@ -1,0 +1,17 @@
+{
+    "require": {
+        "smarty/smarty": "^3.1",
+        "components/jquery": "^3.3",
+        "components/jqueryui": "^1.12",
+        "components/bootstrap": "^4.1",
+        "php-ews/php-ews": "^1.0",
+        "wikia/simplehtmldom": "^1.6",
+        "twbs/bootstrap": "^4.3",
+        "voku/simple_html_dom": "^3.1",
+        "php-amqplib/php-amqplib": "^2.12",
+        "phpoffice/phpspreadsheet": "^1.8",
+        "phpmailer/phpmailer": "^6.6",
+        "php-ffmpeg/php-ffmpeg": "^1.2",
+        "irazasyed/telegram-bot-sdk": "^3.14"
+    }
+}

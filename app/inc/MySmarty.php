@@ -7,7 +7,7 @@ namespace app\inc;
  * @since  2018-03-30
  */
 
-class MySmarty extends \Smarty\Smarty
+class MySmarty extends \Smarty
 {
 
     public function __construct()
