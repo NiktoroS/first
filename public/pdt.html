@@ -1,0 +1,32 @@
+<html>
+<head>
+    <title>Тестирование PDT</title>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <script>
+function setFocus()
+{
+     document.getElementById("code2").focus();
+}
+
+function onInput(code)
+{
+    var resultElement   = document.getElementById("result");
+    var codeRow         = code.split(";");
+    if (codeRow.length > 1) {
+        resultElement.innerHTML = codeRow[1];
+    } else {
+        resultElement.innerHTML = "";
+    }
+}
+
+    </script>
+
+</head>
+<body onLoad="setFocus()">
+    <form>
+        <input type="text" id="code1" name="code1" onInput="onInput(this.value)"/><br>
+        <input type="text" id="code2" name="code2" onInput="onInput(this.value)"/>
+    </form>
+    <div id="result"></div>
+</body>
+</html>

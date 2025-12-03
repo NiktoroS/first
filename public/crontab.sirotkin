@@ -1,0 +1,96 @@
+# Edit this file to introduce tasks to be run by cron.
+# 
+# Each task to run has to be defined through a single line
+# indicating with different fields when the task will be run
+# and what command to run for the task
+# 
+# To define the time you can provide concrete values for
+# minute (m), hour (h), day of month (dom), month (mon),
+# and day of week (dow) or use '*' in these fields (for 'any').# 
+# Notice that tasks will be started based on the cron's system
+# daemon's notion of time and timezones.
+# 
+# Output of the crontab jobs (including errors) is sent through
+# email to the user the crontab file belongs to (unless redirected).
+# 
+# For example, you can run a backup of all your user accounts
+# at 5 a.m every week with:
+# 0 5 * * 1 tar -zcf /var/backups/home.tgz /home/
+# 
+# For more information see the manual pages of crontab(5) and cron(8)
+# 
+# m h  dom mon dow   command
+
+#first
+
+* * * * * php /home/sirotkin/www/first/robot/xe.php 2>> /home/sirotkin/www/.logs/xe.err 1>> /home/sirotkin/www/.logs/xe.log
+
+15 */8 * * * php /home/sirotkin/www/first/robot/kupivip_kng.php 1>> /home/sirotkin/www/.logs/kupivip_kng.log 2>> /home/sirotkin/www/.logs/kupivip_kng.err
+
+#0 2 * * * php /home/sirotkin/www/first/robot/kupivip_purge.php > /dev/null
+
+#4 4 * * * php /home/sirotkin/www/first/robot/cian.php 2>> /home/sirotkin/www/.logs/cian.err 1>> /home/sirotkin/www/.logs/cian.log
+
+8 * * * * php /home/sirotkin/www/first/robot/locationUpd.php 2>> /home/sirotkin/www/.logs/locationUpd.err 1>> /home/sirotkin/www/.logs/locationUpd.log
+
+*/20 * * * * php /home/sirotkin/www/first/robot/internetopros.php 1>> /home/sirotkin/www/.logs/internetopros.log 2>> /home/sirotkin/www/.logs/internetopros.err
+
+*/30 * * * * php /home/sirotkin/www/first/robot/remind.php 1>> /home/sirotkin/www/.logs/remind.log 2>> /home/sirotkin/www/.logs/remind.err
+
+0 * * * * php /home/sirotkin/www/first/robot/md56.php 1>> /home/sirotkin/www/.logs/md56.log 2>> /home/sirotkin/www/.logs/md56.err
+
+#55 9,14,15 * * 1,3,5 php /home/sirotkin/www/sro/robot/temp/obed_ru.php > /dev/null
+
+
+#xv
+
+* * * * * php /home/sirotkin/www/first/robot/xv_vt.php 1>> /home/sirotkin/www/.logs/xv_vt.log 2>> /home/sirotkin/www/.logs/xv_vt.err
+* * * * * php /home/sirotkin/www/first/robot/xv_vt.php 1>> /home/sirotkin/www/.logs/xv_vt.log 2>> /home/sirotkin/www/.logs/xv_vt.err
+* * * * * php /home/sirotkin/www/first/robot/xv_vt.php 1>> /home/sirotkin/www/.logs/xv_vt.log 2>> /home/sirotkin/www/.logs/xv_vt.err
+* * * * * php /home/sirotkin/www/first/robot/xv_vt.php 1>> /home/sirotkin/www/.logs/xv_vt.log 2>> /home/sirotkin/www/.logs/xv_vt.err
+* * * * * php /home/sirotkin/www/first/robot/xv_vt.php 1>> /home/sirotkin/www/.logs/xv_vt.log 2>> /home/sirotkin/www/.logs/xv_vt.err
+* * * * * php /home/sirotkin/www/first/robot/xv_vt.php 1>> /home/sirotkin/www/.logs/xv_vt.log 2>> /home/sirotkin/www/.logs/xv_vt.err
+
+0 * * * * php /home/sirotkin/www/first/robot/xv_err.php 1>> /home/sirotkin/www/.logs/xv_err.log 2>> /home/sirotkin/www/.logs/xv_err.err
+
+*/10 * * * * php /home/sirotkin/www/first/robot/xv_profile.php 1>> /home/sirotkin/www/.logs/xv_profile.log 2>> /home/sirotkin/www/.logs/xv_profile.err
+*/10 * * * * php /home/sirotkin/www/first/robot/xv_profile_week.php 1>> /home/sirotkin/www/.logs/xv_profile_week.log 2>> /home/sirotkin/www/.logs/xv_profile_week.err
+*/10 * * * * php /home/sirotkin/www/first/robot/xv_profile_day.php  1>> /home/sirotkin/www/.logs/xv_profile_day.log 2>>  /home/sirotkin/www/.logs/xv_profile_day.err
+
+20 * * * * php /home/sirotkin/www/first/robot/xv_tag.php 1>> /home/sirotkin/www/.logs/xv_tag.log 2>> /home/sirotkin/www/.logs/xv_tag.err
+20 * * * * php /home/sirotkin/www/first/robot/xv.php 1>> /home/sirotkin/www/.logs/xv.log 2>> /home/sirotkin/www/.logs/xv.err
+20 * * * * php /home/sirotkin/www/first/robot/xv_mc.php 1>> /home/sirotkin/www/.logs/xv_mc.log 2>> /home/sirotkin/www/.logs/xv_mc.err
+20 */4 * * * php /home/sirotkin/www/first/robot/xv_href.php 1>> /home/sirotkin/www/.logs/xv_href.log 2>> /home/sirotkin/www/.logs/xv_href.err
+
+2 2 * * * php /home/sirotkin/www/first/robot/xv_download_download.php 1>>        /home/sirotkin/www/.logs/xv_download_download.log 2>> /home/sirotkin/www/.logs/xv_download_download.err
+
+
+
+
+#12 * * * * php /home/sirotkin/www/sro/robot/nostroy/kontur_okved.php 1>> /home/sirotkin/www/.logs/kontur_okved.log 2>> /home/sirotkin/www/.logs/kontur_okved.err
+
+
+#3,18,33,48 6-17 * * * php /home/sirotkin/www/sro/robot/access_control_parsec3.php > /dev/null 2>&1
+#50-59 8 * * * php /home/sirotkin/www/sro/robot/access_control_parsec3.php > /dev/null 2>&1
+#1-9 9 * * * php /home/sirotkin/www/sro/robot/access_control_parsec3.php > /dev/null 2>&1
+
+
+0 * * * * php /home/sirotkin/www/first/robot/rbc.php 1>> /home/sirotkin/www/.logs/rbc.log 2>> /home/sirotkin/www/.logs/rbc.err
+
+#sro
+#* * * * * php /home/sirotkin/www/sro/robot/nostroy/reestr_16.php 1>> /home/sirotkin/www/.logs/reestr_16.log 2>> /home/sirotkin/www/.logs/reestr_16.err
+#* * * * * php /home/sirotkin/www/sro/robot/nostroy/reestr_15.php 1>> /home/sirotkin/www/.logs/reestr_15.log 2>> /home/sirotkin/www/.logs/reestr_15.err
+#11 11 * * * php /home/sirotkin/www/sro/robot/nostroy/reestr_14.php 1>> /home/sirotkin/www/.logs/reestr_14.log 2>> /home/sirotkin/www/.logs/reestr_14.err
+#0 23 * * * php /home/sirotkin/www/sro/robot/nostroy/reestr_17.php 1>> /home/sirotkin/www/.logs/reestr_17.log 2>> /home/sirotkin/www/.logs/reestr_17.err
+
+#0-9 22 * * 5 php /home/sirotkin/www/sro/robot/nostroy/reestr_121.php 0 1>> /home/sirotkin/www/.logs/reestr_121.log 2>> /home/sirotkin/www/.logs/reestr_121.err
+#0-9 22 * * 5 php /home/sirotkin/www/sro/robot/nostroy/reestr_121.php 0 1>> /home/sirotkin/www/.logs/reestr_121.log 2>> /home/sirotkin/www/.logs/reestr_121.err
+#0-9 22 * * 5 php /home/sirotkin/www/sro/robot/nostroy/reestr_121.php 0 1>> /home/sirotkin/www/.logs/reestr_121.log 2>> /home/sirotkin/www/.logs/reestr_121.err
+#0-9 22 * * 5 php /home/sirotkin/www/sro/robot/nostroy/reestr_121.php 0 1>> /home/sirotkin/www/.logs/reestr_121.log 2>> /home/sirotkin/www/.logs/reestr_121.err
+
+#16 1 * * * php /home/sirotkin/www/sro/robot/nostroy/kontur.php 1>> /home/sirotkin/www/.logs/kontur.log 2>> /home/sirotkin/www/.logs/kontur.err
+
+#* * * * * php /home/sirotkin/www/sro/robot/nostroy/1clicom_kpp.php 1>> /home/sirotkin/www/.logs/1clicom_kpp.log 2>> /home/sirotkin/www/.logs/1clicom_kpp.err
+
+55 23 * * 0 /home/sirotkin/www/first/robot/backup.sh > /dev/null
+30 0 * * 0 /home/sirotkin/www/first/robot/xv_backup.sh > /dev/null

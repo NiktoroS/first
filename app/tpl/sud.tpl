@@ -1,0 +1,281 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+  <title>sudoku solver</title>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+</head>
+<body>
+  <p id="error"></p>
+  <table>
+  <tbody>
+  <tr valign="top">
+    <td style="border: 0;">
+      <table>
+      <tbody>
+      {for $r1 = 0; $r1 < 3; $r1++}
+      <tr>
+        {for $c1 = 0; $c1 < 3; $c1++}
+        <td>
+          <table>
+          <tbody>
+          {for $r2 = 0; $r2 < 3; $r2++}
+            <tr>
+            {for $c2 = 0; $c2 < 3; $c2++}
+              <td class="game" id="game_{$r1 * 3 + $r2}_{$c1 * 3 + $c2}" onClick="setCell(this)"> </td>
+            {/for}
+            </tr>
+          {/for}
+          </tbody>
+          </table>
+        </td>
+        {/for}
+      </tr>
+      {/for}
+      </tbody>
+      </table>
+    </td>
+  </tr>
+  <tr>
+    <td style="border: 0;">
+      <table>
+      <tbody>
+      {for $r = 0; $r < 2; $r++}
+        <tr>
+        {for $c = 0; $c < 5; $c++}
+          {$number = $r * 5 + $c + 1}
+          {if 10 == $number}{$number = " "}{/if}
+          <td class="set" id="set_{$number}" onClick="setNumber('{$number}')">{$number}</td>
+        {/for}
+        </tr>
+      {/for}
+      </tbody>
+      </table>
+      <input type="button" value="Clear" onClick="clearAll()"/>
+      <input type="button" value="Solve" onClick="solveAll(false)"/><br/>
+      <input type="button" value="Solve Online" onClick="solveAll(true)"/>
+      <input type="button" value="Save Acc"     onClick="saveAcc()" id="saveAccBtn" disabled/><br/>
+      <input type="number" value="" id="level" name="level" min="0" max="9999"/>
+      {html_options id="gadget" name="gadget" options=$gadgetRows}<br/>
+      <input type="file" id="file" name="file"/>
+    </td>
+  </tr>
+  </tbody>
+  </table>
+  <p id="time"></p>
+</body>
+</html>
+
+<script type="text/javascript" src="/js/jquery.min.js"></script>
+<script type="text/javascript" src="/js/admin.js"></script>
+<script type="text/javascript">
+var number = " ";
+var idCell = "game_0_0";
+var accStamp = "";
+
+function saveAcc()
+{
+  window.location="/sud/download?stamp=" + accStamp;
+}
+
+function setCell(_this)
+{
+  var elements = document.getElementsByClassName("game");
+  for (i = 0; i < elements.length; i++) {
+    elements[i].style.backgroundColor = "black";
+  }
+  idCell = _this.id;
+  _this.style.backgroundColor = "green";
+}
+
+function setNumber(_number)
+{
+  number = _number;
+  var cell = document.getElementById(idCell);
+  cell.innerHTML = number;
+  if (" " == number) {
+    cell.style.fontWeight = "normal";
+    cell.style.color = "#bbbbbb";
+  } else {
+    cell.style.fontWeight = "bold";
+    cell.style.color = "#ffffff";
+  }
+}
+
+function putNumber(_this)
+{
+  _this.innerHTM = number;
+}
+
+function clearAll()
+{
+  var elements = document.getElementsByClassName("game");
+  for (i = 0; i < elements.length; i++) {
+    elements[i].innerHTML = " ";
+    elements[i].style.backgroundColor = "black";
+    elements[i].style.fontWeight = "normal";
+    elements[i].style.color = "#bbbbbb";
+  }
+  $("#saveAccBtn").prop("disabled", true);
+}
+
+function solveAll(online)
+{
+  var number = " ";
+  var rows = [];
+  var s = "";
+  var time_begin = new Date().getTime();
+
+  for (var r = 0; r < 9; r ++) {
+    row = []
+    for (var c = 0; c < 9; c ++) {
+      number = " ";
+      var cell = document.getElementById("game_" + r + "_" + c)
+      if ("bold" == cell.style.fontWeight) {
+        number = cell.innerHTML;
+      }
+      s = s + number;
+      row.push(" " == number ? 0 : parseInt(number));
+    }
+    rows.push(row);
+  }
+
+  if (true == online) {
+    level = 0;
+    $("#saveAccBtn").prop("disabled", true);
+    var formData = new FormData();
+    var json     = {};
+    formData.append("file", $("#file")[0].files[0]);
+    formData.append("gadget", $("#gadget").val());
+    formData.append("level", $("#level").val());
+    formData.append("method", "solve");
+    formData.append("module", "sud");
+    formData.append("rows", rows);
+    $.ajax({
+      type: "POST",
+      url: "/ajax",
+      data: formData,
+      dataType: "json",
+      processData: false,
+      async: false,
+      contentType: false,
+      success: function(res) {
+        json = res
+      }
+    });
+    rows = json.rows;
+    if (!$("#level").val() && json.params.level) {
+      $("#level").val(json.params.level);
+    }
+    accStamp = json.acc;
+    $("#saveAccBtn").prop("disabled", false);
+  } else {
+    rows = new SudokuSolver().solve(s, { result: "chunks" });
+  }
+
+  if (Array.isArray(rows)) {
+    document.getElementById("error").innerHTML = "";
+    for (var r = 0; r < 9; r ++) {
+      for (var c = 0; c < 9; c ++) {
+        document.getElementById("game_" + r + "_" + c).innerHTML = rows[r][c];
+      }
+    }
+  } else {
+    document.getElementById("error").innerHTML = rows;
+  }
+  document.getElementById("time").innerHTML = (new Date().getTime() - time_begin) / 1000.0;
+}
+
+
+function SudokuSolver()
+{
+  var puzzle_table = [];
+  /*
+  * Check if the number is a legal candidate
+  * for the given cell (by Sudoku rules).
+  */
+  function check_candidate(num, row, col)
+  {
+    for (var i = 0; i < 9; i++) {
+      var b_index = ((Math.floor(row / 3) * 3) + Math.floor(i / 3)) * 9 + (Math.floor(col / 3) * 3) + (i % 3);
+      if (num == puzzle_table[(row * 9) + i] || num == puzzle_table[col + (i * 9)] || num == puzzle_table[b_index]) {
+        return false;
+      }
+    }
+    return true;
+  }
+  /*
+  * Recursively test all possible numbers for a given cell until
+  * the puzzle is solved.
+  */
+  function get_candidate(index)
+  {
+    if (index >= puzzle_table.length) {
+      return true;
+    } else if (puzzle_table[index] != 0) {
+      return get_candidate(index + 1);
+    }
+
+    for (var i = 1; i <= 9; i++) {
+      if (check_candidate(i, Math.floor(index / 9), index % 9)) {
+        puzzle_table[index] = i;
+        if (get_candidate(index + 1)) {
+          return true;
+        }
+      }
+    }
+    puzzle_table[index] = 0;
+    return false;
+  }
+  /*
+  * Split result of puzzle into chunks by 9.
+  */
+  function chunk_in_groups(arr)
+  {
+    var result = [];
+    for (var i = 0; i < arr.length; i += 9) {
+      result.push(arr.slice(i, i + 9));
+    }
+    return result;
+  }
+  /*
+  * Start solving the game for provided puzzle and options.
+  */
+  this.solve = function (puzzle, options)
+  {
+    options = options || {};
+    var result = options.result || 'string';
+    puzzle_table = puzzle.split('').map(function (v) {
+      return isNaN(v) ? 0 : +v
+    });
+    if (puzzle.length !== 81) {
+      return 'Puzzle is not valid.'
+    }
+    return !get_candidate(0) ? 'No solution found.' : result === 'chunks' ? chunk_in_groups(puzzle_table) : result === 'array' ? puzzle_table : puzzle_table.join('');
+  }
+}
+</script>
+
+<style type="text/css">
+body {
+  background-color: black;
+  color: #bbbbbb;
+  font-family: arial;
+}
+table {
+  border-collapse: collapse;
+}
+td {
+  border: 1px solid white;
+  padding: 0;
+}
+.game, .set {
+  text-align: center;
+  width: 25px;
+  height: 25px;
+}
+.set {
+  font-weight: bold;
+  width: 45px;
+  height: 45px;
+}
+</style>

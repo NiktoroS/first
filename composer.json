@@ -1,0 +1,6 @@
+{
+    "require": {
+        "components/jqueryui": "^1.12",
+        "smarty/smarty": "^3.1"
+    }
+}
