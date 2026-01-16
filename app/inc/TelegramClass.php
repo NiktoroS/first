@@ -109,8 +109,10 @@ class TelegramClass
             }
             return json_decode($this->browser->res)->result ?? $this->browser->res;
         } catch (\Exception $exception) {
-            $this->logs->add($exception->getMessage());
-            throw $exception;
+            $error = $exception->getMessage();
+            $this->logs->add($error);
+            echo("{$error}\n");
+//            throw $exception;
         }
     }
 }

@@ -14,13 +14,13 @@ $dsnMySql = [
 
 $dsnPgSql = [
     "prod" => [
+        "dbname"    => "asirotki_xsrm",
         "hostRows" => [
             "10.99.54.74"
         ],
-        "port"      => "5432",
         "name"      => "asirotki_xsrm",
-        "dbname"    => "asirotki_xsrm",
-        "user"      => "mhuser",
-        "password"  => "RaWu8WVuNA!qj8Xvzmbx"
+        "password"  => 'FbMU\/dqxb5&REm$dN!N',
+        "port"      => "5432",
+        "user"      => "mhuser"
     ]
 ];

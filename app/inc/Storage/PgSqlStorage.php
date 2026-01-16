@@ -55,9 +55,9 @@ class PgSqlStorage
 
         $host = $this->dsn["host"];
         $name = $this->dsn["name"];
-        if (empty($pgDbAll[$host][$name]["conn"])) {
+        if (empty($pgDbAll[$host][$name]["connection"])) {
             do {
-                $connString = "host={$this->dsn["host"]} port={$this->dsn["port"]} dbname={$this->dsn["dbname"]} user={$this->dsn["user"]} password={$this->dsn["password"]}";
+                $connString = "host={$this->dsn["host"]} port={$this->dsn["port"]} dbname={$this->dsn["dbname"]} user={$this->dsn["user"]} password=" . addslashes($this->dsn["password"]);
                 $pgDbAll[$host][$name]["connection"] = pg_connect($connString);
                 if (!$pgDbAll[$host][$name]["connection"]) {
                     $this->logs->add("Error connect connString: {$connString}");
@@ -72,12 +72,6 @@ class PgSqlStorage
                 }
             } while (!$pgDbAll[$host][$name]["connection"]);
             $pgDbAll[$host][$name]["transactions"] = 0;
-/*
-            $pgDbAll[$host][$name]["link"]->autocommit(true);
-            $pgDbAll[$host][$name]["link"]->query("SET NAMES utf8");
-            $pgDbAll[$host][$name]["link"]->query("SET sql_mode = 'ALLOW_INVALID_DATES'");
-            $pgDbAll[$host][$name]["link"]->query("SET wait_timeout = 288000");
-**/
         }
         $this->connection   = &$pgDbAll[$host][$name]["connection"];
         $this->transactions = &$pgDbAll[$host][$name]["transactions"];

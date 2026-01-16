@@ -36,10 +36,15 @@ if (false === $lock->setLock()) {
 
 try {
     $telegram   = new TelegramClass();
-    $ws = new WaterSolver();
-    $offset = 0;
+    $ws         = new WaterSolver();
+    $offset     = 0;
     do {
-        foreach ($telegram->getUpdates($offset) as $update) {
+        $updates = $telegram->getUpdates($offset);
+        if (!$updates) {
+            sleep(120);
+            continue;
+        }
+        foreach ($updates as $update) {
             $level      = null;
             $cntColors  = null;
             if ($update->message->date + 360000 < time()) {

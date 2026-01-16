@@ -1,7 +1,7 @@
 <?php
+use app\inc\DeepState;
 use app\inc\Lock;
 use app\inc\Logs;
-use app\inc\DeepState;
 
 /**
  * @category robot
@@ -25,7 +25,7 @@ if (false === $lock->setLock()) {
     exit;
 }
 
-$file = $_SERVER["argv"][1] ?? (ROOT_DIR . "userdata" . DS . "ds20251005.html");
+//$file = $_SERVER["argv"][1] ?? (ROOT_DIR . "userdata" . DS . "ds20251005.html");
 
 $deepState = new DeepState();
 $deepState->updateAttrRows();

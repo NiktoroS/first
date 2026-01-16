@@ -376,7 +376,7 @@ class WaterSolver extends PgSqlStorage
                 $this->logs->add("{$proc}.stream: {$stream}");
                 continue;
             }
-            $this->logs->add("{$proc}.solved: " . var_export($resultProc["solved"], true));
+            $this->logs->add("{$proc}.solved: {$resultProc["solved"]}; hasheCnt: {$resultProc["hasheCnt"]}");
             if (!$resultProc["solved"]) {
                 continue;
             }

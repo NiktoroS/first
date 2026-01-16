@@ -52,7 +52,8 @@ class DeepState extends PgSqlStorage
     public function updateAttrRows()
     {
         foreach ($this->selectRows("ds_attr") as $attrRow) {
-            $attrRow["name"] = convert_uuencode($attrRow["name"]);
+            $attrRow["name"]        = convert_uuencode($attrRow["name"]);
+            $attrRow["updated_at"]  = "NOW()";
             $this->updateRow("ds_attr", $attrRow);
         }
     }
@@ -66,31 +67,29 @@ class DeepState extends PgSqlStorage
         $this->insertRow("ds_attr", ["name" => $name, "created_at" => "NOW()"]);
         return $this->getAttrRow($name);
     }
-
 }
-
 
 /**
 
 CREATE TABLE ds_attr (
-	id bigserial NOT NULL,
-	"name" varchar(255) NOT NULL,
-	description text NULL,
-	created_at timestamp(0) NULL,
-	updated_at timestamp(0) NULL,
-	CONSTRAINT ds_attr_pkey PRIMARY KEY (id)
+    id bigserial NOT NULL,
+    "name" varchar(255) NOT NULL,
+    description text NULL,
+    created_at timestamp(0) NULL,
+    updated_at timestamp(0) NULL,
+    CONSTRAINT ds_attr_pkey PRIMARY KEY (id)
 );
 
 CREATE TABLE ds_stat (
-	id bigserial NOT NULL,
-	ds_attr_id int8 NOT NULL,
-	"date" date NOT NULL,
-	total int4 NULL,
-	delta int4 NULL,
-	created_at timestamp(0) NULL,
-	updated_at timestamp(0) NULL,
-	CONSTRAINT ds_stat_pkey PRIMARY KEY (id),
-	CONSTRAINT ds_stat_unique UNIQUE (date, ds_attr_id),
-	CONSTRAINT ds_stat_ds_attr_fk FOREIGN KEY (ds_attr_id) REFERENCES ds_attr(id)
+    id bigserial NOT NULL,
+    ds_attr_id int8 NOT NULL,
+    "date" date NOT NULL,
+    total int4 NULL,
+    delta int4 NULL,
+    created_at timestamp(0) NULL,
+    updated_at timestamp(0) NULL,
+    CONSTRAINT ds_stat_pkey PRIMARY KEY (id),
+    CONSTRAINT ds_stat_unique UNIQUE (date, ds_attr_id),
+    CONSTRAINT ds_stat_ds_attr_fk FOREIGN KEY (ds_attr_id) REFERENCES ds_attr(id)
 );
 */
