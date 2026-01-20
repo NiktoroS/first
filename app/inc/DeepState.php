@@ -29,9 +29,14 @@ class DeepState extends PgSqlStorage
                     continue;
                 }
                 $date = date("Y-m-d", strtotime($spanDay->plaintext));
+                $ul = $liDay->find("ul", 0);
                 $statRows = [];
-                foreach ($liDay->find("li") as $liPosition) {
-                    list($name, $stat) = array_map("trim", explode("&nbsp;—", $liPosition->plaintext));
+                foreach ($ul->find("li") as $liPosition) {
+                    $row = explode("&nbsp;—", $liPosition->plaintext);
+                    if (empty($row[1])) {
+                        $row = explode("&nbsp;&mdash;", $liPosition->plaintext);
+                    }
+                    list($name, $stat) = array_map("trim", $row);
                     $arttrRow   = $this->getAttrRow(convert_uuencode($name));
                     $small      = $liPosition->find("small", 0);
                     $statRows[] = [

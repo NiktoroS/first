@@ -40,7 +40,8 @@ try {
     $offset     = 0;
     do {
         $updates = $telegram->getUpdates($offset);
-        if (!$updates) {
+        if (!is_array($updates)) {
+            var_dump($updates);
             sleep(120);
             continue;
         }
