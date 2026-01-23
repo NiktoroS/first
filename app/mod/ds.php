@@ -3,7 +3,7 @@
 use app\inc\DeepState;
 
 require_once(INC_DIR . "DeepState.php");
-require_once(MOD_DIR . "main.php");
+require_once("main.php");
 
 set_time_limit(0);
 
@@ -16,20 +16,10 @@ class ds extends main
         return parent::__construct();
     }
 
-    public function delta($params = [])
-    {
-        foreach ($this->deepState->selectRows("ds_attr") as $attr) {
-            $total = 0;
-            foreach ($this->deepState->selectRows("ds_stat", ["ds_attr_id" => $attr["id"]], "\"date\" ASC") as $stat) {
-                if (!$stat["delta"] && intval($stat["total"]) <> $total) {
-                    $this->deepState->updateRow("ds_stat", ["id" => $stat["id"], "delta" => intval($stat["total"]) - $total]);
-                }
-                $total = intval($stat["total"]);
-            }
-        }
-        $this->show();
-    }
-
+    /**
+     *
+     * @param array $params
+     */
     public function month($params = [])
     {
         $this->data["params"]   = $params;
@@ -49,7 +39,7 @@ SELECT
     {
         $this->deepState->saveFile($_FILES["file"]["tmp_name"]);
         $this->delta();
-        $this->show();
+        ToolsClass::location("/ds");
     }
 
     /**
@@ -60,10 +50,15 @@ SELECT
     public function show($params = [])
     {
         $this->data["attrs"] = $this->deepState->selectRows("ds_attr");
+        usort(
+            $this->data["attrs"], function($row1, $row2) {
+                return convert_uudecode($row1["name"]) > convert_uudecode($row2["name"]);
+            }
+        );
         $detailRows = $this->deepState->queryRows("
 SELECT
-    EXTRACT(YEAR FROM \"date\") AS year,
     ds_attr_id,
+    EXTRACT(YEAR FROM \"date\") AS year,
     SUM(delta) AS delta
   FROM ds_stat
  GROUP BY 1, 2");
@@ -78,6 +73,10 @@ SELECT
         }
     }
 
+    /**
+     *
+     * @param array $params
+     */
     public function year($params = [])
     {
         $this->data["params"]   = $params;
@@ -86,12 +85,24 @@ SELECT
     EXTRACT(MONTH FROM \"date\") AS month,
     SUM(delta) AS delta
   FROM ds_stat
- WHERE EXTRACT(YEAR FROM \"date\") = {$params["year"]}
-   AND ds_attr_id = {$params["attr_id"]}
+ WHERE ds_attr_id = {$params["attr_id"]}
+   AND EXTRACT(YEAR FROM \"date\") = {$params["year"]}
  GROUP BY 1
  ORDER BY 1");
     }
 
     private $deepState;
 
+    private function delta()
+    {
+        foreach ($this->deepState->selectRows("ds_attr") as $attr) {
+            $total = 0;
+            foreach ($this->deepState->selectRows("ds_stat", ["ds_attr_id" => $attr["id"]], "\"date\" ASC") as $stat) {
+                if (!$stat["delta"] && intval($stat["total"]) <> $total) {
+                    $this->deepState->updateRow("ds_stat", ["id" => $stat["id"], "delta" => intval($stat["total"]) - $total]);
+                }
+                $total = intval($stat["total"]);
+            }
+        }
+    }
 }

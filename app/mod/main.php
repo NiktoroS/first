@@ -3,10 +3,10 @@
 use app\inc\MySmarty;
 use app\inc\Storage\MySqlStorage;
 
-require_once(INC_DIR . "ToolsClass.php");
 require_once(INC_DIR . "MySmarty.php");
 require_once(INC_DIR . "Storage/MySqlStorage.php");
 require_once(INC_DIR . "Storage/PgSqlStorage.php");
+require_once(INC_DIR . "ToolsClass.php");
 
 /**
  * @category основной модуль

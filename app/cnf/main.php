@@ -40,7 +40,7 @@ if (isset($_SERVER["REQUEST_URI"])) {
 #    session_start();
 }
 
-$envFile = ROOT_DIR . "/.env";
+$envFile = ROOT_DIR . ".env";
 if (is_file($envFile)) {
     $iniRows = parse_ini_file($envFile);
     foreach ($iniRows as $iniKey => $iniVal) {

@@ -4,12 +4,12 @@ namespace app\inc;
 
 use app\inc\Storage\PgsqlStorage;
 
-set_time_limit(0);
-ini_set("memory_limit", "20047M");
 define('MAX_FILE_SIZE', 10000000);
+ini_set("memory_limit", "4095M");
+set_time_limit(0);
 
-require_once(INC_DIR . "simple_html_dom.php");
-require_once(INC_DIR . "Storage/PgSqlStorage.php");
+require_once("simple_html_dom.php");
+require_once("Storage/PgSqlStorage.php");
 
 class DeepState extends PgSqlStorage
 {
@@ -17,7 +17,6 @@ class DeepState extends PgSqlStorage
     /**
      *
      * @param string $file
-     * @return number
      */
     public function saveFile(string $file)
     {
@@ -63,6 +62,12 @@ class DeepState extends PgSqlStorage
         }
     }
 
+    /**
+     *
+     * @param string $name
+     * @return array
+     * @throws
+     */
     private function getAttrRow($name = "")
     {
         $attrRow = $this->selectRow("ds_attr", ["name" => $name]);

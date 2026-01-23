@@ -6,21 +6,18 @@
  */
 
 $dsnMySql = [
-    "host" => "localhost",
-    "name" => "sro",
-    "user" => "sro_db_user",
-    "pass" => "Twz9GhWT2PNWxrcz"
+    "host" => getenv("MY_DB_HOST") ?? "localhost",
+    "name" => getenv("MY_DB_NAME") ?? "first",
+    "pass" => getenv("MY_DB_PASS") ?? "first",
+    "user" => getenv("MY_DB_USER") ?? "first"
 ];
 
 $dsnPgSql = [
     "prod" => [
-        "dbname"    => "asirotki_xsrm",
-        "hostRows" => [
-            "10.99.54.74"
-        ],
-        "name"      => "asirotki_xsrm",
-        "password"  => 'FbMU\/dqxb5&REm$dN!N',
-        "port"      => "5432",
-        "user"      => "mhuser"
+        "hosts"     => [getenv("PG_DB_HOST") ?? "localhost"],
+        "name"  => getenv("PG_DB_NAME") ?? "first",
+        "pass"  => getenv("PG_DB_PASS") ?? "first",
+        "port"  => getenv("PG_DB_PORT") ?? "5432",
+        "user"  => getenv("PG_DB_USER") ?? "first"
     ]
 ];
