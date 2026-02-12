@@ -14,10 +14,10 @@ $dsnMySql = [
 
 $dsnPgSql = [
     "prod" => [
-        "hosts"     => [getenv("PG_DB_HOST") ?? "localhost"],
+        "hosts" => [getenv("PG_DB_HOST") ?? "localhost"],
         "name"  => getenv("PG_DB_NAME") ?? "first",
         "pass"  => getenv("PG_DB_PASS") ?? "first",
-        "port"  => getenv("PG_DB_PORT") ?? "5432",
+        "port"  => getenv("PG_DB_PORT") ?? 5432,
         "user"  => getenv("PG_DB_USER") ?? "first"
     ]
 ];
