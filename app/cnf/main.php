@@ -31,6 +31,10 @@ define("TITLE",    "First");
 define("KEYWORDS", "First");
 define("DESCR",    "First");
 
+if (!is_dir(TPL_DIR)) {
+    mkdir(TPL_DIR, 0777, true);
+}
+
 if (isset($_SERVER["REQUEST_URI"])) {
     if (!is_dir(SESSIONS_DIR)) {
         mkdir(SESSIONS_DIR, 0777, true);

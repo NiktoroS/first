@@ -51,7 +51,7 @@ try {
             if ($update->message->date + 360000 < time()) {
                 continue;
             }
-            if (!$update->message->photo) {
+            if (empty($update->message->photo)) {
                 continue;
             }
             if (!empty($update->message->caption)) {
