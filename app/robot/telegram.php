@@ -14,7 +14,7 @@ use app\inc\WaterSolver;
  */
 
 set_time_limit(0);
-ini_set("memory_limit", "4095M");
+ini_set("memory_limit", -1);
 
 require_once(dirname(__DIR__) . "/cnf/main.php");
 require_once(INC_DIR . "Lock.php");
@@ -70,6 +70,9 @@ try {
                     continue;
                 }
                 $fileInfo = $telegram->getFile($photo->file_id);
+                if (!$fileInfo) {
+                    continue;
+                }
                 $tmpFile  = TMP_DIR . $photo->file_id;
                 file_put_contents($tmpFile, $telegram->downloadFile($fileInfo->file_path));
                 switch ($photo->width) {

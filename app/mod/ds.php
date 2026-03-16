@@ -49,7 +49,7 @@ SELECT
      */
     public function show($params = [])
     {
-        $this->data["attrs"] = $this->deepState->selectRows("ds_attr");
+        $this->data["attrs"] = $this->deepState->selectRows("ds_attr", ["hidden = false"]);
         usort(
             $this->data["attrs"], function($row1, $row2) {
                 return convert_uudecode($row1["name"]) > convert_uudecode($row2["name"]);

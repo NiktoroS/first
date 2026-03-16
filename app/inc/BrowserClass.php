@@ -13,7 +13,7 @@ class BrowserClass
 {
 
     public $useragent = "Mozilla/5.0 (Windows NT 10.0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/39.0.2171.71 Safari/537.36 Edge/12.0";
-    public $timeOut   = 300;
+    public $timeOut   = 600;
     public $referer   = "";
     public $cookies   = "";
     public $proxy;
@@ -91,17 +91,20 @@ class BrowserClass
             if ($curlRows) {
                 curl_setopt_array($ch, $curlRows);
             }
+            echo(date("[Y-m-d H:i:s] ") . "curl_exec: {$url}\n");
             $resRows = explode("\r\n\r\n", curl_exec($ch));
             $http_response_header = explode("\r\n", array_shift($resRows));
             $this->res = implode("\n", $resRows);
             curl_close($ch);
         } else {
             $cxContext = stream_context_create($aContext);
+            echo(date("[Y-m-d H:i:s] ") . "file_get_contents: {$url}\n");
             $this->res = @file_get_contents($url, false, $cxContext);
         }
         $this->resHeader = $http_response_header;
         $this->getCookies();
         $this->referer = $url;
+        echo(date("[Y-m-d H:i:s] ") . "res {$this->res}\n");
         return $this->res;
     }
 
@@ -110,7 +113,6 @@ class BrowserClass
         $this->request($url, $httpMethod, $httpHeader, $content);
         if ($this->res) {
             return str_get_html($this->res);
-//            #return HtmlDomParser::str_get_html(iconv("CP1251", "UTF-8//IGNORE", $this->res));
         }
     }
 

@@ -1,11 +1,15 @@
-.idea
-.project
 .buildpath
-.settings
-
-.log
-.tmp
+.env
+.git*
+.idea
 .lock
+.log
+.project
+.settings
+.tmp
 
-vendor
 composer.lock
+content/
+package-lock.json
+userdata/
+vendor
