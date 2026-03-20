@@ -561,7 +561,13 @@ SELECT column_name
                 if (is_numeric($key)) {
                     $conditionNew = $condition;
                 } else {
-                    $conditionNew = "\"" . $this->escapeString($key) . "\" = '" . $this->escapeString($condition) . "'";
+                    if (is_bool($condition)) {
+                        $conditionNew = "\"" . $this->escapeString($key) . "\" = " . ($condition ? "true" : "false");
+                    } else if (is_numeric($condition)) {
+                        $conditionNew = "\"" . $this->escapeString($key) . "\" = " . $this->escapeString($condition);
+                    } else {
+                        $conditionNew = "\"" . $this->escapeString($key) . "\" = '" . $this->escapeString($condition) . "'";
+                    }
                 }
                 $conditionsNew[] = $conditionNew;
             }
@@ -571,6 +577,7 @@ SELECT column_name
             $query .= " ORDER BY {$orderBy}";
         }
         $query .= " LIMIT 1";
+        var_dump($query);
         return $this->queryRow($query);
     }
 

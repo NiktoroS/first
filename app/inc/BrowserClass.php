@@ -13,7 +13,7 @@ class BrowserClass
 {
 
     public $useragent = "Mozilla/5.0 (Windows NT 10.0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/39.0.2171.71 Safari/537.36 Edge/12.0";
-    public $timeOut   = 600;
+    public $timeOut   = 300;
     public $referer   = "";
     public $cookies   = "";
     public $proxy;
@@ -43,14 +43,14 @@ class BrowserClass
     {
         $this->url = $url;
         $aContext = [
-            "http" => [
-                "method" => $httpMethod,
-                "header" => $this->makeHeader($httpHeader),
-                "timeout"    => $this->timeOut
+            'http' => [
+                'method' => $httpMethod,
+                'header' => $this->makeHeader($httpHeader),
+                'timeout'    => $this->timeOut
             ],
-            "ssl" => [
-                "verify_peer"       => false,
-                "verify_peer_name"  => false
+            'ssl' => [
+                'verify_peer'       => false,
+                'verify_peer_name'  => false
             ]
         ];
         if ($content) {
@@ -65,16 +65,24 @@ class BrowserClass
             }
         }
         $http_response_header = [];
-        if ($useCurl or ($this->proxy and preg_match('/^socks5/', $this->proxy))) {
+        if ($useCurl or $this->proxy) {
             $ch = curl_init();
-            curl_setopt($ch, CURLOPT_URL, $url);
-            curl_setopt($ch, CURLOPT_TIMEOUT, $this->timeOut);
+            curl_setopt($ch, CURLOPT_HEADER, true);
             curl_setopt($ch, CURLOPT_HTTPHEADER, $httpHeader);
             curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-            curl_setopt($ch, CURLOPT_HEADER, true);
+            curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
+            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+            curl_setopt($ch, CURLOPT_TIMEOUT, $this->timeOut);
+            curl_setopt($ch, CURLOPT_URL, $url);
             if ($this->proxy) {
-                if (preg_match('/^socks5/', $this->proxy)) {
+                curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
+                if (preg_match('/^socks4/', $this->proxy)) {
+                    curl_setopt($ch, CURLOPT_PROXYTYPE, CURLPROXY_SOCKS4);
+                } else if (preg_match('/^socks5/', $this->proxy)) {
                     curl_setopt($ch, CURLOPT_PROXYTYPE, CURLPROXY_SOCKS5);
+//                } else {
+//                    curl_setopt($ch, CURLOPT_HTTPPROXYTUNNEL, true);
+//                    curl_setopt($ch, CURLOPT_PROXYTYPE, CURLPROXY_HTTPS);
                 }
                 curl_setopt($ch, CURLOPT_PROXY, $this->proxy);
                 if ($this->proxyAuth) {
@@ -83,28 +91,23 @@ class BrowserClass
                 }
             }
             if ("POST" == $httpMethod and $content) {
-                curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
-                curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
                 curl_setopt($ch, CURLOPT_POST, true);
                 curl_setopt($ch, CURLOPT_POSTFIELDS, $content);
             }
             if ($curlRows) {
                 curl_setopt_array($ch, $curlRows);
             }
-            echo(date("[Y-m-d H:i:s] ") . "curl_exec: {$url}\n");
             $resRows = explode("\r\n\r\n", curl_exec($ch));
             $http_response_header = explode("\r\n", array_shift($resRows));
             $this->res = implode("\n", $resRows);
             curl_close($ch);
         } else {
             $cxContext = stream_context_create($aContext);
-            echo(date("[Y-m-d H:i:s] ") . "file_get_contents: {$url}\n");
-            $this->res = @file_get_contents($url, false, $cxContext);
+            $this->res = file_get_contents($url, false, $cxContext);
         }
         $this->resHeader = $http_response_header;
         $this->getCookies();
         $this->referer = $url;
-        echo(date("[Y-m-d H:i:s] ") . "res {$this->res}\n");
         return $this->res;
     }
 

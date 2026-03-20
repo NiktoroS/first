@@ -41,8 +41,6 @@ try {
     do {
         $updates = $telegram->getUpdates($offset);
         if (!is_array($updates)) {
-            var_dump($updates);
-            sleep(120);
             continue;
         }
         foreach ($updates as $update) {
@@ -73,8 +71,11 @@ try {
                 if (!$fileInfo) {
                     continue;
                 }
-                $tmpFile  = TMP_DIR . $photo->file_id;
+                $tmpFile    = TMP_DIR . $photo->file_id;
                 file_put_contents($tmpFile, $telegram->downloadFile($fileInfo->file_path));
+                if (!filesize($tmpFile)) {
+                    continue;
+                }
                 switch ($photo->width) {
                     case 582:
                         $gadget = "x9d";
@@ -109,16 +110,17 @@ try {
                             TMP_DIR . SudokuSolver::saveAc($resultRows, $rows, $solver["level"], $gadget) . ".txt",
                             $update->message->chat->id
                         );
-                        if (!empty($update->message->caption)) {
-                            foreach (["Mi11", "Pad6", "x9d"] as $_gadget) {
-                                if  ($_gadget == $gadget) {
-                                    continue;
-                                }
-                                $telegram->sendDocument(
-                                    TMP_DIR . SudokuSolver::saveAc($resultRows, $rows, $solver["level"], $_gadget) . ".txt",
-                                    $update->message->chat->id
-                                );
+                        if (empty($update->message->caption)) {
+                            break;
+                        }
+                        foreach (["Mi11", "Pad6", "x9d"] as $_gadget) {
+                            if  ($_gadget == $gadget) {
+                                continue;
                             }
+                            $telegram->sendDocument(
+                                TMP_DIR . SudokuSolver::saveAc($resultRows, $rows, $solver["level"], $_gadget) . ".txt",
+                                $update->message->chat->id
+                            );
                         }
                         break;
 
