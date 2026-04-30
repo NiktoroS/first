@@ -3,7 +3,6 @@ namespace app\inc;
 
 require_once(INC_DIR . "BrowserClass.php");
 require_once(INC_DIR . "Logs.php");
-require_once(INC_DIR . "ProxyClass.php");
 
 /**
  * Telegram
@@ -12,41 +11,22 @@ require_once(INC_DIR . "ProxyClass.php");
  * @since  20.12.2016
  */
 
-class TelegramClass
+class MaxClass
 {
 
     private $browser;
-    private $botToken;
+    private $token;
     private $logs;
-    private $proxyObj;
 
     /**
      *
      * @param string $botToken
      */
-    public function __construct($botToken = "329014600:AAGB3v56moIsLum3gsfiNsE6-9u4WKGqOrg" /* @niktorisBot */)
+    public function __construct($token = "")
     {
-        $this->botToken = $botToken;
+        $this->botToken = $token;
         $this->browser  = new BrowserClass();
-        $this->browser->timeOut = 4;
         $this->logs     = new Logs("Telegram");
-        $this->proxyObj = new ProxyClass();
-    }
-
-    /**
-     *
-     * @param \stdClass $update
-     * @return string
-     */
-    public function deleteMessage($update)
-    {
-        return $this->request(
-            "deleteMessage",
-            [
-                "chat_id"       => $update->message->chat->id,
-                "message_id"    => $update->message->message_id
-            ]
-        );
     }
 
     /**
@@ -154,35 +134,18 @@ class TelegramClass
     private function request($name, $data = [], $httpMethod = "POST", $dir = "/bot", $httpHeader = ["Content-Type" => "application/x-www-form-urlencoded"], $useCurl = false)
     {
         $this->browser->res = "";
-        $att = 0;
-        while (!$this->browser->res) {
-            $proxyRow = $this->proxyObj->getProxy();
-            $this->browser->proxy = base64_decode($proxyRow["name"]);
-            $this->browser->proxyAuth = $proxyRow["auth"] ?? null;
-            $microtime = microtime(true);
-            echo(date("[Y-m-d H:i:s] ") . "{$dir}/{$name} [{$httpMethod}: " . json_encode($data) . "] {$this->browser->proxy} ");
-            try {
-                $this->browser->request("https://api.telegram.org{$dir}{$this->botToken}/{$name}", $httpMethod, $httpHeader, $data, $useCurl);
-                echo("time=" . round(microtime(true) - $microtime, 2) . "\n");
-                if ("getUpdates" === $name) {
-                    echo("{$this->browser->res}\n");
-                }
-                $this->proxyObj->saveSuccess($proxyRow, microtime(true) - $microtime);
-            } catch (\Exception $exception) {
-                echo($exception->getMessage() . " [" . $exception->getCode() . "] time=" . round(microtime(true) - $microtime, 2) . "\n");
-                $att ++;
-                if (20 == $att) {
-                    $att = 0;
-                    if (mb_strlen(file_get_contents("https://megafon.ru")) < 100000) {
-                        sleep(5);
-                        if (mb_strlen(file_get_contents("https://megafon.ru")) < 100000) {
-                            die("Похоже нету подключения к интернету");
-                        }
-                    }
-                }
-                $this->proxyObj->saveFail($proxyRow);
+        if (getenv("PROXY") && getenv("EXTERNAL_IP") != gethostbyname(gethostname())) {
+            $this->browser->proxy = getenv("PROXY");
+            if (getenv("PROXY_AUTH")) {
+                $this->browser->proxyAuth = getenv("PROXY_AUTH");
             }
         }
-        return json_decode($this->browser->res)->result ?? $this->browser->res;
+        try {
+            $this->browser->request("https://web.max.ru{$dir}{$this->token}/{$name}", $httpMethod, $httpHeader, $data, $useCurl);
+            echo("{$this->browser->res}");
+        } catch (\Exception $exception) {
+            echo($exception->getMessage() . " [" . $exception->getCode() . "]\n");
+        }
+        return json_decode($this->browser->res);
     }
 }

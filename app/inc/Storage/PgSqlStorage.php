@@ -577,7 +577,6 @@ SELECT column_name
             $query .= " ORDER BY {$orderBy}";
         }
         $query .= " LIMIT 1";
-        var_dump($query);
         return $this->queryRow($query);
     }
 

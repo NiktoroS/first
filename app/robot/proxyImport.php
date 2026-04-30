@@ -24,4 +24,3 @@ error_reporting(E_ALL);
 
 $proxy  = new ProxyClass();
 $proxy->import();
-

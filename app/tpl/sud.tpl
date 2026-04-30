@@ -120,23 +120,22 @@ function clearAll()
 
 function solveAll(online)
 {
+  var initRows = [];
   var number = " ";
   var rows = [];
-  var s = "";
   var time_begin = new Date().getTime();
 
   for (var r = 0; r < 9; r ++) {
-    row = []
+    var row = [];
     for (var c = 0; c < 9; c ++) {
       number = " ";
       var cell = document.getElementById("game_" + r + "_" + c)
       if ("bold" == cell.style.fontWeight) {
         number = cell.innerHTML;
       }
-      s = s + number;
       row.push(" " == number ? 0 : parseInt(number));
     }
-    rows.push(row);
+    initRows.push(row);
   }
 
   if (true == online) {
@@ -149,7 +148,7 @@ function solveAll(online)
     formData.append("level", $("#level").val());
     formData.append("method", "solve");
     formData.append("module", "sud");
-    formData.append("rows", rows);
+    formData.append("rows", initRows);
     $.ajax({
       type: "POST",
       url: "/ajax",
@@ -163,6 +162,10 @@ function solveAll(online)
       }
     });
     rows = json.rows;
+    initRows = json.params.rows;
+
+    console.log("initRows", initRows);
+
     if (!$("#level").val() && json.params.level) {
       $("#level").val(json.params.level);
     }
@@ -176,7 +179,12 @@ function solveAll(online)
     document.getElementById("error").innerHTML = "";
     for (var r = 0; r < 9; r ++) {
       for (var c = 0; c < 9; c ++) {
-        document.getElementById("game_" + r + "_" + c).innerHTML = rows[r][c];
+        const element = document.getElementById("game_" + r + "_" + c);
+        element.innerHTML = rows[r][c];
+        if (parseInt(initRows[r][c]) > 0) {
+          element.style.fontWeight = "bold";
+          element.style.color = "rgb(255, 255, 255)";
+        }
       }
     }
   } else {

@@ -43,7 +43,7 @@ class sud extends main
     public function solve($params = [])
     {
         if (empty($params["level"]) && !empty($_FILES["file"]["tmp_name"])) {
-            $params["level"] = SudokuSolver::getLevelFromFile($_FILES["file"]["tmp_name"]);
+            $params["level"] = SudokuSolver::getLevelFromFile($_FILES["file"]["tmp_name"], $_FILES["file"]["type"]);
         }
         SudokuSolver::getRowsFromRequest($params);
         $startTime  = microtime(true);
@@ -57,6 +57,7 @@ class sud extends main
         if (!empty($params["gadget"])) {
             $result["ac"] = SudokuSolver::saveAc($resultRows, $params["rows"], $params["level"], $params["gadget"]);
 //            $result["acc"] =  SudokuSolver::saveAcc($resultRows, $params["rows"], $params["level"], $params["gadget"])
+/*
             $log = new Logs("sud");
             try {
                 $telegram = new TelegramClass();
@@ -65,6 +66,7 @@ class sud extends main
             } catch (Exception $exception) {
                 $log->add($exception->getMessage());
             }
+*/
         }
         header("Content-type: application/json");
         echo (json_encode($result));

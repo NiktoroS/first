@@ -17,10 +17,10 @@ class WaterSolver extends PgSqlStorage
      * @param string $file
      * @return number
      */
-    static public function getLevelFromFile(string $file)
+    static public function getLevelFromFile(string $file, $type = "image/jpeg")
     {
-        $level = 0;
-        $im     = imagecreatefromjpeg($file);
+        $level  = 0;
+        $im     = Gd::getImageFromFile($file, $type);
         $coordx = [316, 293, 270, 247];
         foreach ($coordx as $pow => $startX) {
             $errors = [];
@@ -154,10 +154,10 @@ class WaterSolver extends PgSqlStorage
      * @param array $colors
      * @return array
      */
-    public function setBottlesFromFile(string $file, array $colors)
+    public function setBottlesFromFile(string $filename, string $type, array $colors)
     {
         $this->bottles  = [];
-        $im     = imagecreatefromjpeg($file);
+        $im     = Gd::getImageFromFile($filename, $type);
         $points = $this->points[count($colors) + 1];
         foreach ($points as $row) {
             $stepX = ($row[1]["x"] - $row[0]["x"]) / ($row[1]["bottle"] - $row[0]["bottle"]);
@@ -166,12 +166,12 @@ class WaterSolver extends PgSqlStorage
                 $this->bottles[$bottle] = [];
                 for ($stage = 0; $stage < 4; $stage ++) {
                     $this->bottles[$bottle][$stage] = 0;
-                    for ($x = $row[0]["x"] + ($bottle - $row[0]["bottle"]) * $stepX - 2;
-                        $x <= $row[0]["x"] + ($bottle - $row[0]["bottle"]) * $stepX + 2;
+                    for ($x = $row[0]["x"] + ($bottle - $row[0]["bottle"]) * $stepX - 3;
+                        $x <= $row[0]["x"] + ($bottle - $row[0]["bottle"]) * $stepX + 3;
                         $x ++
                     ) {
-                        for ($y = $row[0]["y"] + $stage * $stepY - 2;
-                            $y <= $row[0]["y"] + $stage * $stepY + 2;
+                        for ($y = $row[0]["y"] + $stage * $stepY - 3;
+                            $y <= $row[0]["y"] + $stage * $stepY + 3;
                             $y ++
                         ) {
                             $rgb   = imagecolorat($im, $x, $y);
@@ -183,7 +183,7 @@ class WaterSolver extends PgSqlStorage
                                 $rCheck = ($rgbCheck >> 16) & 0xFF;
                                 $gCheck = ($rgbCheck >> 8) & 0xFF;
                                 $bCheck = $rgbCheck & 0xFF;
-                                if (abs($rCheck - $r) < 2 && abs($gCheck - $g) < 2 && abs($bCheck - $b) < 2) {
+                                if (abs($rCheck - $r) < 3 && abs($gCheck - $g) < 3 && abs($bCheck - $b) < 3) {
                                     $this->bottles[$bottle][$stage] = $colorKey;
                                     break 3;
                                 }
@@ -515,7 +515,7 @@ SELECT proc
      */
     private function getMovesFromProc($level = 0, $proc = 0)
     {
-        return $this->selectRows("ws", ["level" => $level, "proc" => $proc, "step > 0"], "step");
+        return $this->selectRows("ws", ["level" => $level, "proc" => $proc ?? 0, "step > 0"], "step");
     }
 
     /**
@@ -551,17 +551,17 @@ SELECT proc
      */
     private function hash(array $bottles, int $from, int $to)
     {
-        return md5(json_encode($bottles)); // . ($this->extendedHash ? "{$from}:{$to}" : ""));
-//         $str = "";
-//         foreach ($bottles as $bottle) {
-//             foreach ($bottle as $cell) {
-//                 $str .= dechex($cell);
-//             }
-//         }
-//         if ($this->extendedHash) {
-//             $str .= base_convert($from, 10, count($bottles)) . base_convert($to, 10, count($bottles));
-//         }
-//         return $str;
+//        return md5(json_encode($bottles)); // . ($this->extendedHash ? "{$from}:{$to}" : ""));
+        $str = "";
+        foreach ($bottles as $bottle) {
+            foreach ($bottle as $cell) {
+                $str .= dechex($cell);
+            }
+        }
+        if ($this->extendedHash) {
+            $str .= base_convert($from, 10, count($bottles)) . base_convert($to, 10, count($bottles));
+        }
+        return $str;
     }
 
     /**
@@ -630,8 +630,8 @@ SELECT proc
             return;
         }
         $keysFrom = $keysTo = array_keys($bottles);
-//         shuffle($keysFrom);
-//         shuffle($keysTo);
+        shuffle($keysFrom);
+        shuffle($keysTo);
         foreach ($keysFrom as $keyFrom) {
             foreach ($keysTo as $keyTo) {
                 if ($keyFrom == $keyTo) {
@@ -648,22 +648,18 @@ SELECT proc
                     // некуда перемещать (вехня ячейка занята)
                     continue;
                 }
-                $bottleFrom = array_filter($bottles[$keyFrom]);
-                if (
-                    !$bottles[$keyTo][3] and 1 == count(array_unique($bottleFrom))
-                ) {
-                    // все исходные колонки одного цвета, то не имеет смысла перемещать "всё" в "пустоту"
-                    continue;
-                }
-                $colorFrom = reset($bottleFrom);
-                // поучен верхний цвет
-                foreach ($bottles[$keyTo] as $colorTo) {
-                    if ($colorTo) {
-                        if ($colorFrom === $colorTo) {
-                            break; // если цвета вехних ячеек совпадают
-                        } else {
-                            continue 2;
-                        }
+                $bottleFrom = array_filter($bottles[$keyFrom], function ($val) { return $val > 0; });
+                $colorFrom  = reset($bottleFrom);
+                if ($bottles[$keyTo][3]) {
+                    $bottleTo = array_filter($bottles[$keyTo], function ($val) { return $val > 0; });
+                    if ($colorFrom != reset($bottleTo)) {
+                        // верхгие ячейки отличаются по-цвету
+                        continue;
+                    }
+                } else {
+                    if (1 == count(array_unique($bottleFrom))) {
+                        // все исходные колонки одного цвета, не имеет смысла перемещать "всё" в "пустоту"
+                        continue;
                     }
                 }
                 if ($this->extendedHash) {
@@ -733,14 +729,6 @@ SELECT proc
                     );
                     fclose($this->pipes[$proc][0]);
                     $this->logs->add("proc: {$proc}");
-//                 } elseif (
-//                     $step < 22 ||
-//                     empty($this->hashesCnt[$step]) ||
-//                     $this->hashesCnt[$step] < 100000 ||
-//                     empty($this->hashesCnt[$step + 1]) ||
-//                     $this->hashesCnt[$step + 1] < $this->hashesCnt[$step]
-//                 ) {
-//                     $this->nextStep($this->extendedHash ? $bottles : $bottlesAfterMove, $step + 1, $hash, $keyFrom, $keyTo);
                 } else {
                     $this->nextStep($this->extendedHash ? $bottles : $bottlesAfterMove, $step + 1, $hash, $keyFrom, $keyTo);
                 }
@@ -802,7 +790,7 @@ SELECT proc
      *
      * @param array $moves
      */
-    private function updateDelays(array &$moves, $proc)
+    private function updateDelays(array &$moves, $proc = 0)
     {
         $this->setUseCache(false);
         for ($key = count($moves) - 1; $key >= 0; $key --) {
@@ -811,7 +799,7 @@ SELECT proc
 SELECT *
   FROM ws
  WHERE level = {$this->level}
-   AND proc = {$proc}
+   AND proc = " . $proc ?? 0 . "
    AND step > {$move["step"]}
    AND (
        \"from\" = {$move["from"]} OR
@@ -827,7 +815,7 @@ SELECT *
 SELECT SUM(delay) AS delay
   FROM ws
  WHERE level = {$this->level}
-   AND proc = {$proc}
+   AND proc = " . $proc ?? 0 . "
    AND step BETWEEN {$move["step"]} AND " . ($nextFromMove["step"] - 1));
             $move["delay"] = 2500 - $delayRow["delay"];
             if ($move["delay"] < $this->minDelay) {

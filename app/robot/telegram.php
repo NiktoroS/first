@@ -67,37 +67,55 @@ try {
                 if (1280 != $photo->height) {
                     continue;
                 }
-                $fileInfo = $telegram->getFile($photo->file_id);
-                if (!$fileInfo) {
-                    continue;
-                }
-                $tmpFile    = TMP_DIR . $photo->file_id;
-                file_put_contents($tmpFile, $telegram->downloadFile($fileInfo->file_path));
-                if (!filesize($tmpFile)) {
-                    continue;
-                }
-                switch ($photo->width) {
-                    case 582:
-                        $gadget = "x9d";
-                        break;
+                $solver = null;
+                $att    = 0;
+                while (!$solver && $att < 5) {
+                    try {
+                        $fileInfo = $telegram->getFile($photo->file_id);
+                        if (!$fileInfo) {
+                            continue;
+                        }
+                        if (empty($fileInfo->file_path)) {
+                            var_dump($photo->file_id, $fileInfo);
+                            $logs->add("getFile {$photo->file_id} do not file_path attribute in response:" . var_export($fileInfo, true));
+                            break;
+                        }
+                        $tmpFile    = TMP_DIR . $photo->file_id;
+                        file_put_contents($tmpFile, $telegram->downloadFile($fileInfo->file_path));
+                        if (!filesize($tmpFile)) {
+                            continue;
+                        }
+                        switch ($photo->width) {
+                            case 582:
+                                $gadget = "x9d";
+                                break;
 
-                    default:
-                        $gadget = "Mi11";
-                        break;
+                            default:
+                                $gadget = "Mi11";
+                                break;
+                        }
+                        if ($cntColors) {
+                            $solver = [
+                                "cntColors" => $cntColors,
+                                "level" => $level,
+                                "type"  => "Water"
+                            ];
+                        } else if ($level) {
+                            $solver = [
+                                "level" => $level,
+                                "type"  => "Sudoku"
+                            ];
+                        } else {
+                            $solver = Solver::getSolverFromFile($tmpFile, $gadget);
+                        }
+                    } catch (Exception $exception) {
+                        $att ++;
+                        echo($exception->getMessage());
+                        $logs->add($exception);
+                    }
                 }
-                if ($cntColors) {
-                    $solver = [
-                        "cntColors" => $cntColors,
-                        "level" => $level,
-                        "type"  => "Water"
-                    ];
-                } else if ($level) {
-                    $solver = [
-                        "level" => $level,
-                        "type"  => "Sudoku"
-                    ];
-                } else {
-                    $solver = Solver::getSolverFromFile($tmpFile, $gadget);
+                if (!$solver) {
+                    continue;
                 }
                 switch ($solver["type"]) {
                     case "Sudoku":
@@ -125,11 +143,13 @@ try {
                         break;
 
                     case "Water":
+                        $tmpFile2 = TMP_DIR . $solver["type"] . $solver["level"] . "jpg";
+                        file_put_contents($tmpFile2, file_get_contents($tmpFile));
                         $data = $ws->setData($solver["cntColors"], $solver["level"]);
-                        $ws->setBottlesFromFile($tmpFile, $data["colors"]);
+                        $ws->setBottlesFromFile($tmpFile2, "image/jpeg", $data["colors"]);
                         $resultMoves = [];
                         for ($att = 0; $att < 5; $att ++) {
-                            $result  = $ws->solve(true);
+                            $result = $ws->solve(true);
                             if (!$result["success"]) {
                                 continue;
                             }
@@ -151,6 +171,7 @@ try {
                 }
             }
             $offset = $update->update_id + 1;
+            var_dump($offset);
         }
         sleep(15);
     } while (1 == 1);

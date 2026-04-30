@@ -43,19 +43,19 @@ class BrowserClass
     {
         $this->url = $url;
         $aContext = [
-            'http' => [
-                'method' => $httpMethod,
-                'header' => $this->makeHeader($httpHeader),
-                'timeout'    => $this->timeOut
+            "http" => [
+                "ignore_errors" => true,
+                "header"    => $this->makeHeader($httpHeader),
+                "method"    => $httpMethod,
+                "timeout"   => $this->timeOut
             ],
-            'ssl' => [
-                'verify_peer'       => false,
-                'verify_peer_name'  => false
+            "ssl" => [
+                "verify_peer"       => false,
+                "verify_peer_name"  => false
             ]
         ];
         if ($content) {
             $aContext["http"]["content"]    = is_array($content) ? http_build_query($content) : $content;
-            $aContext["http"]["header"][]   = "Content-Length: " . strlen($aContext["http"]["content"]);
         }
         if ($this->proxy) {
             $aContext["http"]["proxy"] = "tcp://{$this->proxy}";
@@ -67,11 +67,12 @@ class BrowserClass
         $http_response_header = [];
         if ($useCurl or $this->proxy) {
             $ch = curl_init();
-            curl_setopt($ch, CURLOPT_HEADER, true);
-            curl_setopt($ch, CURLOPT_HTTPHEADER, $httpHeader);
+            curl_setopt($ch, CURLOPT_HEADER, false);
+            curl_setopt($ch, CURLOPT_HTTPHEADER, $aContext["http"]["header"]);
             curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
             curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
             curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+//            curl_setopt($ch, CURLOPT_SSLVERSION, CURL_SSLVERSION_TLSv1_2);
             curl_setopt($ch, CURLOPT_TIMEOUT, $this->timeOut);
             curl_setopt($ch, CURLOPT_URL, $url);
             if ($this->proxy) {
@@ -80,8 +81,8 @@ class BrowserClass
                     curl_setopt($ch, CURLOPT_PROXYTYPE, CURLPROXY_SOCKS4);
                 } else if (preg_match('/^socks5/', $this->proxy)) {
                     curl_setopt($ch, CURLOPT_PROXYTYPE, CURLPROXY_SOCKS5);
-//                } else {
-//                    curl_setopt($ch, CURLOPT_HTTPPROXYTUNNEL, true);
+                } else {
+                    curl_setopt($ch, CURLOPT_HTTPPROXYTUNNEL, false);
 //                    curl_setopt($ch, CURLOPT_PROXYTYPE, CURLPROXY_HTTPS);
                 }
                 curl_setopt($ch, CURLOPT_PROXY, $this->proxy);
@@ -97,13 +98,29 @@ class BrowserClass
             if ($curlRows) {
                 curl_setopt_array($ch, $curlRows);
             }
-            $resRows = explode("\r\n\r\n", curl_exec($ch));
-            $http_response_header = explode("\r\n", array_shift($resRows));
+            $this->res = curl_exec($ch);
+            if (curl_errno($ch)) {
+                throw new \Exception(curl_error($ch), curl_errno($ch));
+            }
+            $resRows = explode("\r\n\r\n", $this->res);
+//            $http_response_header = explode("\r\n", array_shift($resRows));
             $this->res = implode("\n", $resRows);
             curl_close($ch);
         } else {
+            if (!empty($aContext["http"]["content"])) {
+                $aContext["http"]["header"][]   = "Content-Length: " . strlen($aContext["http"]["content"]);
+            }
             $cxContext = stream_context_create($aContext);
-            $this->res = file_get_contents($url, false, $cxContext);
+            set_error_handler(function($errno, $errstr, $errfile, $errline) {
+                throw new \ErrorException($errstr, 0, $errno, $errfile, $errline);
+            });
+            try {
+                $this->res = file_get_contents($url, false, $cxContext);
+            } catch (\ErrorException $exception) {
+                throw $exception;
+            } finally {
+                restore_error_handler();
+            }
         }
         $this->resHeader = $http_response_header;
         $this->getCookies();
@@ -174,19 +191,19 @@ class BrowserClass
         if ($this->cookies and empty($httpHeader["Cookie"])) {
             $header[] = "Cookie: {$this->cookies}";
         }
-        if (empty($httpHeader["Content-type"])) {
+        if (empty($httpHeader["Content-Type"])) {
             $header[] = "Content-Type: application/x-www-form-urlencoded; charset=UTF-8";
         }
-        if (empty($httpHeader["User-Agent"])) {
-            $header[] = "User-Agent: {$this->useragent}";
-        }
-        if (empty($httpHeader["Host"])) {
-            $urlArr = parse_url($this->url);
-            $header[] = "Host: {$urlArr["host"]}";
-        }
-        if ($this->referer and empty($httpHeader["Referer"])) {
-            $header[] = "Referer: {$this->referer}";
-        }
+//         if (empty($httpHeader["User-Agent"])) {
+//             $header[] = "User-Agent: {$this->useragent}";
+//         }
+//         if (empty($httpHeader["Host"])) {
+//             $urlArr = parse_url($this->url);
+//             $header[] = "Host: {$urlArr["host"]}";
+//         }
+//         if ($this->referer and empty($httpHeader["Referer"])) {
+//             $header[] = "Referer: {$this->referer}";
+//         }
         return $header;
     }
 

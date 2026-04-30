@@ -17,96 +17,42 @@ class SudokuSolver
      * @param string $tmpFile
      * @return number
      */
-    static public function getLevelFromFile(string $tmpFile = "")
+    static public function getLevelFromFile(string $filename, string $type = "image/jpeg")
     {
-        $image    = imagecreatefromjpeg($tmpFile);
-        $width    = imagesx($image);
+        $numberStr = "";
+        $image  = Gd::getImageFromFile($filename, $type);
+        $width  = imagesx($image);
         if (576 == $width) {
-            $xFirst   = 82;
-            $xLast    = 180;
-            $yFrom    = 79;
-            $yTo      = 101;
+            $xFrom  = 90;
+            $xTo    = 172;
+            $yFrom  = 102;
+            $yTo    = 122;
         } elseif (582 == $width) {
-            $xFirst   = 88;
-            $xLast    = 194;
-            $yFrom    = 83;
-            $yTo      = 106;
+            $xFrom  = 90;
+            $xTo    = 174;
+            $yFrom  = 102;
+            $yTo    = 122;
         }
-        $isNegative = Gd::isNegative($image, $xFirst, $yFrom, 420);
-        $numbers  = [];
+
+        $dir = APP_DIR . "resources" . DS . "sud" . DS . "level" . DS;
+        $checkImages = self::getCheckImages($dir);
+        $avg    = Gd::getAvg($image, $xFrom, $yFrom, $xTo, $yTo);
+        $_xFrom = $xFrom;
+        $numberStr = "";
         do {
-            $xFirst     = self::getFirstX($image, $xFirst, $xLast, $yFrom, $yTo, $isNegative);
-            $numbers[]  = self::getNumber($image, $xFirst, $yFrom, $isNegative);
-        } while($xFirst < $xLast && count($numbers) < 5);
-        return intval(join("", $numbers));
+            $imageClip = Gd::clipBw($image, $_xFrom, $yFrom, $xTo, $yTo, $avg);
+            $width   = imagesx($imageClip);
+            $_xFrom  += $width + 1;
+            if ($width > 9) {
+                $number  = self::getNumber($imageClip, $checkImages, $avg);
+                $numberStr  .= strval($number);
+                imagepng($imageClip, $dir . "{$_xFrom}_" . time() . ".png");
+            }
+        } while ($_xFrom < $xTo);
+        return intval($numberStr);
     }
 
-    /**
-     *
-     * @param \GdImage $image
-     * @param int $xFrom
-     * @param int $xTo
-     * @param int $yFrom
-     * @param int $yTo
-     * @param bool $isNegative
-     * @return int
-     */
-    static private function getFirstX($image, int $xFrom, int $xTo, int $yFrom, int $yTo, bool $isNegative)
-    {
-        for ($x = $xFrom; $x < $xTo; $x ++) {
-            for ($y = $yFrom; $y < $yTo; $y ++) {
-                if (!Gd::isWhite($image, $x, $y, $isNegative)) {
-                    return $x;
-                }
-            }
-        }
-        return $xFrom;
-    }
 
-    /**
-     *
-     * @param \GdImage $image
-     * @param int $xFrom
-     * @param int $yFrom
-     * @param bool $isNegative
-     * @return number
-     */
-    static private function getNumber($image, int &$xFrom, int $yFrom, bool $isNegative)
-    {
-        $dir = APP_DIR . "resources" . DS . "sud" . DS . "level";
-        $errors = [];
-        $xMaxs  = [];
-        foreach (scandir($dir) as $file) {
-            $output = [];
-            if (!preg_match('/(\d\.\d+)\.png$/', $file, $output)) {
-                continue;
-            }
-            $number = $output[1];
-            $errors[$number] = 0;
-            $cnt  = 0;
-            $fileFull = $dir . DS . $file;
-            $imageCheck = imagecreatefrompng($fileFull);
-            $imageSize  = getimagesize($fileFull);
-            $xMax = $xMaxs[$number] = $imageSize[0];
-            $yMax = $imageSize[1];
-            for ($x = 0; $x < $xMax; $x ++) {
-                for ($y = 0; $y < $yMax; $y ++) {
-                    $cnt ++;
-                    if (
-                        Gd::isWhite($image, $x + $xFrom, $y + $yFrom, $isNegative) !=
-                        Gd::isWhite($imageCheck, $x, $y)
-                    ) {
-                        $errors[$number] ++;
-                    }
-                }
-            }
-            $errors[$number] /= $cnt;
-        }
-        asort($errors);
-        $keys   = array_keys($errors);
-        $xFrom += $errors[$keys[0]] < 0.25 ? $xMaxs[$keys[0]] + 1 : 20;
-        return $errors[$keys[0]] < 0.25 ? intval($keys[0]) : "";
-    }
     // /api/v1/WorkPlaces/143604 143612 144046
 
     /**
@@ -114,52 +60,39 @@ class SudokuSolver
      * @param string $tmpFile
      * @return array
      */
-    static public function getRowsFromFile(string $tmpFile = "")
+    static public function getRowsFromFile(string $filename, string $type = "image/jpeg")
     {
-        $image  = imagecreatefromjpeg($tmpFile);
+        $image  = Gd::getImageFromFile($filename, $type);
         $width  = imagesx($image);
         if (576 == $width) {
-            $size     = 64;
-            $xFrom    = 6;
-            $yFrom    = 184;
+            $xFrom  = 10;
+            $xSize  = 63.5;
+            $yFrom  = 165;
+            $ySize  = 63.5;
         } elseif (582 == $width) {
-            $size     = 64.67;
-            $xFrom    = 6;
-            $yFrom    = 188;
+            $xFrom  = 6;
+            $xSize  = 64.67;
+            $yFrom  = 188;
+            $ySize  = 63.5;
+        } else {
+            throw new \Exception("Незвестрная ширина: {$width}");
         }
+        $checkImages = self::getCheckImages();
         $rows = [];
         for ($row = 0; $row < 9; $row ++) {
             for ($col = 0; $col < 9; $col ++) {
-                $errors = [];
-                for ($val = 0; $val <= 9; $val ++) {
-                    $errors[$val] = 0;
-                    $imageCheck = imagecreatefrompng(APP_DIR . "resources" . DS . "sud" . DS . "{$val}.png");
-                    for ($x = 0; $x < 56; $x ++) {
-                        for ($y = 0; $y < 56; $y ++) {
-                            $rgb = imagecolorat(
-                                $image,
-                                intval($x + $xFrom + ($col * $size)),
-                                intval($y + $yFrom + ($row * $size))
-                            );
-                            $r = ($rgb >> 16) & 0xFF;
-                            $g = ($rgb >> 8) & 0xFF;
-                            $b = $rgb & 0xFF;
-                            $rgbCheck = imagecolorat($imageCheck, $x, $y);
-                            if ($r < 96 && $g < 96 && $b < 96) {
-                                if (!$rgbCheck) {
-                                    $errors[$val] ++;
-                                }
-                            } else {
-                                if ($rgbCheck) {
-                                    $errors[$val] ++;
-                                }
-                            }
-                        }
-                    }
+                $_xFrom = intval($xFrom + ($col * $xSize));
+                $_yFrom = intval($yFrom + ($row * $ySize));
+                $curImage   = Gd::clipBw($image, $_xFrom, $_yFrom, $_xFrom + 48, $_yFrom + 48, 384);
+                $rows[$row][$col]   = Self::getNumber($curImage, $checkImages) ?? 0;
+                if (!$rows[$row][$col]) {
+                    continue;
                 }
-                asort($errors);
-                $keys = array_keys($errors);
-                $rows[$row][$col] = $keys[0];
+//                 $file = APP_DIR . "resources" . DS . "sud" . DS . "{$rows[$row][$col]}.{$row}_{$col}.png";
+//                 if (is_file($file)) {
+//                     continue;
+//                 }
+//                 imagepng($curImage, $file);
             }
         }
         return $rows;
@@ -174,7 +107,7 @@ class SudokuSolver
         if (!$_FILES) {
             return;
         }
-        $params["rows"] = self::getRowsFromFile($_FILES["file"]["tmp_name"]);
+        $params["rows"] = self::getRowsFromFile($_FILES["file"]["tmp_name"], $_FILES["file"]["type"]);
     }
 
     /**
@@ -198,10 +131,10 @@ class SudokuSolver
         $data = [
             "name" => "{$gadget} {$level}",
             "mode" => 2,
-            "gapBetweenCyc" => 10,
+            "gapBetweenCyc" => 50,
             "isCycle" => true,
             "cycleType" => 2,
-            "cycleDuration" => 10,
+            "cycleDuration" => 50,
             "cycleReps" => 1,
             "items" => []
         ];
@@ -279,7 +212,14 @@ class SudokuSolver
         return [];
     }
 
-    static private function findPossibleValues($rowIndex, $columnIndex, $puzzle)
+    /**
+     *
+     * @param number $rowIndex
+     * @param number $columnIndex
+     * @param array $puzzle
+     * @return array
+     */
+    static private function findPossibleValues($rowIndex = 0, $columnIndex = 0, $puzzle = [])
     {
         $values = range(1, 9);
         $values = array_diff($values, self::getRowValues($rowIndex, $puzzle), self::getColumnValues($columnIndex, $puzzle), self::getBlockValues($rowIndex, $columnIndex, $puzzle));
@@ -322,11 +262,53 @@ class SudokuSolver
             "scenarioId" => self::$scenarioId,
             "priority" => 0,
             "type" => "CLICK",
-            "gapNext" => 10,
+            "gapNext" => 50,
             "x" => ($val % 5) * $xDelta + $xOffset,
             "y" => floor($val / 5) * $yDelta + $yOffset,
             "repeatCount" => 1,
-            "clickDuration" => 10,
+            "clickDuration" => 50,
+            "cdShowType" => 0
+        ];
+    }
+
+    /**
+     *
+     * @param number $x
+     * @param number $y
+     * @param string $gadget
+     * @return []
+     */
+    static private function getAcField($x = 0, $y = 0, $gadget = "Mi11")
+    {
+        switch ($gadget) {
+            case "Mi11":
+                $xDelta   = 120;
+                $xOffset  = 60;
+                $yDelta   = 120;
+                $yOffset  = 370;
+                break;
+            case "Pad6":
+                $xDelta   = 200;
+                $xOffset  = 100;
+                $yDelta   = 205;
+                $yOffset  = 360;
+                break;
+            case "x9d":
+                $xDelta   = 130;
+                $xOffset  = 75;
+                $yDelta   = 135;
+                $yOffset  = 430;
+                break;
+        }
+        return [
+            "scenarioId" => self::$scenarioId,
+            "priority" => 0,
+            "type" => "CLICK",
+            "gapNext" => 50,
+            "x" => $xOffset + $x * $xDelta,
+            "y" => $yOffset + $y * $yDelta,
+            "repeatCount" => 1,
+            "clickDuration" => 50,
             "cdShowType" => 0
         ];
     }
@@ -372,48 +354,6 @@ class SudokuSolver
             "xPos1" => -1,
             "yPos"  => floor($val / 5) * $yDelta + $yOffset,
             "yPos1" => -1
-        ];
-    }
-
-    /**
-     *
-     * @param number $x
-     * @param number $y
-     * @param string $gadget
-     * @return []
-     */
-    static private function getAcField($x = 0, $y = 0, $gadget = "Mi11")
-    {
-        switch ($gadget) {
-            case "Mi11":
-                $xDelta   = 120;
-                $xOffset  = 50;
-                $yDelta   = 125;
-                $yOffset  = 370;
-                break;
-            case "Pad6":
-                $xDelta   = 200;
-                $xOffset  = 100;
-                $yDelta   = 205;
-                $yOffset  = 360;
-                break;
-            case "x9d":
-                $xDelta   = 130;
-                $xOffset  = 75;
-                $yDelta   = 135;
-                $yOffset  = 430;
-                break;
-        }
-        return [
-            "scenarioId" => self::$scenarioId,
-            "priority" => 0,
-            "type" => "CLICK",
-            "gapNext" => 10,
-            "x" => $xOffset + $x * $xDelta,
-            "y" => $yOffset + $y * $yDelta,
-            "repeatCount" => 1,
-            "clickDuration" => 10,
-            "cdShowType" => 0
         ];
     }
 
@@ -480,6 +420,27 @@ class SudokuSolver
 
     /**
      *
+     * @param string $dir
+     * @return \GdImage[]
+     */
+    static private function getCheckImages($dir = "")
+    {
+        if (!$dir) {
+            $dir = APP_DIR . "resources" . DS . "sud" . DS;
+        }
+        $checkImages = [];
+        foreach (scandir($dir) as $file) {
+            $output = [];
+            if (!preg_match('/^(\d\.\w+)\.png$/', $file, $output)) {
+                continue;
+            }
+            $number = $output[1];
+            $checkImages[$number] = imagecreatefrompng($dir . DS . $file);
+        }
+        return $checkImages;
+    }
+    /**
+     *
      * @param number $columnIndex
      * @param array $puzzle
      * @return []
@@ -495,6 +456,38 @@ class SudokuSolver
 
     /**
      *
+     * @param \GdImage $image
+     * @param \GdImage[] $checkImages
+     * @param number $avg
+     * @return string|number
+     */
+    static private function getNumber(\GdImage $image, $checkImages, $avg = 384)
+    {
+        $errors = [];
+        foreach ($checkImages as $number => $checkImage) {
+            $errors[$number] = 0;
+            $cnt  = 0;
+            $xTo = min(imagesx($image), imagesx($checkImage));
+            $yTo = min(imagesy($image), imagesy($checkImage));
+            for ($x = 0; $x < $xTo; $x ++) {
+                for ($y = 0; $y < $yTo; $y ++) {
+                    $cnt ++;
+                    if (
+                        Gd::isWhite($image, $x, $y, $avg) != Gd::isWhite($checkImage, $x, $y)
+                    ) {
+                        $errors[$number] ++;
+                    }
+                }
+            }
+            $errors[$number] /= $cnt;
+        }
+        asort($errors);
+        $keys = array_keys($errors);
+        return $errors[$keys[0]] < 0.25 ? intval($keys[0]) : "";
+    }
+
+    /**
+     *
      * @param number $rowIndex
      * @param array $puzzle
      * @return []
@@ -504,15 +497,17 @@ class SudokuSolver
         return $puzzle[$rowIndex];
     }
 
+    /**
+     *
+     * @param array $solution
+     * @return boolean
+     */
     static private function solveHelper(&$solution)
     {
         self::$i ++;
-
         $minRow     = -1;
         $minColumn  = -1;
-
         $minValues  = [];
-
         while (true) {
             $minRow = -1;
             for ($rowIndex = 0; $rowIndex < 9; $rowIndex ++) {
@@ -541,7 +536,6 @@ class SudokuSolver
                 break;
             }
         }
-
         foreach ($minValues as $v) {
             $solutionCopy = $solution;
             $solutionCopy[$minRow][$minColumn] = $v;

@@ -65,10 +65,10 @@ class ws extends main
     {
         $ws = new WaterSolver();
         $cntColors  = empty($_REQUEST["cntColors"]) ? 15 : intval($_REQUEST["cntColors"]);
-        $level      = !empty($_FILES["file"]["tmp_name"]) ? WaterSolver::getLevelFromFile($_FILES["file"]["tmp_name"]) : $_REQUEST["level"] ?? 0;
+        $level      = !empty($_FILES["file"]["tmp_name"]) ? WaterSolver::getLevelFromFile($_FILES["file"]["tmp_name"], $_FILES["file"]["type"]) : $_REQUEST["level"] ?? 0;
         $this->data = $ws->setData($cntColors, $level);
         if (!empty($_FILES["file"]["tmp_name"])) {
-            $this->data["bottles"] = $ws->setBottlesFromFile($_FILES["file"]["tmp_name"], $this->data["colors"]);
+            $this->data["bottles"] = $ws->setBottlesFromFile($_FILES["file"]["tmp_name"], $_FILES["file"]["type"], $this->data["colors"]);
         }
     }
 

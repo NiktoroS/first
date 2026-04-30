@@ -30,17 +30,22 @@ class ProxyClass
     public function getProxy()
     {
         if (getenv("PROXY") && getenv("EXTERNAL_IP") != gethostbyname(gethostname()) ) {
+            var_dump(gethostbyname(gethostname()));
             return $this->pgSql->selectRow($this->table, ["name" => base64_encode(getenv("PROXY"))]);
         }
-        return $this->pgSql->selectRow($this->table, ["deleted" => false], "success >= fail DESC, avg ASC, RANDOM()");
+        return $this->pgSql->selectRow(
+            $this->table,
+            ["deleted" => false, "success < 5"],
+            "success >= fail DESC, avg ASC, RANDOM()"
+        );
     }
 
     public function import()
     {
-        $this->pgSql->execute("UPDATE {$this->table} SET deleted = true");
         if (getenv("PROXY")) {
             $this->insertOrUpdate(getenv("PROXY"), "", getenv("PROXY_AUTH"));
         }
+        $this->pgSql->query("UPDATE {$this->table} SET deleted = true WHERE deleted = false AND success = 0 AND fail > 0");
         foreach (scandir($this->dir) as $file) {
             if (!preg_match('/\.txt$/', $file)) {
                 continue;
@@ -60,12 +65,21 @@ class ProxyClass
         }
     }
 
+    /**
+     *
+     * @param array $proxyRow
+     */
     public function saveFail($proxyRow)
     {
         $proxyRow["fail"] ++;
         $this->updateProxy($proxyRow);
     }
 
+    /**
+     *
+     * @param array $proxyRow
+     * @param string $microtime
+     */
     public function saveSuccess($proxyRow, $microtime)
     {
         $proxyRow["success"] ++;
@@ -73,6 +87,12 @@ class ProxyClass
         $this->updateProxy($proxyRow);
     }
 
+    /**
+     *
+     * @param string $name
+     * @param string $type
+     * @param string $auth
+     */
     private function insertOrUpdate($name, $type = "", $auth = "")
     {
         $name = trim($name);
@@ -81,8 +101,9 @@ class ProxyClass
         }
         $proxyRow = $this->pgSql->selectRow($this->table, ["name" => base64_encode($name)]);
         if ($proxyRow) {
-            $proxyRow["deletad"] = false;
-            $proxyRow["auth"]    = base64_encode($auth);
+            $proxyRow["deletad"]    = false;
+            $proxyRow["auth"]       = base64_encode($auth);
+            $proxyRow["updated_at"] = "now";
             $this->updateProxy($proxyRow);
         } else {
             $this->pgSql->insertRow(
@@ -98,14 +119,16 @@ class ProxyClass
         }
     }
 
-    private function updateProxy($proxyRow)
+    /**
+     *
+     * @param array $proxyRow
+     */
+    private function updateProxy($proxyRow = [])
     {
         $proxyRow["updated_at"] = "now";
         $this->pgSql->updateRow($this->table, $proxyRow);
     }
 }
-
-
 
 /**
 CREATE TABLE public.tg_addresses (
