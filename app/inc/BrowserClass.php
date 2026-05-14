@@ -56,6 +56,9 @@ class BrowserClass
         ];
         if ($content) {
             $aContext["http"]["content"]    = is_array($content) ? http_build_query($content) : $content;
+            if ("GET" == $httpMethod) {
+                $url .= "?{$aContext["http"]["content"]}";
+            }
         }
         if ($this->proxy) {
             $aContext["http"]["proxy"] = "tcp://{$this->proxy}";
@@ -91,9 +94,11 @@ class BrowserClass
                     curl_setopt($ch, CURLOPT_PROXYUSERPWD, $this->proxyAuth);
                 }
             }
-            if ("POST" == $httpMethod and $content) {
-                curl_setopt($ch, CURLOPT_POST, true);
-                curl_setopt($ch, CURLOPT_POSTFIELDS, $content);
+            if ($content) {
+                if ("POST" == $httpMethod) {
+                    curl_setopt($ch, CURLOPT_POST, true);
+                    curl_setopt($ch, CURLOPT_POSTFIELDS, $content);
+                }
             }
             if ($curlRows) {
                 curl_setopt_array($ch, $curlRows);

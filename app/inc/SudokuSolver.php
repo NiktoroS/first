@@ -43,10 +43,10 @@ class SudokuSolver
             $imageClip = Gd::clipBw($image, $_xFrom, $yFrom, $xTo, $yTo, $avg);
             $width   = imagesx($imageClip);
             $_xFrom  += $width + 1;
-            if ($width > 9) {
+            if ($width > 9 && imagesy($imageClip) > 9) {
                 $number  = self::getNumber($imageClip, $checkImages, $avg);
                 $numberStr  .= strval($number);
-                imagepng($imageClip, $dir . "{$_xFrom}_" . time() . ".png");
+                imagepng($imageClip, TMP_DIR . "{$_xFrom}_" . time() . ".png");
             }
         } while ($_xFrom < $xTo);
         return intval($numberStr);

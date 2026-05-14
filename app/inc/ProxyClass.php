@@ -21,23 +21,77 @@ class ProxyClass
     private $pgSql;
     private $table = "tg_addresses";
 
+    private $pipes = [];
+    private $procs = [];
+
     public function __construct()
     {
-        $this->logs  = new Logs("Proxy");
+        global $logs;
+        if (empty($logs)) {
+            $this->logs = new Logs("Proxy");
+        } else {
+            $this->logs = &$logs;
+        }
         $this->pgSql = new PgSqlStorage();
     }
 
-    public function getProxy()
+    public function check($procs = 10)
+    {
+        for ($proc = 0; $proc < $procs; $proc ++) {
+            $descriptorspec = [
+                0 => ["pipe", "r"], // stdin
+                1 => ["pipe", "w"], // stdout
+                2 => ["pipe", "w"] // stderr
+            ];
+            $this->procs[$proc] = proc_open(
+                "php " . APP_DIR . "robot" . DS . "proxyCheckProc.php {$procs} {$proc}",
+                $descriptorspec,
+                $this->pipes[$proc]
+            );
+            fclose($this->pipes[$proc][0]);
+            $this->logs->add("proc_open: {$proc}");
+        }
+        foreach ($this->procs as $proc => $_proc) {
+            $stream = "";
+            while ($buf = fgets($this->pipes[$proc][1])) {
+                $stream .= $buf;
+            }
+            $status = proc_get_status($_proc);
+            if (!$status["running"]) {
+                fclose($this->pipes[$proc][1]);
+                fclose($this->pipes[$proc][2]);
+                proc_close($_proc);
+                $this->logs->add("proc_close: {$proc}");
+            }
+            if (!$stream) {
+                continue;
+            }
+            $this->logs->add("{$proc}: {$stream}");
+        }
+    }
+
+    public function getProxy($procs = 1, $proc = 0, $forCheck = false)
     {
         if (getenv("PROXY") && getenv("EXTERNAL_IP") != gethostbyname(gethostname()) ) {
             var_dump(gethostbyname(gethostname()));
             return $this->pgSql->selectRow($this->table, ["name" => base64_encode(getenv("PROXY"))]);
         }
-        return $this->pgSql->selectRow(
-            $this->table,
-            ["deleted" => false, "success < 5"],
-            "success >= fail DESC, avg ASC, RANDOM()"
-        );
+//        return $this->pgSql->selectRow($this->table, ["id" => 59171]);
+        $conditions = ["id % {$procs} = {$proc}"];
+        $orderBy = "
+success >= fail DESC,
+deleted ASC,
+avg ASC,
+RANDOM()";
+        if ($forCheck) {
+            $conditions[]   = "fail < 10";
+            $conditions[]   = "success < 5";
+            $conditions[]   = "(fail = 0 AND success = 0 OR updated_at < '" . date("Y-m-d 00:00:00") . "')";
+            $orderBy        = "fail ASC, deleted ASC, updated_at ASC";
+        } else {
+            $conditions[]   = "(deleted = false OR success > 0)";
+        }
+        return $this->pgSql->selectRow($this->table, $conditions, $orderBy);
     }
 
     public function import()
@@ -45,7 +99,7 @@ class ProxyClass
         if (getenv("PROXY")) {
             $this->insertOrUpdate(getenv("PROXY"), "", getenv("PROXY_AUTH"));
         }
-        $this->pgSql->query("UPDATE {$this->table} SET deleted = true WHERE deleted = false AND success = 0 AND fail > 0");
+        $this->pgSql->query("UPDATE {$this->table} SET deleted = true WHERE deleted = false AND success = 0");
         foreach (scandir($this->dir) as $file) {
             if (!preg_match('/\.txt$/', $file)) {
                 continue;
@@ -69,8 +123,11 @@ class ProxyClass
      *
      * @param array $proxyRow
      */
-    public function saveFail($proxyRow)
+    public function saveFail($proxyRow, $microtime = 5)
     {
+        if ($proxyRow["success"]) {
+            $proxyRow["avg"] = ($proxyRow["avg"] * $proxyRow["success"] + $microtime) / ($proxyRow["success"] + 1);
+        }
         $proxyRow["fail"] ++;
         $this->updateProxy($proxyRow);
     }
@@ -80,7 +137,7 @@ class ProxyClass
      * @param array $proxyRow
      * @param string $microtime
      */
-    public function saveSuccess($proxyRow, $microtime)
+    public function saveSuccess($proxyRow, $microtime = 5)
     {
         $proxyRow["success"] ++;
         $proxyRow["avg"] = ($proxyRow["avg"] * ($proxyRow["success"] - 1) + $microtime) / $proxyRow["success"];

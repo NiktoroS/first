@@ -28,7 +28,7 @@ class TelegramClass
     {
         $this->botToken = $botToken;
         $this->browser  = new BrowserClass();
-        $this->browser->timeOut = 4;
+        $this->browser->timeOut = 10;
         $this->logs     = new Logs("Telegram");
         $this->proxyObj = new ProxyClass();
     }
@@ -96,7 +96,7 @@ class TelegramClass
      */
     public function getUpdates($offset = 0)
     {
-        return $this->request("getUpdates" . ($offset ? "?offset={$offset}" : ""), [], "GET");
+        return $this->request("getUpdates", $offset ? ["offset" => $offset] : [], "GET");
     }
 
     /**
@@ -165,13 +165,16 @@ class TelegramClass
                 $this->browser->request("https://api.telegram.org{$dir}{$this->botToken}/{$name}", $httpMethod, $httpHeader, $data, $useCurl);
                 echo("time=" . round(microtime(true) - $microtime, 2) . "\n");
                 if ("getUpdates" === $name) {
-                    echo("{$this->browser->res}\n");
+                    if (empty(json_decode($this->browser->res)->ok)) {
+                        echo("{$this->browser->res}\n");
+                        throw new \Exception("wrong result: {$this->browser->res}", intval($this->browser->res));
+                    }
                 }
                 $this->proxyObj->saveSuccess($proxyRow, microtime(true) - $microtime);
             } catch (\Exception $exception) {
                 echo($exception->getMessage() . " [" . $exception->getCode() . "] time=" . round(microtime(true) - $microtime, 2) . "\n");
                 $att ++;
-                if (20 == $att) {
+                if (40 == $att) {
                     $att = 0;
                     if (mb_strlen(file_get_contents("https://megafon.ru")) < 100000) {
                         sleep(5);
@@ -180,6 +183,7 @@ class TelegramClass
                         }
                     }
                 }
+                $proxyRow["error_code"] = $exception->getCode();
                 $this->proxyObj->saveFail($proxyRow);
             }
         }

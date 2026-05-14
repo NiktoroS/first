@@ -1,4 +1,5 @@
 <?php
+
 use app\inc\Lock;
 use app\inc\Logs;
 use app\inc\Solver;
@@ -106,7 +107,7 @@ try {
                                 "type"  => "Sudoku"
                             ];
                         } else {
-                            $solver = Solver::getSolverFromFile($tmpFile, $gadget);
+                            $solver = Solver::getSolverFromFile($tmpFile, "image/jpeg");
                         }
                     } catch (Exception $exception) {
                         $att ++;
@@ -128,6 +129,7 @@ try {
                             TMP_DIR . SudokuSolver::saveAc($resultRows, $rows, $solver["level"], $gadget) . ".txt",
                             $update->message->chat->id
                         );
+                        sleep(40);
                         if (empty($update->message->caption)) {
                             break;
                         }
@@ -164,6 +166,7 @@ try {
                         $result = array_shift($resultMoves);
                         $ws->saveMovies($result);
                         $telegram->sendDocument(TMP_DIR . $ws->saveAcc() . ".txt", $update->message->chat->id);
+                        sleep(240);
                         break;
 
                     default:
@@ -171,9 +174,8 @@ try {
                 }
             }
             $offset = $update->update_id + 1;
-            var_dump($offset);
         }
-        sleep(15);
+        sleep(17);
     } while (1 == 1);
 } catch (Exception $exception) {
     echo($exception->getMessage());
