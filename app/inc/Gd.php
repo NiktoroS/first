@@ -159,6 +159,11 @@ class Gd
             $image      = imagecreatetruecolor(576, 1280);
             imagecopyresampled($image, $imageSrc, 0, 0, 0, 0, 576, 1280, 864, 1920);
         }
+        if (1080 == $width) {
+            $imageSrc   = $image;
+            $image      = imagecreatetruecolor(576, 1280);
+            imagecopyresampled($image, $imageSrc, 0, 0, 0, 0, 576, 1280, 1080, 2400);
+        }
         return $image;
     }
 

@@ -431,7 +431,7 @@ class SudokuSolver
         $checkImages = [];
         foreach (scandir($dir) as $file) {
             $output = [];
-            if (!preg_match('/^(\d\.\w+)\.png$/', $file, $output)) {
+            if (!preg_match('/^([0-9_]+\.\w+)\.png$/', $file, $output)) {
                 continue;
             }
             $number = $output[1];
@@ -483,7 +483,7 @@ class SudokuSolver
         }
         asort($errors);
         $keys = array_keys($errors);
-        return $errors[$keys[0]] < 0.25 ? intval($keys[0]) : "";
+        return $errors[$keys[0]] < 0.25 ? (preg_match('/^\d/', $keys[0]) ? intval($keys[0]) : "") : "";
     }
 
     /**

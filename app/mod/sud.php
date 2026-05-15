@@ -15,10 +15,10 @@ class sud extends main
 
     public function download()
     {
-        $content = file_get_contents(ROOT_DIR . "content" . DS . "config.{$_GET['stamp']}.txt");
+        $content = file_get_contents(TMP_DIR . "{$_GET['stamp']}.txt");
         header('Content-Description: File Transfer');
-        header("Content-Type: application/json");
-        header('Content-Disposition: attachment; filename="config.' . $_GET['stamp'] .'.txt"');
+        header("Content-Type: text/plain");
+        header("Content-Disposition: attachment; filename=\"{$_GET['stamp']}.txt\"");
         header('Content-Transfer-Encoding: binary');
         header('Expires: 0');
         header('Cache-Control: must-revalidate, post-check=0, pre-check=0');

@@ -52,11 +52,11 @@
       </table>
       <input type="button" value="Clear" onClick="clearAll()"/>
       <input type="button" value="Solve" onClick="solveAll(false)"/><br/>
-      <input type="button" value="Solve Online" onClick="solveAll(true)"/>
-      <input type="button" value="Save Acc"     onClick="saveAcc()" id="saveAccBtn" disabled/><br/>
+      <input type="button" value="Solve Online" onClick="solveAll()"/>
+      <input type="button" value="Save Acc"     onClick="saveAcc(false)" id="saveAccBtn" disabled/><br/>
       <input type="number" value="" id="level" name="level" min="0" max="9999"/>
       {html_options id="gadget" name="gadget" options=$gadgetRows}<br/>
-      <input type="file" id="file" name="file"/>
+      <input type="file" id="file" name="file" accept="image/*" onChange="file()"/>
     </td>
   </tr>
   </tbody>
@@ -71,6 +71,29 @@
 var number = " ";
 var idCell = "game_0_0";
 var accStamp = "";
+
+function clearAll()
+{
+  var elements = document.getElementsByClassName("game");
+  for (i = 0; i < elements.length; i++) {
+    elements[i].innerHTML = " ";
+    elements[i].style.backgroundColor = "black";
+    elements[i].style.fontWeight = "normal";
+    elements[i].style.color = "#bbbbbb";
+  }
+  $("#saveAccBtn").prop("disabled", true);
+}
+
+function file()
+{
+  $("#level").val("");
+  solveAll();
+}
+
+function putNumber(_this)
+{
+  _this.innerHTM = number;
+}
 
 function saveAcc()
 {
@@ -101,24 +124,7 @@ function setNumber(_number)
   }
 }
 
-function putNumber(_this)
-{
-  _this.innerHTM = number;
-}
-
-function clearAll()
-{
-  var elements = document.getElementsByClassName("game");
-  for (i = 0; i < elements.length; i++) {
-    elements[i].innerHTML = " ";
-    elements[i].style.backgroundColor = "black";
-    elements[i].style.fontWeight = "normal";
-    elements[i].style.color = "#bbbbbb";
-  }
-  $("#saveAccBtn").prop("disabled", true);
-}
-
-function solveAll(online)
+function solveAll(online = true)
 {
   var initRows = [];
   var number = " ";
@@ -163,14 +169,12 @@ function solveAll(online)
     });
     rows = json.rows;
     initRows = json.params.rows;
-
-    console.log("initRows", initRows);
-
     if (!$("#level").val() && json.params.level) {
       $("#level").val(json.params.level);
     }
-    accStamp = json.acc;
+    accStamp = json.acс ?? (json.ac ?? "");
     $("#saveAccBtn").prop("disabled", false);
+    saveAcc();
   } else {
     rows = new SudokuSolver().solve(s, { result: "chunks" });
   }
