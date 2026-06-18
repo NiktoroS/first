@@ -153,6 +153,8 @@ class Gd
         if (!$image) {
             throw new \Exception("Не удалось распознать файл: {$filename}");
         }
+        $log    = new Logs("gd");
+        $log->add("width: " . imagesx($image) . " height: " . imagesy($image));
         $width  = imagesx($image);
         if (864 == $width) {
             $imageSrc   = $image;
@@ -163,6 +165,11 @@ class Gd
             $imageSrc   = $image;
             $image      = imagecreatetruecolor(576, 1280);
             imagecopyresampled($image, $imageSrc, 0, 0, 0, 0, 576, 1280, 1080, 2400);
+        }
+        if (1200 == $width) {
+            $imageSrc   = $image;
+            $image      = imagecreatetruecolor(582, 1280);
+            imagecopyresampled($image, $imageSrc, 0, 0, 0, 0, 582, 1280, 1200, 2640);
         }
         return $image;
     }

@@ -2,6 +2,7 @@
 namespace app\inc;
 
 require_once(INC_DIR . "Gd.php");
+require_once(INC_DIR . "Logs.php");
 
 /**
  *
@@ -30,23 +31,23 @@ class SudokuSolver
         } elseif (582 == $width) {
             $xFrom  = 90;
             $xTo    = 174;
-            $yFrom  = 102;
-            $yTo    = 122;
+            $yFrom  = 106;
+            $yTo    = 126;
         }
 
-        $dir = APP_DIR . "resources" . DS . "sud" . DS . "level" . DS;
+        $dir    = APP_DIR . "resources" . DS . "sud" . DS . "level" . DS;
         $checkImages = self::getCheckImages($dir);
         $avg    = Gd::getAvg($image, $xFrom, $yFrom, $xTo, $yTo);
         $_xFrom = $xFrom;
         $numberStr = "";
         do {
-            $imageClip = Gd::clipBw($image, $_xFrom, $yFrom, $xTo, $yTo, $avg);
-            $width   = imagesx($imageClip);
+            $clipImage = Gd::clipBw($image, $_xFrom, $yFrom, $xTo, $yTo, $avg);
+            $width   = imagesx($clipImage);
             $_xFrom  += $width + 1;
-            if ($width > 9 && imagesy($imageClip) > 9) {
-                $number  = self::getNumber($imageClip, $checkImages, $avg);
+            if ($width > 9 && imagesy($clipImage) > 9) {
+                $number  = self::getNumber($clipImage, $checkImages, $avg);
                 $numberStr  .= strval($number);
-                imagepng($imageClip, TMP_DIR . "{$_xFrom}_" . time() . ".png");
+                imagepng($clipImage, TMP_DIR . "{$_xFrom}_" . time() . ".png");
             }
         } while ($_xFrom < $xTo);
         return intval($numberStr);
@@ -70,10 +71,10 @@ class SudokuSolver
             $yFrom  = 165;
             $ySize  = 63.5;
         } elseif (582 == $width) {
-            $xFrom  = 6;
-            $xSize  = 64.67;
-            $yFrom  = 188;
-            $ySize  = 63.5;
+            $xFrom  = 10;
+            $xSize  = 64.33;
+            $yFrom  = 165;
+            $ySize  = 64.33;
         } else {
             throw new \Exception("Незвестрная ширина: {$width}");
         }
@@ -83,8 +84,8 @@ class SudokuSolver
             for ($col = 0; $col < 9; $col ++) {
                 $_xFrom = intval($xFrom + ($col * $xSize));
                 $_yFrom = intval($yFrom + ($row * $ySize));
-                $curImage   = Gd::clipBw($image, $_xFrom, $_yFrom, $_xFrom + 48, $_yFrom + 48, 384);
-                $rows[$row][$col]   = Self::getNumber($curImage, $checkImages) ?? 0;
+                $clipImage  = Gd::clipBw($image, $_xFrom, $_yFrom, $_xFrom + 48, $_yFrom + 48, 384);
+                $rows[$row][$col]   = Self::getNumber($clipImage, $checkImages) ?? 0;
                 if (!$rows[$row][$col]) {
                     continue;
                 }
@@ -120,7 +121,7 @@ class SudokuSolver
      */
     static public function saveAc($resultRows = [], $startRows = [], $level = null, $gadget = "Mi11")
     {
-        self::$scenarioId = rand(10, 99); //intval(microtime(true) * 1000);
+        self::$scenarioId = rand(10, 99);
         if (!$level) {
             $level = time();
             $return = "{$gadget}.{$level}";
@@ -131,10 +132,10 @@ class SudokuSolver
         $data = [
             "name" => "{$gadget} {$level}",
             "mode" => 2,
-            "gapBetweenCyc" => 50,
+            "gapBetweenCyc" => 0,
             "isCycle" => true,
             "cycleType" => 2,
-            "cycleDuration" => 50,
+            "cycleDuration" => 0,
             "cycleReps" => 1,
             "items" => []
         ];
@@ -240,10 +241,10 @@ class SudokuSolver
         }
         switch ($gadget) {
             case "Mi11":
-                $xDelta   = 200;
-                $xOffset  = 60;
-                $yDelta   = 475;
-                $yOffset  = 1525;
+                $xDelta   = 180;
+                $xOffset  = 100;
+                $yDelta   = 430;
+                $yOffset  = 1600;
                 break;
             case "Pad6":
                 $xDelta   = 320;
@@ -255,7 +256,7 @@ class SudokuSolver
                 $xDelta   = 200;
                 $xOffset  = 100;
                 $yDelta   = 500;
-                $yOffset  = 1700;
+                $yOffset  = 1750;
                 break;
         }
         return [
@@ -266,7 +267,7 @@ class SudokuSolver
             "x" => ($val % 5) * $xDelta + $xOffset,
             "y" => floor($val / 5) * $yDelta + $yOffset,
             "repeatCount" => 1,
-            "clickDuration" => 50,
+            "clickDuration" => 15,
             "cdShowType" => 0
         ];
     }
@@ -285,7 +286,7 @@ class SudokuSolver
                 $xDelta   = 120;
                 $xOffset  = 60;
                 $yDelta   = 120;
-                $yOffset  = 370;
+                $yOffset  = 365;
                 break;
             case "Pad6":
                 $xDelta   = 200;
@@ -297,7 +298,7 @@ class SudokuSolver
                 $xDelta   = 130;
                 $xOffset  = 75;
                 $yDelta   = 135;
-                $yOffset  = 430;
+                $yOffset  = 415;
                 break;
         }
         return [
@@ -308,7 +309,7 @@ class SudokuSolver
             "x" => $xOffset + $x * $xDelta,
             "y" => $yOffset + $y * $yDelta,
             "repeatCount" => 1,
-            "clickDuration" => 50,
+            "clickDuration" => 15,
             "cdShowType" => 0
         ];
     }

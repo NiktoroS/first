@@ -32,7 +32,6 @@ class sud extends main
     {
         $this->data = [
             "gadgetRows" => [
-                "" => "",
                 "Mi11" => "Mi11 lite",
                 "Pad6" => "Pad 6",
                 "x9d"  => "Honor x9d"
@@ -56,17 +55,6 @@ class sud extends main
         ];
         if (!empty($params["gadget"])) {
             $result["ac"] = SudokuSolver::saveAc($resultRows, $params["rows"], $params["level"], $params["gadget"]);
-//            $result["acc"] =  SudokuSolver::saveAcc($resultRows, $params["rows"], $params["level"], $params["gadget"])
-/*
-            $log = new Logs("sud");
-            try {
-                $telegram = new TelegramClass();
-                $response = $telegram->sendDocument(TMP_DIR . "{$result["ac"]}.txt");
-                $log->add(var_export($response, true));
-            } catch (Exception $exception) {
-                $log->add($exception->getMessage());
-            }
-*/
         }
         header("Content-type: application/json");
         echo (json_encode($result));
