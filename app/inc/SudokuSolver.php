@@ -130,14 +130,14 @@ class SudokuSolver
             $return = "{$gadget}.{$level}." . time();
         }
         $data = [
-            "name" => "{$gadget} {$level}",
-            "mode" => 2,
+            "name"  => "{$gadget} {$level}",
+            "mode"  => 2,
             "gapBetweenCyc" => 0,
-            "isCycle" => true,
-            "cycleType" => 2,
+            "isCycle"       => true,
+            "cycleType"     => 2,
             "cycleDuration" => 0,
-            "cycleReps" => 1,
-            "items" => []
+            "cycleReps"     => 1,
+            "items"         => []
         ];
         for ($button = 1; $button < 10; $button ++) {
             $data["items"][] = self::getAcButton($button, $gadget);
@@ -260,15 +260,15 @@ class SudokuSolver
                 break;
         }
         return [
-            "scenarioId" => self::$scenarioId,
-            "priority" => 0,
-            "type" => "CLICK",
-            "gapNext" => 50,
-            "x" => ($val % 5) * $xDelta + $xOffset,
-            "y" => floor($val / 5) * $yDelta + $yOffset,
-            "repeatCount" => 1,
-            "clickDuration" => 15,
-            "cdShowType" => 0
+            "scenarioId"    => self::$scenarioId,
+            "priority"      => 0,
+            "type"          => "CLICK",
+            "gapNext"       => 50,
+            "x"             => ($val % 5) * $xDelta + $xOffset,
+            "y"             => floor($val / 5) * $yDelta + $yOffset,
+            "repeatCount"   => 1,
+            "clickDuration" => 25,
+            "cdShowType"    => 0
         ];
     }
 
@@ -298,19 +298,19 @@ class SudokuSolver
                 $xDelta   = 130;
                 $xOffset  = 75;
                 $yDelta   = 135;
-                $yOffset  = 415;
+                $yOffset  = 405;
                 break;
         }
         return [
-            "scenarioId" => self::$scenarioId,
-            "priority" => 0,
-            "type" => "CLICK",
-            "gapNext" => 50,
-            "x" => $xOffset + $x * $xDelta,
-            "y" => $yOffset + $y * $yDelta,
-            "repeatCount" => 1,
-            "clickDuration" => 15,
-            "cdShowType" => 0
+            "scenarioId"    => self::$scenarioId,
+            "priority"      => 0,
+            "type"          => "CLICK",
+            "gapNext"       => 50,
+            "x"             => $xOffset + $x * $xDelta,
+            "y"             => $yOffset + $y * $yDelta,
+            "repeatCount"   => 1,
+            "clickDuration" => 25,
+            "cdShowType"    => 0
         ];
     }
 
@@ -384,7 +384,7 @@ class SudokuSolver
                 $xDelta   = 130;
                 $xOffset  = 65;
                 $yDelta   = 125;
-                $yOffset  = 370;
+                $yOffset  = 360;
                 break;
         }
         return [
