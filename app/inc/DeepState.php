@@ -87,6 +87,7 @@ CREATE TABLE ds_attr (
     description text NULL,
     created_at timestamp(0) NULL,
     updated_at timestamp(0) NULL,
+    hidden bool NOT NULL DEFAULT false,
     CONSTRAINT ds_attr_pkey PRIMARY KEY (id)
 );
 
