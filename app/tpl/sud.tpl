@@ -169,6 +169,9 @@ function solveAll(online = true)
     });
     rows = json.rows;
     initRows = json.params.rows;
+    if (!$("#gadget").val() && json.params.gadget) {
+      $("#gadget").val(json.params.gadget);
+    }
     if (!$("#level").val() && json.params.level) {
       $("#level").val(json.params.level);
     }

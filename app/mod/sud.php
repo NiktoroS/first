@@ -32,9 +32,10 @@ class sud extends main
     {
         $this->data = [
             "gadgetRows" => [
-                "Mi11" => "Mi11 lite",
-                "Pad6" => "Pad 6",
-                "x9d"  => "Honor x9d"
+                null    => "--auto--",
+                "Mi11"  => "Mi11 lite",
+                "Pad6"  => "Pad 6",
+                "x9d"   => "Honor x9d"
             ]
         ];
     }
@@ -46,6 +47,9 @@ class sud extends main
         }
         SudokuSolver::getRowsFromRequest($params);
         $startTime  = microtime(true);
+        if (empty($params["gadget"])) {
+            $params["gadget"] = SudokuSolver::getGadgetFromFile($_FILES["file"]["tmp_name"], $_FILES["file"]["type"]);
+        }
         $resultRows = SudokuSolver::solve($params["rows"]);
         $result = [
             "params"  => $params,
@@ -53,9 +57,7 @@ class sud extends main
             "time"  => microtime(true) - $startTime,
             "i"     => SudokuSolver::$i,
         ];
-        if (!empty($params["gadget"])) {
-            $result["ac"] = SudokuSolver::saveAc($resultRows, $params["rows"], $params["level"], $params["gadget"]);
-        }
+        $result["ac"] = SudokuSolver::saveAc($resultRows, $params["rows"], $params["level"], $params["gadget"]);
         header("Content-type: application/json");
         echo (json_encode($result));
         exit;

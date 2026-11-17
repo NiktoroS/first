@@ -13,6 +13,18 @@ class SudokuSolver
 {
     static public $i = 0;
 
+    static public function getGadgetFromFile(string $filename, string $type = "image/jpeg")
+    {
+        $image  = Gd::getImageFromFile($filename, $type);
+        $width  = imagesx($image);
+        if (576 == $width) {
+            return "Mi11";
+        }
+        if (582 == $width) {
+            return "x9d";
+        }
+        return "unKnown";
+    }
     /**
      *
      * @param string $tmpFile
@@ -44,7 +56,7 @@ class SudokuSolver
             $clipImage = Gd::clipBw($image, $_xFrom, $yFrom, $xTo, $yTo, $avg);
             $width   = imagesx($clipImage);
             $_xFrom  += $width + 1;
-            if ($width > 9 && imagesy($clipImage) > 9) {
+            if ($width > 7 && imagesy($clipImage) > 9) {
                 $number  = self::getNumber($clipImage, $checkImages, $avg);
                 $numberStr  .= strval($number);
                 imagepng($clipImage, TMP_DIR . "{$_xFrom}_" . time() . ".png");
