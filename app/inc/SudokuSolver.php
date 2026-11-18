@@ -97,15 +97,16 @@ class SudokuSolver
                 $_xFrom = intval($xFrom + ($col * $xSize));
                 $_yFrom = intval($yFrom + ($row * $ySize));
                 $clipImage  = Gd::clipBw($image, $_xFrom, $_yFrom, $_xFrom + 48, $_yFrom + 48, 384);
-                $rows[$row][$col]   = intval(Self::getNumber($clipImage, $checkImages)) ?? 0;
-                if (!$rows[$row][$col]) {
+                $rows[$row][$col]   = Self::getNumber($clipImage, $checkImages) ?? 0;
+                if ($rows[$row][$col]) {
                     continue;
                 }
-//                 $file = APP_DIR . "resources" . DS . "sud" . DS . "{$rows[$row][$col]}.{$row}_{$col}.png";
+                $rows[$row][$col] = 0;
+                //                 $file = APP_DIR . "resources" . DS . "sud" . DS . "{$rows[$row][$col]}.{$row}_{$col}.png";
 //                 if (is_file($file)) {
 //                     continue;
 //                 }
-//                 imagepng($curImage, $file);
+//                 imagepng($clipImage, $file);
             }
         }
         return $rows;
@@ -496,6 +497,9 @@ class SudokuSolver
         }
         asort($errors);
         $keys = array_keys($errors);
+        if (!$keys) {
+            return "";
+        }
         return $errors[$keys[0]] < 0.25 ? (preg_match('/^\d/', $keys[0]) ? intval($keys[0]) : "") : "";
     }
 
