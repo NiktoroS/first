@@ -97,7 +97,7 @@ class SudokuSolver
                 $_xFrom = intval($xFrom + ($col * $xSize));
                 $_yFrom = intval($yFrom + ($row * $ySize));
                 $clipImage  = Gd::clipBw($image, $_xFrom, $_yFrom, $_xFrom + 48, $_yFrom + 48, 384);
-                $rows[$row][$col]   = Self::getNumber($clipImage, $checkImages) ?? 0;
+                $rows[$row][$col]   = intval(Self::getNumber($clipImage, $checkImages)) ?? 0;
                 if (!$rows[$row][$col]) {
                     continue;
                 }
