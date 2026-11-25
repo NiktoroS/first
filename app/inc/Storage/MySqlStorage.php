@@ -83,7 +83,6 @@ class MySqlStorage
      */
     public function close()
     {
-        global $myDbAll;
         if (empty($this->myDb)) {
             return;
         }
@@ -91,7 +90,6 @@ class MySqlStorage
             $this->commit();
         }
         $this->myDb->close();
-#        unset($this->myDb, $myDbAll[$this->dsn["host"]][$this->dsn["name"]]["link"]);
     }
 
     /**
@@ -122,7 +120,7 @@ class MySqlStorage
     public function queryForSelect($sql, $data = array (), $escape = true)
     {
         if ($data) {
-            $sql = self::makeString($sql, $data, $escape);
+            $sql = $this->makeString($sql, $data, $escape);
         }
         do {
             if (empty($this->myDb)) {
@@ -327,7 +325,7 @@ class MySqlStorage
      * @return int lastInsertId
      * @throws
      */
-    public function insertRow($table, $row, $id = "id")
+    public function insertRow($table, array $row, $id = "id")
     {
         unset($row[$id]);
         if (isset($row["_updated"])) {
@@ -370,7 +368,7 @@ class MySqlStorage
      * @return int
      * @throws
      */
-    public function insertOrUpdateRows($table, $rows = [])
+    public function insertOrUpdateRows($table, $rows = [], $idsKey = ["id"])
     {
         if (!$rows) {
             return 0;
@@ -380,7 +378,7 @@ class MySqlStorage
         foreach ($rows as $keyRow => $row) {
             $this->correctData($table, $row, $columns);
             if (!$fields) {
-                $keys = $keysUpd = array_map(function($key) { return "`" . $key . "`"; }, array_keys($row));
+                $keys = $keysUpd = array_map(function($key) { return $this->escapeIdentifier($key); }, array_keys($row));
                 $fields  = " (" . join(", ", $keys) . ") ";
                 if ($key = array_search("`created`", $keysUpd)) {
                     unset($keysUpd[$key]);
@@ -467,6 +465,15 @@ class MySqlStorage
     }
 
     /**
+     *
+     * @param string $string
+     * @return string
+     */
+    public function escapeIdentifier(string $string)
+    {
+        return "`{$string}`";
+    }
+    /**
      * @return true
      * @throws
      */
@@ -485,7 +492,7 @@ class MySqlStorage
         }
         $this->myDb->autocommit(false);
         if (true != $this->checkQueryResult($this->query("BEGIN"), "BEGIN")) {
-            throw new Exception("begin transaction - fail");
+            throw new \Exception("begin transaction - fail");
         }
         $this->transactions ++;
         return true;
@@ -508,9 +515,9 @@ class MySqlStorage
         }
         if (true != $this->myDb->commit()) {
             if (true != $this->myDb->rollback()) {;
-            throw new Exception("rollback - fail");
+            throw new \Exception("rollback - fail");
             }
-            throw new Exception("commit transaction - fail");
+            throw new \Exception("commit transaction - fail");
         }
         $this->myDb->autocommit(true);
         $this->transactions --;
@@ -524,7 +531,7 @@ class MySqlStorage
     public function rollback()
     {
         if (true != $this->myDb->rollback()) {;
-        throw new Exception("rollback - fail");
+            throw new \Exception("rollback - fail");
         }
         $this->transactions = 0;
         return true;
@@ -563,7 +570,7 @@ class MySqlStorage
      * @param  bool   $escape
      * @return string
      */
-    static protected function makeString($template, $row, $escape = true)
+    protected function makeString($template, $row, $escape = true)
     {
         if (!is_array($row)) {
             return "";
@@ -596,7 +603,7 @@ class MySqlStorage
             $error = $this->myDb->error;
             $errno = $this->myDb->errno;
             $request   = empty($_SERVER["REQUEST_URI"]) ? "" : "request: " . $_SERVER["REQUEST_URI"] . ($_POST ? "?" . http_build_query($_POST) : "") . "\n\n";
-            $exception = new Exception($request . $sql . " [" . $error . "] - " . $errno);
+            $exception = new \Exception($request . $sql . " [" . $error . "] - " . $errno);
             if ("" == $request and $this->numErrors < 5 and !$this->transactions) {
                 // при offline запуске и отсутствии открытой транзакции
                 // попытаемся переконнектится и выполнить запрос еще раз
@@ -617,7 +624,7 @@ class MySqlStorage
     }
 
     /**
-     * @param Exception $exception
+     * @param \Exception $exception
      */
     private function addLogs($exception)
     {
@@ -632,16 +639,19 @@ class MySqlStorage
     }
 
     /**
-     * @param Exception $exception
+     *
+     * @param \Exception $exception
      */
     private function sendSms($exception)
     {
+/*
         if (!is_file(INC_DIR . "Telegram.class.php")) {
             return;
         }
         require_once(INC_DIR . "Telegram.class.php");
         $telegram = new Telegram();
         $telegram->sendMessage($exception, "MySql");
+*/
     }
 
     /**
@@ -677,10 +687,12 @@ class MySqlStorage
 
     /**
      * приведение данных
-     * @param string &$tableName
-     * @param array  &$row
+     *
+     * @param string $table
+     * @param array  &$data
+     * @param array $columns
      */
-    private function correctData($table, &$data, $columns = "")
+    private function correctData($table, &$data, $columns = [])
     {
         $table = $this->escapeTable($table);
         if (!$columns) {
@@ -716,7 +728,8 @@ class MySqlStorage
      * @return array
      * @throws
      */
-    public function selectRows($table, $conditions = [], $orderBy = "name", $offset = 0, $limit = 0, $addTable = "") {
+    public function selectRows($table, $conditions = [], $orderBy = "name", $offset = 0, $limit = 0, $addTable = "", $distinct = false)
+    {
         if (is_array($table)) {
             extract($table);
         }
@@ -757,12 +770,14 @@ class MySqlStorage
      *
      * @param string $table
      * @param array $conditions
+     * @param string $orderBy
      * @param string $addTable
      *
      * @return array
      * @throws
      */
-    public function selectRow($table, $conditions = [], $orderBy = "", $addTable = "", ) {
+    public function selectRow($table, $conditions = [], $orderBy = "", $addTable = "", $fields = "*")
+    {
         if (is_array($table)) {
             extract($table);
         }

@@ -2,18 +2,30 @@
 
 namespace app\inc;
 
-use app\inc\Storage\PgsqlStorage;
+use app\inc\Storage\MySqlStorage;
+use app\inc\Storage\PgSqlStorage;
 
 define('MAX_FILE_SIZE', 10000000);
 ini_set("memory_limit", "4095M");
 set_time_limit(0);
 
 require_once("simple_html_dom.php");
+require_once("Storage/MySqlStorage.php");
 require_once("Storage/PgSqlStorage.php");
 
 class DeepState extends PgSqlStorage
 {
 
+    public $db;
+
+    public function __construct()
+    {
+        if (getenv("DS_DB") && "PG" == getenv("DS_DB")) {
+            $this->db = new PgSqlStorage();
+        } else {
+            $this->db = new MySqlStorage();
+        }
+    }
     /**
      *
      * @param string $file
@@ -46,19 +58,19 @@ class DeepState extends PgSqlStorage
                         "updated_at"    => "NOW()"
                     ];
                 }
-                $this->insertOrUpdateRows("ds_stat", $statRows, ["date", "ds_attr_id"]);
+                $this->db->insertOrUpdateRows("ds_stat", $statRows, ["date", "ds_attr_id"]);
             }
         } catch (\Exception $exception) {
-            $this->logs->add($exception);
+            $this->db->logs->add($exception);
         }
     }
 
     public function updateAttrRows()
     {
-        foreach ($this->selectRows("ds_attr") as $attrRow) {
+        foreach ($this->db->selectRows("ds_attr") as $attrRow) {
             $attrRow["name"]        = convert_uuencode($attrRow["name"]);
             $attrRow["updated_at"]  = "NOW()";
-            $this->updateRow("ds_attr", $attrRow);
+            $this->db->updateRow("ds_attr", $attrRow);
         }
     }
 
@@ -70,16 +82,18 @@ class DeepState extends PgSqlStorage
      */
     private function getAttrRow($name = "")
     {
-        $attrRow = $this->selectRow("ds_attr", ["name" => $name]);
+        $attrRow = $this->db->selectRow("ds_attr", ["name" => $name]);
         if ($attrRow) {
             return $attrRow;
         }
-        $this->insertRow("ds_attr", ["name" => $name, "created_at" => "NOW()"]);
+        $this->db->insertRow("ds_attr", ["name" => $name, "created_at" => "NOW()"]);
         return $this->getAttrRow($name);
     }
 }
 
 /**
+
+-- PgSql
 
 CREATE TABLE ds_attr (
     id bigserial NOT NULL,
@@ -103,4 +117,30 @@ CREATE TABLE ds_stat (
     CONSTRAINT ds_stat_unique UNIQUE (date, ds_attr_id),
     CONSTRAINT ds_stat_ds_attr_fk FOREIGN KEY (ds_attr_id) REFERENCES ds_attr(id)
 );
+
+-- MySql
+
+CREATE TABLE ds_attr (
+    id BIGINT AUTO_INCREMENT NOT NULL,
+    `name` VARCHAR(255) NOT NULL,
+    description TEXT NULL,
+    created_at TIMESTAMP NULL,
+    updated_at TIMESTAMP NULL,
+    hidden TINYINT(1) NOT NULL DEFAULT 0,
+    PRIMARY KEY (id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE ds_stat (
+    id BIGINT AUTO_INCREMENT NOT NULL,
+    ds_attr_id BIGINT NOT NULL,
+    `date` DATE NOT NULL,
+    total INT NULL,
+    delta INT NULL,
+    created_at TIMESTAMP NULL,
+    updated_at TIMESTAMP NULL,
+    PRIMARY KEY (id),
+    UNIQUE KEY ds_stat_unique (`date`, ds_attr_id),
+    CONSTRAINT ds_stat_ds_attr_fk FOREIGN KEY (ds_attr_id) REFERENCES ds_attr(id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
 */

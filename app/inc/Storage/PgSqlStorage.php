@@ -143,6 +143,18 @@ class PgSqlStorage
     }
 
     /**
+     *
+     * @param string $string
+     * @return string
+     */
+    public function escapeIdentifier(string $string)
+    {
+        if (empty($this->connection)) {
+            $this->open();
+        }
+        return pg_escape_identifier($this->connection, $string);
+    }
+    /**
      * @param  string $data
      * @return string
      */

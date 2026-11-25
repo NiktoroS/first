@@ -23,14 +23,14 @@ class ds extends main
     public function month($params = [])
     {
         $this->data["params"]   = $params;
-        $this->data["statRows"] = $this->deepState->queryRows("
+        $this->data["statRows"] = $this->deepState->db->queryRows("
 SELECT
-    EXTRACT(day FROM \"date\") AS day,
+    EXTRACT(day FROM " . $this->deepState->db->escapeIdentifier("date") . ") AS day,
     SUM(delta) AS delta
   FROM ds_stat
  WHERE ds_attr_id = {$params["attr_id"]}
-   AND EXTRACT(MONTH FROM \"date\") = {$params["month"]}
-   AND EXTRACT(YEAR FROM \"date\") = {$params["year"]}
+   AND EXTRACT(MONTH FROM " . $this->deepState->db->escapeIdentifier("date") . ") = {$params["month"]}
+   AND EXTRACT(YEAR FROM " . $this->deepState->db->escapeIdentifier("date") . ") = {$params["year"]}
  GROUP BY 1
  ORDER BY 1");
     }
@@ -49,21 +49,23 @@ SELECT
      */
     public function show($params = [])
     {
-        $this->data["attrs"] = $this->deepState->selectRows("ds_attr", ["hidden = false"]);
+        $this->data["attrs"] = $this->deepState->db->selectRows("ds_attr", ["hidden = false"]);
         usort(
-            $this->data["attrs"], function($row1, $row2) {
+            $this->data["attrs"],
+            function($row1, $row2)
+            {
                 return convert_uudecode($row1["name"]) > convert_uudecode($row2["name"]);
             }
         );
-        $detailRows = $this->deepState->queryRows("
+        $detailRows = $this->deepState->db->queryRows("
 SELECT
     ds_attr_id,
-    EXTRACT(YEAR FROM \"date\") AS year,
+    EXTRACT(YEAR FROM " . $this->deepState->db->escapeIdentifier("date") . ") AS year,
     SUM(delta) AS delta
   FROM ds_stat
  GROUP BY 1, 2");
         foreach ($this->data["attrs"] as &$attr) {
-            $attr["stat"] = $this->deepState->selectRow("ds_stat", ["ds_attr_id" => $attr["id"]], "\"date\" DESC");
+            $attr["stat"] = $this->deepState->db->selectRow("ds_stat", ["ds_attr_id" => $attr["id"]], $this->deepState->db->escapeIdentifier("date") . " DESC");
             $attr["stat"]["detail"] = [];
             foreach ($detailRows as $detailRow) {
                 if ($detailRow["ds_attr_id"] == $attr["id"]) {
@@ -80,13 +82,13 @@ SELECT
     public function year($params = [])
     {
         $this->data["params"]   = $params;
-        $this->data["statRows"] = $this->deepState->queryRows("
+        $this->data["statRows"] = $this->deepState->db->queryRows("
 SELECT
-    EXTRACT(MONTH FROM \"date\") AS month,
+    EXTRACT(MONTH FROM " . $this->deepState->db->escapeIdentifier("date") . ") AS month,
     SUM(delta) AS delta
   FROM ds_stat
  WHERE ds_attr_id = {$params["attr_id"]}
-   AND EXTRACT(YEAR FROM \"date\") = {$params["year"]}
+   AND EXTRACT(YEAR FROM " . $this->deepState->db->escapeIdentifier("date") . ") = {$params["year"]}
  GROUP BY 1
  ORDER BY 1");
     }
@@ -95,11 +97,11 @@ SELECT
 
     private function delta()
     {
-        foreach ($this->deepState->selectRows("ds_attr") as $attr) {
+        foreach ($this->deepState->db->selectRows("ds_attr") as $attr) {
             $total = 0;
-            foreach ($this->deepState->selectRows("ds_stat", ["ds_attr_id" => $attr["id"]], "\"date\" ASC") as $stat) {
+            foreach ($this->deepState->db->selectRows("ds_stat", ["ds_attr_id" => $attr["id"]], $this->deepState->db->escapeIdentifier("date") . " ASC") as $stat) {
                 if (!$stat["delta"] && intval($stat["total"]) <> $total) {
-                    $this->deepState->updateRow("ds_stat", ["id" => $stat["id"], "delta" => intval($stat["total"]) - $total]);
+                    $this->deepState->db->updateRow("ds_stat", ["id" => $stat["id"], "delta" => intval($stat["total"]) - $total]);
                 }
                 $total = intval($stat["total"]);
             }
